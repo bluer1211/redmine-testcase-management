@@ -13,4 +13,13 @@ class TestPlansTest < ActiveSupport::TestCase
     assert_nil test_plan.end_date
     assert_nil test_plan.estimated_bug
   end
+
+  def test_create
+    test_plan = TestPlans.new(:id => 1,
+                              :name => "dummy",
+                              :begin_date => "2022-02-16",
+                              :end_date => "2022-02-28",
+                              :estimated_bug => 10)
+    assert_save test_plan
+  end
 end
