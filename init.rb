@@ -1,8 +1,8 @@
 Redmine::Plugin.register :redmine_plugin_testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
-  author 'Author name'
-  description 'This is a plugin for Redmine'
-  version '0.0.1'
-  url 'http://example.com/path/to/plugin'
-  author_url 'http://example.com/about'
+  author 'ClearCode Inc.'
+  description 'Manage test plans, test cases and execution result'
+  version '1.0.0'
+  url 'https://gitlab.com/clear-code/redmine-plugin-testcase-management'
+  author_url 'https://www.clear-code.com'
 end
