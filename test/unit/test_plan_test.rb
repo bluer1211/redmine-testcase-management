@@ -1,11 +1,11 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-class TestPlansTest < ActiveSupport::TestCase
+class TestPlanTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :roles
 
   def test_initialize
-    test_plan = TestPlans.new
+    test_plan = TestPlan.new
 
     assert_nil test_plan.id
     assert_nil test_plan.name
@@ -15,11 +15,11 @@ class TestPlansTest < ActiveSupport::TestCase
   end
 
   def test_create
-    test_plan = TestPlans.new(:id => 1,
-                              :name => "dummy",
-                              :begin_date => "2022-02-16",
-                              :end_date => "2022-02-28",
-                              :estimated_bug => 10)
+    test_plan = TestPlan.new(:id => 1,
+                             :name => "dummy",
+                             :begin_date => "2022-02-16",
+                             :end_date => "2022-02-28",
+                             :estimated_bug => 10)
     assert_save test_plan
   end
 end
