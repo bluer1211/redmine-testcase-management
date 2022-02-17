@@ -1,0 +1,9 @@
+--- 
+test_cases_001: 
+  id: 1
+  result: true
+  comment: Dummy Comment 1
+  user_id: 2
+  issue_id: 1
+  execution_date: 2022-02-10 00:00:00 +09:00
+  test_plan_id: 1
