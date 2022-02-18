@@ -35,7 +35,7 @@ ln -s ${source_dir} plugins/testcase_management
 ln -s \
    ../plugins/testcase_management/config/database.yml.example.sqlite3 \
    config/database.yml
-
+cp plugins/testcase_management/test/fixtures/*.yml test/fixtures/
 bundle install
 bin/rails db:create
 bin/rails generate_secret_token
