@@ -69,15 +69,63 @@ class TestCaseTest < ActiveSupport::TestCase
     end
   end
 
+  def test_missing_name
+    object = TestCase.create(:scenario => "dummy",
+                             :expected => "dummy",
+                             :user => User.find(1),
+                             :environment => "dummy",
+                             :issue_status => IssueStatus.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:name]
+  end
+
+  def test_missing_scenario
+    object = TestCase.create(:name => "dummy",
+                             :expected => "dummy",
+                             :user => User.find(1),
+                             :environment => "dummy",
+                             :issue_status => IssueStatus.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:scenario]
+  end
+
+  def test_missing_expected
+    object = TestCase.create(:name => "dummy",
+                             :scenario => "dummy",
+                             :user => User.find(1),
+                             :environment => "dummy",
+                             :issue_status => IssueStatus.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:expected]
+  end
+
   def test_missing_user
-    assert_raises ActiveRecord::RecordNotFound do
-      TestCase.new(:user => User.find(999))
-    end
+    object = TestCase.create(:name => "dummy",
+                             :scenario => "dummy",
+                             :expected => "dummy",
+                             :environment => "dummy",
+                             :issue_status => IssueStatus.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:user]
+  end
+
+  def test_missing_environment
+    object = TestCase.create(:name => "dummy",
+                             :scenario => "dummy",
+                             :expected => "dummy",
+                             :user => User.find(1),
+                             :issue_status => IssueStatus.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:environment]
   end
 
   def test_missing_issue_status
-    assert_raises ActiveRecord::RecordNotFound do
-      TestCase.new(:issue_status => IssueStatus.find(999))
-    end
+    object = TestCase.create(:name => "dummy",
+                             :scenario => "dummy",
+                             :expected => "dummy",
+                             :environment => "dummy",
+                             :user => User.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:issue_status]
   end
 end
