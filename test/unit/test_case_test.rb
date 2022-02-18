@@ -19,7 +19,7 @@ class TestCaseTest < ActiveSupport::TestCase
   end
 
   def test_create
-    test_case = TestCase.new(:id => 2,
+    test_case = TestCase.new(:id => 100,
                              :name => "dummy",
                              :scenario => "test scenario",
                              :expected => "expected situation",

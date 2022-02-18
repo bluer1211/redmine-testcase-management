@@ -18,7 +18,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_create
     test_plan = TestPlan.new
-    test_case_execution = TestCaseExecution.new(:id => 2,
+    test_case_execution = TestCaseExecution.new(:id => 100,
                                                 :result => true,
                                                 :execution_date => "2022-02-28",
                                                 :comment => "dummy",

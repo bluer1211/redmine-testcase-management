@@ -18,7 +18,7 @@ class TestPlanTest < ActiveSupport::TestCase
   end
 
   def test_create
-    test_plan = TestPlan.create(:id => 2,
+    test_plan = TestPlan.create(:id => 100,
                                 :name => "dummy",
                                 :begin_date => "2022-02-16",
                                 :end_date => "2022-02-28",
