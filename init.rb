@@ -1,4 +1,4 @@
-Redmine::Plugin.register :redmine_plugin_testcase_management do
+Redmine::Plugin.register :testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
   author 'ClearCode Inc.'
   description 'Manage test plans, test cases and execution result'
