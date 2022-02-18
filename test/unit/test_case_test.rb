@@ -57,4 +57,27 @@ class TestCaseTest < ActiveSupport::TestCase
     end
   end
 
+  def test_missing_test_case
+    assert_raises ActiveRecord::RecordNotFound do
+      TestCase.find(999)
+    end
+  end
+
+  def test_missing_project
+    assert_raises ActiveRecord::RecordNotFound do
+      TestCase.new(:project => Project.find(999))
+    end
+  end
+
+  def test_missing_user
+    assert_raises ActiveRecord::RecordNotFound do
+      TestCase.new(:user => User.find(999))
+    end
+  end
+
+  def test_missing_issue_status
+    assert_raises ActiveRecord::RecordNotFound do
+      TestCase.new(:issue_status => IssueStatus.find(999))
+    end
+  end
 end
