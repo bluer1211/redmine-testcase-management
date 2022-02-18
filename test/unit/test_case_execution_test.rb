@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 class TestCaseExecutionTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :roles, :issues, :issue_statuses
-  fixtures :test_case_executions
+  fixtures :test_plans, :test_case_executions
 
   def test_initialize
     test_case_execution = TestCaseExecution.new
@@ -21,6 +21,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     test_case_execution = TestCaseExecution.new(:id => 2,
                                                 :result => true,
                                                 :execution_date => "2022-02-28",
+                                                :comment => "dummy",
                                                 :user => User.find(1),
                                                 :test_plan => test_plan,
                                                 :issue => Issue.find(1))
@@ -38,11 +39,12 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   end
 
   def test_not_unique
-    test_plan = TestPlan.new
+    test_plan = TestPlan.find(1)
     test_case_execution = TestCaseExecution.new(:id => 1,
                                                 :result => true,
+                                                :comment => "dummy",
                                                 :execution_date => "2022-02-28",
-                                                :user => User.find(1),
+                                                :user => User.find(2),
                                                 :test_plan => test_plan,
                                                 :issue => Issue.find(1))
     assert_raises ActiveRecord::RecordNotUnique do
@@ -62,16 +64,24 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     end
   end
 
+  def test_missing_result
+    object = TestCaseExecution.create(:comment => "dummy",
+                                      :user => User.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:result]
+  end
+
   def test_missing_user
-    assert_raises ActiveRecord::RecordNotFound do
-      TestCaseExecution.new(:user => User.find(999))
-    end
+    object = TestCaseExecution.create(:result => false,
+                                      :comment => "dummy")
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:user]
   end
 
-  def test_missing_issue
-    assert_raises ActiveRecord::RecordNotFound do
-      TestCaseExecution.new(:issue => Issue.find(999))
-    end
+  def test_missing_comment
+    object = TestCaseExecution.create(:result => false,
+                                      :user => User.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:comment]
   end
-
 end
