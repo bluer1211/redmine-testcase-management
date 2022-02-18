@@ -31,7 +31,7 @@ class TestPlanTest < ActiveSupport::TestCase
   def test_fixture
     test_plan = TestPlan.find(1)
     assert_equal 1, test_plan.id
-    assert_equal "Dummy Test Plan 1", test_plan.name
+    assert_equal "Test Plan (No test case)", test_plan.name
     assert_equal 10, test_plan.estimated_bug
     assert_equal 2, test_plan.user_id
     assert_equal 1, test_plan.issue_status_id

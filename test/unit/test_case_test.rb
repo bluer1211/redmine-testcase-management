@@ -33,8 +33,8 @@ class TestCaseTest < ActiveSupport::TestCase
   def test_fixture
     test_case = TestCase.find(1)
     assert_equal 1, test_case.id
-    assert_equal "Dummy Test Case 1", test_case.name
-    assert_equal "Dummy Scenario 1", test_case.scenario
+    assert_equal "Test Case 1 (No test case execution)", test_case.name
+    assert_equal "Scenario 1", test_case.scenario
     assert_equal "Dummy Expected 1", test_case.expected
     assert_equal "Debian GNU/Linux", test_case.environment
     assert_equal "2022-02-08 15:00:00 UTC", test_case.scheduled_date.to_s

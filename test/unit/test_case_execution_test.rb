@@ -31,11 +31,11 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   def test_fixture
     test_case_execution = TestCaseExecution.find(1)
     assert_equal 1, test_case_execution.id
-    assert_equal "Dummy Comment 1", test_case_execution.comment
+    assert_equal "Comment 1", test_case_execution.comment
     assert_equal "2022-02-09 15:00:00 UTC", test_case_execution.execution_date.to_s
     assert_equal 2, test_case_execution.user_id
     assert_equal 1, test_case_execution.issue_id
-    assert_equal 1, test_case_execution.test_plan_id
+    assert_equal 2, test_case_execution.test_plan_id
   end
 
   def test_not_unique
