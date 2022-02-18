@@ -18,13 +18,13 @@ class TestPlanTest < ActiveSupport::TestCase
   end
 
   def test_create
-    test_plan = TestPlan.new(:id => 2,
-                             :name => "dummy",
-                             :begin_date => "2022-02-16",
-                             :end_date => "2022-02-28",
-                             :estimated_bug => 10,
-                             :user => User.find(1),
-                             :issue_status => IssueStatus.find(1))
+    test_plan = TestPlan.create(:id => 2,
+                                :name => "dummy",
+                                :begin_date => "2022-02-16",
+                                :end_date => "2022-02-28",
+                                :estimated_bug => 10,
+                                :user => User.find(1),
+                                :issue_status => IssueStatus.find(1))
     assert_save test_plan
   end
 
@@ -54,19 +54,28 @@ class TestPlanTest < ActiveSupport::TestCase
 
   def test_missing_project
     assert_raises ActiveRecord::RecordNotFound do
-      TestPlan.new(:project => Project.find(999))
+      TestPlan.create(:project => Project.find(999))
     end
+  end
+
+  def test_missing_name
+    object = TestPlan.create(:user => User.find(1),
+                             :issue_status => IssueStatus.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:name]
   end
 
   def test_missing_user
-    assert_raises ActiveRecord::RecordNotFound do
-      TestPlan.new(:user => User.find(999))
-    end
+    object = TestPlan.create(:name => "dummy",
+                             :issue_status => IssueStatus.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:user]
   end
 
   def test_missing_issue_status
-    assert_raises ActiveRecord::RecordNotFound do
-      TestPlan.new(:issue_status => IssueStatus.find(999))
-    end
+    object = TestPlan.create(:name => "dummy",
+                             :user => User.find(1))
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:issue_status]
   end
 end
