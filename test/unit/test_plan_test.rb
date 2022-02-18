@@ -38,4 +38,17 @@ class TestPlanTest < ActiveSupport::TestCase
     assert_equal "2022-01-31 15:00:00 UTC", test_plan.begin_date.to_s
     assert_equal "2022-02-27 15:00:00 UTC", test_plan.end_date.to_s
   end
+
+  def test_not_unique
+    test_plan = TestPlan.new(:id => 1,
+                             :name => "dummy",
+                             :begin_date => "2022-02-16",
+                             :end_date => "2022-02-28",
+                             :estimated_bug => 10,
+                             :user => User.find(1),
+                             :issue_status => IssueStatus.find(1))
+    assert_raises ActiveRecord::RecordNotUnique do
+      test_plan.save
+    end
+  end
 end

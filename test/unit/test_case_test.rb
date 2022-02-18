@@ -42,4 +42,19 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_equal 1, test_case.project_id
     assert_equal 1, test_case.issue_status_id
   end
+
+  def test_not_unique
+    test_case = TestCase.new(:id => 1,
+                             :name => "dummy",
+                             :scenario => "test scenario",
+                             :expected => "expected situation",
+                             :environment => "Debian GNU/Linux",
+                             :project => Project.find(1),
+                             :user => User.find(1),
+                             :issue_status => IssueStatus.find(1))
+    assert_raises ActiveRecord::RecordNotUnique do
+      test_case.save
+    end
+  end
+
 end

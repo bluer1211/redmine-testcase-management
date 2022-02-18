@@ -36,4 +36,17 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     assert_equal 1, test_case_execution.issue_id
     assert_equal 1, test_case_execution.test_plan_id
   end
+
+  def test_not_unique
+    test_plan = TestPlan.new
+    test_case_execution = TestCaseExecution.new(:id => 1,
+                                                :result => true,
+                                                :execution_date => "2022-02-28",
+                                                :user => User.find(1),
+                                                :test_plan => test_plan,
+                                                :issue => Issue.find(1))
+    assert_raises ActiveRecord::RecordNotUnique do
+      test_case_execution.save
+    end
+  end
 end
