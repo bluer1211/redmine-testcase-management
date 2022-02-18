@@ -19,7 +19,7 @@
 set -exu
 
 env \
-  NAME=work_report_exporter \
+  NAME=testcase_management \
   PSQLRC=/tmp/nonexistent \
   RAILS_ENV=test \
     ${RUBY:-ruby} bin/rails redmine:plugins:test "$@"
