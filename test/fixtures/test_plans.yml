@@ -1,7 +1,23 @@
 --- 
 test_plans_001: 
   id: 1
-  name: Dummy Test Plan 1
+  name: Test Plan (No test case)
+  begin_date: 2022-02-01 00:00:00 +09:00
+  end_date: 2022-02-28 00:00:00 +09:00
+  user_id: 2
+  estimated_bug: 10
+  issue_status_id: 1
+test_plans_002:
+  id: 2
+  name: Test Plan (1 test case)
+  begin_date: 2022-02-01 00:00:00 +09:00
+  end_date: 2022-02-28 00:00:00 +09:00
+  user_id: 2
+  estimated_bug: 10
+  issue_status_id: 1
+test_plans_003:
+  id: 3
+  name: Test Plan (2 test cases)
   begin_date: 2022-02-01 00:00:00 +09:00
   end_date: 2022-02-28 00:00:00 +09:00
   user_id: 2
