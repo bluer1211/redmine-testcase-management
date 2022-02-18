@@ -49,4 +49,29 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
       test_case_execution.save
     end
   end
+
+  def test_missing_test_case_execution
+    assert_raises ActiveRecord::RecordNotFound do
+      TestCaseExecution.find(999)
+    end
+  end
+
+  def test_missing_test_plan
+    assert_raises ActiveRecord::RecordNotFound do
+      TestCaseExecution.new(:test_plan => TestPlan.find(999))
+    end
+  end
+
+  def test_missing_user
+    assert_raises ActiveRecord::RecordNotFound do
+      TestCaseExecution.new(:user => User.find(999))
+    end
+  end
+
+  def test_missing_issue
+    assert_raises ActiveRecord::RecordNotFound do
+      TestCaseExecution.new(:issue => Issue.find(999))
+    end
+  end
+
 end
