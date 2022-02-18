@@ -2,6 +2,7 @@ class TestCase < ActiveRecord::Base
   belongs_to :user
   belongs_to :project
   belongs_to :issue_status
+  belongs_to :test_plan
   has_many :test_case_executions
 
   validates :name, presence: true
