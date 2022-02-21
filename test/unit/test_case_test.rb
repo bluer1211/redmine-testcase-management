@@ -128,4 +128,54 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:issue_status]
   end
+
+
+  # Test Relations
+
+  def test_association
+    test_case = TestCase.new
+    assert_nil test_case.user
+    assert_nil test_case.project
+    assert_nil test_case.issue_status
+    assert_nil test_case.test_plan
+  end
+
+  def test_no_test_case_execution
+    test_case = TestCase.first
+    assert 0, test_case.test_case_executions.size
+  end
+
+  def test_one_test_case_execution
+    test_case = TestCase.find(2)
+    assert 1, test_case.test_case_executions.size
+    assert "Comment 1", test_case.test_case_executions.select(:comment)
+  end
+
+  def test_many_test_case_executions
+    test_case = TestCase.find(3)
+    assert 2, test_case.test_case_executions.size
+    assert ["Comment 2",
+            "Comment 3"], test_case.test_case_executions.select(:comment)
+  end
+
+  def test_incomplete_test_case_execution
+    test_case = TestCase.find(1)
+    test_case_execution = test_case.test_case_executions.create(:result => true,
+                                                                :user => User.find(1))
+    assert_equal true, test_case_execution.invalid?
+    assert_equal true, test_case.invalid?
+    assert_equal false, test_case.save
+    assert_equal 0, TestCase.find(1).test_case_executions.size
+  end
+
+  def test_save_test_case
+    test_case = TestCase.find(1)
+    test_case_execution = test_case.test_case_executions.create(:result => true,
+                                                                :comment => "dummy",
+                                                                :user => User.find(1))
+    assert_equal true, test_case_execution.valid?
+    assert_equal true, test_case.valid?
+    assert_save test_case
+    assert_equal 1, TestCase.find(1).test_case_executions.size
+  end
 end
