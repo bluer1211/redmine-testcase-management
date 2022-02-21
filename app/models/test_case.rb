@@ -11,4 +11,6 @@ class TestCase < ActiveRecord::Base
   validates :user, presence: true
   validates :environment, presence: true
   validates :issue_status, presence: true
+
+  validates_associated :test_case_executions
 end
