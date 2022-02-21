@@ -89,7 +89,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   def test_empty_association
     test_case_execution = TestCaseExecution.new
     assert_nil test_case_execution.user
-    assert_nil test_case_execution.project
+    assert_nil test_case_execution.test_project
     assert_nil test_case_execution.issue
     assert_nil test_case_execution.test_plan
     assert_nil test_case_execution.test_case
@@ -101,7 +101,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     assert_equal 2, test_case_execution.user.id
     assert_equal 2, test_case_execution.test_case.id
     # T.B.D.
-    #assert_equal 2, test_case_execution.project.id
+    #assert_equal 2, test_case_execution.test_project.id
   end
 
   def test_no_issue

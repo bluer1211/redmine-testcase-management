@@ -1,7 +1,7 @@
 --- 
 test_cases_001: 
   id: 1
-  project_id: 1
+  test_project_id: 1
   test_plan_id: 2
   name: Test Case 1 (No test case execution)
   scenario: Scenario 1
@@ -12,7 +12,7 @@ test_cases_001:
   scheduled_date: 2022-02-09 00:00:00 +09:00
 test_cases_002:
   id: 2
-  project_id: 1
+  test_project_id: 1
   test_plan_id: 3
   name: Test Case 2 (1 test case execution)
   scenario: Scenario 2
@@ -23,7 +23,7 @@ test_cases_002:
   scheduled_date: 2022-02-09 00:00:00 +09:00
 test_cases_003:
   id: 3
-  project_id: 1
+  test_project_id: 1
   test_plan_id: 3
   name: Test Case 3 (2 test case execution)
   scenario: Scenario 3

@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 class TestPlanTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :roles, :issue_statuses
-  fixtures :test_plans
+  fixtures :test_projects, :test_plans
 
   def test_initialize
     test_plan = TestPlan.new
@@ -52,9 +52,9 @@ class TestPlanTest < ActiveSupport::TestCase
     end
   end
 
-  def test_missing_project
+  def test_missing_test_project
     assert_raises ActiveRecord::RecordNotFound do
-      TestPlan.create(:project => Project.find(999))
+      TestPlan.create(:test_project => TestProject.find(999))
     end
   end
 
@@ -110,7 +110,7 @@ class TestPlanTest < ActiveSupport::TestCase
     test_case = test_plan.test_cases.create(:scenario => "test scenario",
                                             :expected => "expected situation",
                                             :environment => "Debian GNU/Linux",
-                                            :project => Project.find(1),
+                                            :test_project => TestProject.find(1),
                                             :user => User.find(1),
                                             :issue_status => IssueStatus.find(1))
     assert_equal true, test_case.invalid?
@@ -123,7 +123,7 @@ class TestPlanTest < ActiveSupport::TestCase
                                             :scenario => "test scenario",
                                             :expected => "expected situation",
                                             :environment => "Debian GNU/Linux",
-                                            :project => Project.find(1),
+                                            :test_project => TestProject.find(1),
                                             :user => User.find(1),
                                             :issue_status => IssueStatus.find(1))
     assert_save test_plan

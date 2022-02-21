@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 class TestCaseTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :roles, :issue_statuses
-  fixtures :test_cases
+  fixtures :test_projects, :test_cases
 
   def test_initialize
     test_case = TestCase.new
@@ -11,7 +11,7 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_nil test_case.id
     assert_nil test_case.user_id
     assert_nil test_case.issue_status_id
-    assert_nil test_case.project_id
+    assert_nil test_case.test_project_id
     assert_nil test_case.name
     assert_nil test_case.scenario
     assert_nil test_case.expected
@@ -24,7 +24,7 @@ class TestCaseTest < ActiveSupport::TestCase
                              :scenario => "test scenario",
                              :expected => "expected situation",
                              :environment => "Debian GNU/Linux",
-                             :project => Project.find(1),
+                             :test_project => TestProject.find(1),
                              :user => User.find(1),
                              :issue_status => IssueStatus.find(1))
     assert_save test_case
@@ -39,7 +39,7 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_equal "Debian GNU/Linux", test_case.environment
     assert_equal "2022-02-08 15:00:00 UTC", test_case.scheduled_date.to_s
     assert_equal 2, test_case.user_id
-    assert_equal 1, test_case.project_id
+    assert_equal 1, test_case.test_project_id
     assert_equal 1, test_case.issue_status_id
   end
 
@@ -49,7 +49,7 @@ class TestCaseTest < ActiveSupport::TestCase
                              :scenario => "test scenario",
                              :expected => "expected situation",
                              :environment => "Debian GNU/Linux",
-                             :project => Project.find(1),
+                             :test_project => TestProject.find(1),
                              :user => User.find(1),
                              :issue_status => IssueStatus.find(1))
     assert_raises ActiveRecord::RecordNotUnique do
@@ -63,9 +63,9 @@ class TestCaseTest < ActiveSupport::TestCase
     end
   end
 
-  def test_missing_project
+  def test_missing_test_project
     assert_raises ActiveRecord::RecordNotFound do
-      TestCase.new(:project => Project.find(999))
+      TestCase.new(:test_project => TestProject.find(999))
     end
   end
 
@@ -135,7 +135,7 @@ class TestCaseTest < ActiveSupport::TestCase
   def test_association
     test_case = TestCase.new
     assert_nil test_case.user
-    assert_nil test_case.project
+    assert_nil test_case.test_project
     assert_nil test_case.issue_status
     assert_nil test_case.test_plan
   end
