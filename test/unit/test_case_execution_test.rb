@@ -84,4 +84,28 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:comment]
   end
+
+  # Test Relation
+  def test_empty_association
+    test_case_execution = TestCaseExecution.new
+    assert_nil test_case_execution.user
+    assert_nil test_case_execution.project
+    assert_nil test_case_execution.issue
+    assert_nil test_case_execution.test_plan
+    assert_nil test_case_execution.test_case
+  end
+
+  def test_association
+    test_case_execution = TestCaseExecution.find(1)
+    assert_equal 1, test_case_execution.issue.id
+    assert_equal 2, test_case_execution.user.id
+    assert_equal 2, test_case_execution.test_case.id
+    # T.B.D.
+    #assert_equal 2, test_case_execution.project.id
+  end
+
+  def test_no_issue
+    test_case_execution = TestCaseExecution.find(2)
+    assert_nil test_case_execution.issue
+  end
 end
