@@ -55,4 +55,14 @@ class TestProjectTest < ActiveSupport::TestCase
                   "Test Plan (2 test cases)"], test_project.test_plans.pluck(:name)
   end
 
+  def test_no_test_case_execution
+    test_project = TestProject.find(2)
+    assert_equal [], test_project.test_case_executions.pluck(:comment)
+  end
+
+  def test_many_test_case_executions
+    test_project = TestProject.find(3)
+    assert_equal ["Comment 1", "Comment 2", "Comment 3"],
+                 test_project.test_case_executions.pluck(:comment)
+  end
 end
