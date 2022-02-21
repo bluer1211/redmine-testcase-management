@@ -39,7 +39,7 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_equal "Debian GNU/Linux", test_case.environment
     assert_equal "2022-02-08 15:00:00 UTC", test_case.scheduled_date.to_s
     assert_equal 2, test_case.user_id
-    assert_equal 1, test_case.test_project_id
+    assert_equal 3, test_case.test_project_id
     assert_equal 1, test_case.issue_status_id
   end
 
