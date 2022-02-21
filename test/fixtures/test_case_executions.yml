@@ -8,6 +8,7 @@ test_case_executions_001:
   execution_date: 2022-02-10 00:00:00 +09:00
   test_plan_id: 2
   test_case_id: 2
+  test_project_id: 2
 test_case_executions_002:
   id: 2
   result: true
@@ -16,6 +17,7 @@ test_case_executions_002:
   execution_date: 2022-02-10 00:00:00 +09:00
   test_plan_id: 2
   test_case_id: 3
+  test_project_id: 2
 test_case_executions_003:
   id: 3
   result: false
@@ -25,3 +27,4 @@ test_case_executions_003:
   execution_date: 2022-02-10 00:00:00 +09:00
   test_plan_id: 2
   test_case_id: 3
+  test_project_id: 2
