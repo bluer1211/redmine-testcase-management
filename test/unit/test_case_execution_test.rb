@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 class TestCaseExecutionTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :roles, :issues, :issue_statuses
-  fixtures :test_plans, :test_cases, :test_case_executions
+  fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
 
   def test_initialize
     test_case_execution = TestCaseExecution.new
