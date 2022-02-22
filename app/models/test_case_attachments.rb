@@ -1,0 +1,2 @@
+class TestCaseAttachments < Attachment
+end
