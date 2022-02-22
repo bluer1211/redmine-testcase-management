@@ -11,7 +11,7 @@ class TestProjectTest < ActiveSupport::TestCase
   end
 
   def test_create
-    test_project = TestProject.create(:id => 100)
+    test_project = TestProject.new(:id => 100)
     assert_save test_project
   end
 

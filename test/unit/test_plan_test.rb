@@ -18,13 +18,13 @@ class TestPlanTest < ActiveSupport::TestCase
   end
 
   def test_create
-    test_plan = TestPlan.create(:id => 100,
-                                :name => "dummy",
-                                :begin_date => "2022-02-16",
-                                :end_date => "2022-02-28",
-                                :estimated_bug => 10,
-                                :user => User.find(1),
-                                :issue_status => IssueStatus.find(1))
+    test_plan = TestPlan.new(:id => 100,
+                             :name => "dummy",
+                             :begin_date => "2022-02-16",
+                             :end_date => "2022-02-28",
+                             :estimated_bug => 10,
+                             :user => User.find(1),
+                             :issue_status => IssueStatus.find(1))
     assert_save test_plan
   end
 
@@ -59,22 +59,22 @@ class TestPlanTest < ActiveSupport::TestCase
   end
 
   def test_missing_name
-    object = TestPlan.create(:user => User.find(1),
-                             :issue_status => IssueStatus.find(1))
+    object = TestPlan.new(:user => User.find(1),
+                          :issue_status => IssueStatus.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:name]
   end
 
   def test_missing_user
-    object = TestPlan.create(:name => "dummy",
-                             :issue_status => IssueStatus.find(1))
+    object = TestPlan.new(:name => "dummy",
+                          :issue_status => IssueStatus.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:user]
   end
 
   def test_missing_issue_status
-    object = TestPlan.create(:name => "dummy",
-                             :user => User.find(1))
+    object = TestPlan.new(:name => "dummy",
+                          :user => User.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:issue_status]
   end
@@ -107,25 +107,25 @@ class TestPlanTest < ActiveSupport::TestCase
 
   def test_incomplete_test_case
     test_plan = TestPlan.find(1)
-    test_case = test_plan.test_cases.create(:scenario => "test scenario",
-                                            :expected => "expected situation",
-                                            :environment => "Debian GNU/Linux",
-                                            :test_project => TestProject.find(1),
-                                            :user => User.find(1),
-                                            :issue_status => IssueStatus.find(1))
+    test_case = test_plan.test_cases.new(:scenario => "test scenario",
+                                         :expected => "expected situation",
+                                         :environment => "Debian GNU/Linux",
+                                         :test_project => TestProject.find(1),
+                                         :user => User.find(1),
+                                         :issue_status => IssueStatus.find(1))
     assert_equal true, test_case.invalid?
     assert_equal false, test_plan.save
   end
 
   def test_save_test_case
     test_plan = TestPlan.find(1)
-    test_case = test_plan.test_cases.create(:name => "dummy",
-                                            :scenario => "test scenario",
-                                            :expected => "expected situation",
-                                            :environment => "Debian GNU/Linux",
-                                            :test_project => TestProject.find(1),
-                                            :user => User.find(1),
-                                            :issue_status => IssueStatus.find(1))
+    test_case = test_plan.test_cases.new(:name => "dummy",
+                                         :scenario => "test scenario",
+                                         :expected => "expected situation",
+                                         :environment => "Debian GNU/Linux",
+                                         :test_project => TestProject.find(1),
+                                         :user => User.find(1),
+                                         :issue_status => IssueStatus.find(1))
     assert_save test_plan
   end
 end

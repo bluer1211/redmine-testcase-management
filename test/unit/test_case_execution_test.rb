@@ -65,22 +65,22 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   end
 
   def test_missing_result
-    object = TestCaseExecution.create(:comment => "dummy",
-                                      :user => User.find(1))
+    object = TestCaseExecution.new(:comment => "dummy",
+                                   :user => User.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:result]
   end
 
   def test_missing_user
-    object = TestCaseExecution.create(:result => false,
-                                      :comment => "dummy")
+    object = TestCaseExecution.new(:result => false,
+                                   :comment => "dummy")
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:user]
   end
 
   def test_missing_comment
-    object = TestCaseExecution.create(:result => false,
-                                      :user => User.find(1))
+    object = TestCaseExecution.new(:result => false,
+                                   :user => User.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:comment]
   end

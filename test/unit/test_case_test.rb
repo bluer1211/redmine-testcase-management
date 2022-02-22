@@ -70,61 +70,61 @@ class TestCaseTest < ActiveSupport::TestCase
   end
 
   def test_missing_name
-    object = TestCase.create(:scenario => "dummy",
-                             :expected => "dummy",
-                             :user => User.find(1),
-                             :environment => "dummy",
-                             :issue_status => IssueStatus.find(1))
+    object = TestCase.new(:scenario => "dummy",
+                          :expected => "dummy",
+                          :user => User.find(1),
+                          :environment => "dummy",
+                          :issue_status => IssueStatus.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:name]
   end
 
   def test_missing_scenario
-    object = TestCase.create(:name => "dummy",
-                             :expected => "dummy",
-                             :user => User.find(1),
-                             :environment => "dummy",
-                             :issue_status => IssueStatus.find(1))
+    object = TestCase.new(:name => "dummy",
+                          :expected => "dummy",
+                          :user => User.find(1),
+                          :environment => "dummy",
+                          :issue_status => IssueStatus.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:scenario]
   end
 
   def test_missing_expected
-    object = TestCase.create(:name => "dummy",
-                             :scenario => "dummy",
-                             :user => User.find(1),
-                             :environment => "dummy",
-                             :issue_status => IssueStatus.find(1))
+    object = TestCase.new(:name => "dummy",
+                          :scenario => "dummy",
+                          :user => User.find(1),
+                          :environment => "dummy",
+                          :issue_status => IssueStatus.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:expected]
   end
 
   def test_missing_user
-    object = TestCase.create(:name => "dummy",
-                             :scenario => "dummy",
-                             :expected => "dummy",
-                             :environment => "dummy",
-                             :issue_status => IssueStatus.find(1))
+    object = TestCase.new(:name => "dummy",
+                          :scenario => "dummy",
+                          :expected => "dummy",
+                          :environment => "dummy",
+                          :issue_status => IssueStatus.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:user]
   end
 
   def test_missing_environment
-    object = TestCase.create(:name => "dummy",
-                             :scenario => "dummy",
-                             :expected => "dummy",
-                             :user => User.find(1),
-                             :issue_status => IssueStatus.find(1))
+    object = TestCase.new(:name => "dummy",
+                          :scenario => "dummy",
+                          :expected => "dummy",
+                          :user => User.find(1),
+                          :issue_status => IssueStatus.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:environment]
   end
 
   def test_missing_issue_status
-    object = TestCase.create(:name => "dummy",
-                             :scenario => "dummy",
-                             :expected => "dummy",
-                             :environment => "dummy",
-                             :user => User.find(1))
+    object = TestCase.new(:name => "dummy",
+                          :scenario => "dummy",
+                          :expected => "dummy",
+                          :environment => "dummy",
+                          :user => User.find(1))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:issue_status]
   end
@@ -160,8 +160,8 @@ class TestCaseTest < ActiveSupport::TestCase
 
   def test_incomplete_test_case_execution
     test_case = TestCase.find(1)
-    test_case_execution = test_case.test_case_executions.create(:result => true,
-                                                                :user => User.find(1))
+    test_case_execution = test_case.test_case_executions.new(:result => true,
+                                                             :user => User.find(1))
     assert_equal true, test_case_execution.invalid?
     assert_equal true, test_case.invalid?
     assert_equal false, test_case.save
@@ -170,9 +170,9 @@ class TestCaseTest < ActiveSupport::TestCase
 
   def test_save_test_case
     test_case = TestCase.find(1)
-    test_case_execution = test_case.test_case_executions.create(:result => true,
-                                                                :comment => "dummy",
-                                                                :user => User.find(1))
+    test_case_execution = test_case.test_case_executions.new(:result => true,
+                                                             :comment => "dummy",
+                                                             :user => User.find(1))
     assert_equal true, test_case_execution.valid?
     assert_equal true, test_case.valid?
     assert_save test_case
