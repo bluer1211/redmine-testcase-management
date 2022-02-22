@@ -13,6 +13,7 @@ class TestProjectTest < ActiveSupport::TestCase
   def test_create
     test_project = TestProject.new(:id => 100)
     assert_save test_project
+    assert test_project.destroy
   end
 
   def test_fixture

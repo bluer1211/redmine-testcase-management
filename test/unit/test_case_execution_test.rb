@@ -26,6 +26,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
                                                 :test_plan => test_plan,
                                                 :issue => issues(:issues_001))
     assert_save test_case_execution
+    assert test_case_execution.destroy
   end
 
   def test_fixture
