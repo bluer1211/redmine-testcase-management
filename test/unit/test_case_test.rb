@@ -24,34 +24,34 @@ class TestCaseTest < ActiveSupport::TestCase
                              :scenario => "test scenario",
                              :expected => "expected situation",
                              :environment => "Debian GNU/Linux",
-                             :test_project => TestProject.find(1),
-                             :user => User.find(1),
-                             :issue_status => IssueStatus.find(1))
+                             :test_project => test_projects(:test_projects_001),
+                             :user => users(:users_001),
+                             :issue_status => issue_statuses(:issue_statuses_001))
     assert_save test_case
   end
 
   def test_fixture
-    test_case = TestCase.find(1)
+    test_case = test_cases(:test_cases_001)
     assert_equal 1, test_case.id
     assert_equal "Test Case 1 (No test case execution)", test_case.name
     assert_equal "Scenario 1", test_case.scenario
     assert_equal "Expected 1", test_case.expected
     assert_equal "Debian GNU/Linux", test_case.environment
     assert_equal "2022-02-08 15:00:00 UTC", test_case.scheduled_date.to_s
-    assert_equal 2, test_case.user_id
-    assert_equal 3, test_case.test_project_id
-    assert_equal 1, test_case.issue_status_id
+    assert_equal users(:users_002), test_case.user
+    assert_equal test_projects(:test_projects_002), test_case.test_project
+    assert_equal issue_statuses(:issue_statuses_001), test_case.issue_status
   end
 
   def test_not_unique
-    test_case = TestCase.new(:id => 1,
+    test_case = TestCase.new(:id => test_cases(:test_cases_001).id,
                              :name => "dummy",
                              :scenario => "test scenario",
                              :expected => "expected situation",
                              :environment => "Debian GNU/Linux",
-                             :test_project => TestProject.find(1),
-                             :user => User.find(1),
-                             :issue_status => IssueStatus.find(1))
+                             :test_project => test_projects(:test_projects_001),
+                             :user => users(:users_001),
+                             :issue_status => issue_statuses(:issue_statuses_001))
     assert_raises ActiveRecord::RecordNotUnique do
       test_case.save
     end
@@ -72,9 +72,9 @@ class TestCaseTest < ActiveSupport::TestCase
   def test_missing_name
     object = TestCase.new(:scenario => "dummy",
                           :expected => "dummy",
-                          :user => User.find(1),
+                          :user => users(:users_001),
                           :environment => "dummy",
-                          :issue_status => IssueStatus.find(1))
+                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:name]
   end
@@ -82,9 +82,9 @@ class TestCaseTest < ActiveSupport::TestCase
   def test_missing_scenario
     object = TestCase.new(:name => "dummy",
                           :expected => "dummy",
-                          :user => User.find(1),
+                          :user => users(:users_001),
                           :environment => "dummy",
-                          :issue_status => IssueStatus.find(1))
+                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:scenario]
   end
@@ -92,9 +92,9 @@ class TestCaseTest < ActiveSupport::TestCase
   def test_missing_expected
     object = TestCase.new(:name => "dummy",
                           :scenario => "dummy",
-                          :user => User.find(1),
+                          :user => users(:users_001),
                           :environment => "dummy",
-                          :issue_status => IssueStatus.find(1))
+                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:expected]
   end
@@ -104,7 +104,7 @@ class TestCaseTest < ActiveSupport::TestCase
                           :scenario => "dummy",
                           :expected => "dummy",
                           :environment => "dummy",
-                          :issue_status => IssueStatus.find(1))
+                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:user]
   end
@@ -113,8 +113,8 @@ class TestCaseTest < ActiveSupport::TestCase
     object = TestCase.new(:name => "dummy",
                           :scenario => "dummy",
                           :expected => "dummy",
-                          :user => User.find(1),
-                          :issue_status => IssueStatus.find(1))
+                          :user => users(:users_001),
+                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:environment]
   end
@@ -124,7 +124,7 @@ class TestCaseTest < ActiveSupport::TestCase
                           :scenario => "dummy",
                           :expected => "dummy",
                           :environment => "dummy",
-                          :user => User.find(1))
+                          :user => users(:users_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:issue_status]
   end
@@ -141,41 +141,41 @@ class TestCaseTest < ActiveSupport::TestCase
   end
 
   def test_no_test_case_execution
-    test_case = TestCase.first
+    test_case = test_cases(:test_cases_001)
     assert 0, test_case.test_case_executions.size
   end
 
   def test_one_test_case_execution
-    test_case = TestCase.find(2)
+    test_case = test_cases(:test_cases_002)
     assert 1, test_case.test_case_executions.size
     assert "Comment 1", test_case.test_case_executions.select(:comment)
   end
 
   def test_many_test_case_executions
-    test_case = TestCase.find(3)
+    test_case = test_cases(:test_cases_003)
     assert 2, test_case.test_case_executions.size
     assert ["Comment 2",
             "Comment 3"], test_case.test_case_executions.select(:comment)
   end
 
   def test_incomplete_test_case_execution
-    test_case = TestCase.find(1)
+    test_case = test_cases(:test_cases_001)
     test_case_execution = test_case.test_case_executions.new(:result => true,
-                                                             :user => User.find(1))
+                                                             :user => users(:users_001))
     assert_equal true, test_case_execution.invalid?
     assert_equal true, test_case.invalid?
     assert_equal false, test_case.save
-    assert_equal 0, TestCase.find(1).test_case_executions.size
+    assert_equal 0, test_cases(:test_cases_001).test_case_executions.size
   end
 
   def test_save_test_case
-    test_case = TestCase.find(1)
+    test_case = test_cases(:test_cases_001)
     test_case_execution = test_case.test_case_executions.new(:result => true,
                                                              :comment => "dummy",
-                                                             :user => User.find(1))
+                                                             :user => users(:users_001))
     assert_equal true, test_case_execution.valid?
     assert_equal true, test_case.valid?
     assert_save test_case
-    assert_equal 1, TestCase.find(1).test_case_executions.size
+    assert_equal 1, test_cases(:test_cases_001).test_case_executions.size
   end
 end

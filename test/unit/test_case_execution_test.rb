@@ -22,31 +22,31 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
                                                 :result => true,
                                                 :execution_date => "2022-02-28",
                                                 :comment => "dummy",
-                                                :user => User.find(1),
+                                                :user => users(:users_001),
                                                 :test_plan => test_plan,
-                                                :issue => Issue.find(1))
+                                                :issue => issues(:issues_001))
     assert_save test_case_execution
   end
 
   def test_fixture
-    test_case_execution = TestCaseExecution.find(1)
+    test_case_execution = test_case_executions(:test_case_executions_001)
     assert_equal 1, test_case_execution.id
     assert_equal "Comment 1", test_case_execution.comment
     assert_equal "2022-02-09 15:00:00 UTC", test_case_execution.execution_date.to_s
-    assert_equal 2, test_case_execution.user_id
-    assert_equal 1, test_case_execution.issue_id
-    assert_equal 2, test_case_execution.test_plan_id
+    assert_equal users(:users_002), test_case_execution.user
+    assert_equal issues(:issues_001), test_case_execution.issue
+    assert_equal test_plans(:test_plans_002), test_case_execution.test_plan
   end
 
   def test_not_unique
-    test_plan = TestPlan.find(1)
-    test_case_execution = TestCaseExecution.new(:id => 1,
+    test_plan = test_plans(:test_plans_001)
+    test_case_execution = TestCaseExecution.new(:id => test_case_executions(:test_case_executions_001).id,
                                                 :result => true,
                                                 :comment => "dummy",
                                                 :execution_date => "2022-02-28",
-                                                :user => User.find(2),
+                                                :user => users(:users_002),
                                                 :test_plan => test_plan,
-                                                :issue => Issue.find(1))
+                                                :issue => issues(:issues_001))
     assert_raises ActiveRecord::RecordNotUnique do
       test_case_execution.save
     end
@@ -66,7 +66,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_missing_result
     object = TestCaseExecution.new(:comment => "dummy",
-                                   :user => User.find(1))
+                                   :user => users(:users_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:result]
   end
@@ -80,7 +80,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_missing_comment
     object = TestCaseExecution.new(:result => false,
-                                   :user => User.find(1))
+                                   :user => users(:users_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:comment]
   end
@@ -96,16 +96,16 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   end
 
   def test_association
-    test_case_execution = TestCaseExecution.find(1)
-    assert_equal 1, test_case_execution.issue.id
-    assert_equal 2, test_case_execution.user.id
-    assert_equal 2, test_case_execution.test_case.id
+    test_case_execution = test_case_executions(:test_case_executions_001)
+    assert_equal issues(:issues_001), test_case_execution.issue
+    assert_equal users(:users_002), test_case_execution.user
+    assert_equal test_cases(:test_cases_002), test_case_execution.test_case
     # T.B.D.
     #assert_equal 2, test_case_execution.test_project.id
   end
 
   def test_no_issue
-    test_case_execution = TestCaseExecution.find(2)
+    test_case_execution = test_case_executions(:test_case_executions_002)
     assert_nil test_case_execution.issue
   end
 end
