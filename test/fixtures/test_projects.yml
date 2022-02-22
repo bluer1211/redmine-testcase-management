@@ -3,7 +3,7 @@ test_projects_001:
   id: 1
 test_projects_002:
   id: 2
-  project_id: 1
+  project: projects_001
 test_projects_003:
   id: 3
-  project_id: 2
+  project: projects_002
