@@ -7,7 +7,7 @@ test_plans_001:
   user_id: 2
   estimated_bug: 10
   issue_status_id: 1
-  test_project_id: 2
+  test_project: test_projects_002
 test_plans_002:
   id: 2
   name: Test Plan (1 test case)
@@ -16,7 +16,7 @@ test_plans_002:
   user_id: 2
   estimated_bug: 10
   issue_status_id: 1
-  test_project_id: 3
+  test_project: test_projects_003
 test_plans_003:
   id: 3
   name: Test Plan (2 test cases)
@@ -25,4 +25,4 @@ test_plans_003:
   user_id: 2
   estimated_bug: 10
   issue_status_id: 1
-  test_project_id: 3
+  test_project: test_projects_003
