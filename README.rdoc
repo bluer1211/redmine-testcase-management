@@ -1,3 +1,0 @@
-= redmine_plugin_testcase_management
-
-Description goes here
