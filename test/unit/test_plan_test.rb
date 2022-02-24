@@ -96,14 +96,14 @@ class TestPlanTest < ActiveSupport::TestCase
   def test_one_test_case
     test_plan = test_plans(:test_plans_002)
     assert 1, test_plan.test_cases.size
-    assert "Test Case 1 (No test case execution)", test_plan.test_cases.select(:name)
+    assert "Test Case 1 (No test case execution)", test_plan.test_cases.pluck(:name)
   end
 
   def test_many_test_case
     test_plan = test_plans(:test_plans_003)
     assert 2, test_plan.test_cases.size
     assert ["Test Case 2 (1 test case execution)",
-            "Test Case 3 (2 test case execution)"], test_plan.test_cases.select(:name)
+            "Test Case 3 (2 test case execution)"], test_plan.test_cases.pluck(:name)
   end
 
   def test_incomplete_test_case
