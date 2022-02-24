@@ -3,7 +3,8 @@ require File.expand_path('../../test_helper', __FILE__)
 class TestCaseAttachmentTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :roles, :issue_statuses
-  fixtures :test_projects, :test_plans, :test_cases, :test_case_executions, :test_case_attachments
+  fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
+  fixtures :test_case_attachments, :test_case_execution_attachments
 
   def test_initialize
     test_case_attachment = TestCaseAttachment.new
@@ -21,34 +22,34 @@ class TestCaseAttachmentTest < ActiveSupport::TestCase
   end
 
   def test_not_unique
-    test_case_attachment = TestCaseAttachment.new(:id => test_case_attachments(:test_case_attachments_001).id,
-                                                  :container => test_cases(:test_cases_001),
-                                                  :file => uploaded_test_file("testfile.txt", "text/plain"),
-                                                  :author => users(:users_001))
+    attachment = TestCaseAttachment.new(:id => test_case_attachments(:test_case_attachments_001).id,
+                                        :container => test_cases(:test_cases_001),
+                                        :file => uploaded_test_file("testfile.txt", "text/plain"),
+                                        :author => users(:users_001))
     assert_raises ActiveRecord::RecordNotUnique do
-      assert_save test_case_attachment
+      assert_save attachment
     end
   end
 
   def test_missing_container
-    object = TestCaseAttachment.new(:file => uploaded_test_file("testfile.txt", "text/plain"),
+    attachment = TestCaseAttachment.new(:file => uploaded_test_file("testfile.txt", "text/plain"),
                                     :author => users(:users_001))
-    assert_equal true, object.valid?
-    assert_equal [], object.errors[:container]
+    assert_equal true, attachment.valid?
+    assert_equal [], attachment.errors[:container]
   end
 
   def test_missing_file
-    object = TestCaseAttachment.new(:container => test_cases(:test_cases_001),
-                                    :author => users(:users_001))
-    assert object.invalid?
-    assert_equal ["cannot be blank"], object.errors[:filename]
+    attachment = TestCaseAttachment.new(:container => test_cases(:test_cases_001),
+                                        :author => users(:users_001))
+    assert attachment.invalid?
+    assert_equal ["cannot be blank"], attachment.errors[:filename]
   end
 
   def test_missing_author
-    object = TestCaseAttachment.new(:container => test_cases(:test_cases_001),
-                                    :file => uploaded_test_file("testfile.txt", "text/plain"))
-    assert object.invalid?
-    assert_equal ["cannot be blank"], object.errors[:author]
+    attachment = TestCaseAttachment.new(:container => test_cases(:test_cases_001),
+                                        :file => uploaded_test_file("testfile.txt", "text/plain"))
+    assert attachment.invalid?
+    assert_equal ["cannot be blank"], attachment.errors[:author]
   end
 
   def test_association
@@ -58,18 +59,18 @@ class TestCaseAttachmentTest < ActiveSupport::TestCase
 
   def test_incomplete_test_case_attachment
     test_case = test_cases(:test_cases_001)
-    test_case_attachment = test_case.attachments.new(:file => uploaded_test_file("testfile.txt", "text/plain")) 
-    assert_equal true, test_case_attachment.invalid?
-    assert_equal ["cannot be blank"], test_case_attachment.errors[:author]
-    assert_equal false, test_case_attachment.save
+    attachment = test_case.attachments.new(:file => uploaded_test_file("testfile.txt", "text/plain")) 
+    assert_equal true, attachment.invalid?
+    assert_equal ["cannot be blank"], attachment.errors[:author]
+    assert_equal false, attachment.save
   end
 
   def test_save_attachment
     test_case = test_cases(:test_cases_001)
-    test_case_attachment = test_case.attachments.new(:file => uploaded_test_file("testfile.txt", "text/plain"),
-                                                     :author => users(:users_001))
-    assert_equal true, test_case_attachment.valid?
-    assert_save test_case_attachment
-    test_case_attachment.destroy
+    attachment = test_case.attachments.new(:file => uploaded_test_file("testfile.txt", "text/plain"),
+                                           :author => users(:users_001))
+    assert_equal true, attachment.valid?
+    assert_save attachment
+    attachment.destroy
   end
 end
