@@ -128,5 +128,6 @@ class TestPlanTest < ActiveSupport::TestCase
                                          :user => users(:users_001),
                                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_save test_plan
+    test_case.destroy
   end
 end

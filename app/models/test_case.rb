@@ -4,7 +4,7 @@ class TestCase < ActiveRecord::Base
   belongs_to :issue_status
   belongs_to :test_plan
   has_many :test_case_executions
-  has_many :test_case_attachments
+  acts_as_attachable
 
   validates :name, presence: true
   validates :scenario, presence: true

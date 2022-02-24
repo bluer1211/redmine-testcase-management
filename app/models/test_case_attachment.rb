@@ -1,3 +1,3 @@
 class TestCaseAttachment < Attachment
-  belongs_to :test_case
+  belongs_to :container, :polymorphic => true
 end

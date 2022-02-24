@@ -53,6 +53,23 @@ class TestCaseAttachmentTest < ActiveSupport::TestCase
 
   def test_association
     test_case = test_cases(:test_cases_002)
-    assert_equal test_case.id, test_case.test_case_attachments.pluck(:container_id)
+    assert_equal [test_case.id], test_case.attachments.pluck(:container_id)
+  end
+
+  def test_incomplete_test_case_attachment
+    test_case = test_cases(:test_cases_001)
+    test_case_attachment = test_case.attachments.new(:file => uploaded_test_file("testfile.txt", "text/plain")) 
+    assert_equal true, test_case_attachment.invalid?
+    assert_equal ["cannot be blank"], test_case_attachment.errors[:author]
+    assert_equal false, test_case_attachment.save
+  end
+
+  def test_save_attachment
+    test_case = test_cases(:test_cases_001)
+    test_case_attachment = test_case.attachments.new(:file => uploaded_test_file("testfile.txt", "text/plain"),
+                                                     :author => users(:users_001))
+    assert_equal true, test_case_attachment.valid?
+    assert_save test_case_attachment
+    test_case_attachment.destroy
   end
 end
