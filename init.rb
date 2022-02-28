@@ -11,5 +11,5 @@ Redmine::Plugin.register :testcase_management do
   author_url 'https://www.clear-code.com'
 
   permission :test_plans, {:test_plans => [:index]}, :public => true
-  menu :project_menu, :testcase_management, {:controller => 'test_plans', :action => 'index', :caption => 'Test Plans'}
+  menu :project_menu, :testcase_management, {:controller => 'test_plans', :action => 'index', :caption => 'Test Plans'}, :param => :project_id
 end
