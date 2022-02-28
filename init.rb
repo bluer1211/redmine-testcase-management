@@ -10,6 +10,10 @@ Redmine::Plugin.register :testcase_management do
   url 'https://gitlab.com/clear-code/redmine-plugin-testcase-management'
   author_url 'https://www.clear-code.com'
 
+  project_module :testcase_management do
+    permission :view_test_plans, {:test_plans => :index}
+  end
+
   permission :test_plans, {:test_plans => [:index]}, :public => true
   menu :project_menu, :testcase_management, {:controller => 'test_plans', :action => 'index', :caption => 'Test Plans'}, :param => :project_id
 end
