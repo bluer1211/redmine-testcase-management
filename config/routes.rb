@@ -2,5 +2,7 @@
 # See: http://guides.rubyonrails.org/routing.html
 
 Rails.application.routes.draw do |map|
-  resource :test_plans
+  resources :projects do
+    resources :test_plans
+  end
 end
