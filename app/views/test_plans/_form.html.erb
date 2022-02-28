@@ -3,10 +3,10 @@
     <%= form.text_field :name, size: 80, required: true %></p>
   <p>
     <%= form.label :begin_date %>
-    <%= form.date_select :begin_date, {}, class: 'form-control' %></p>
+    <%= form.date_field :begin_date %></p>
   <p>
     <%= form.label :end_date %>
-    <%= form.date_select :end_date, {}, class: 'form-control' %></p>
+    <%= form.date_field :end_date %></p>
   <p>
     <%= form.label :user %>
     <%= form.select :user, @user_candidates %></p>
