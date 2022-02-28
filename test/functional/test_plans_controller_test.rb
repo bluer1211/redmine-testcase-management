@@ -1,8 +1,13 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class TestPlansControllerTest < ActionController::TestCase
-  # Replace this with your real tests.
-  def test_truth
-    assert true
+  fixtures :projects
+  fixtures :test_projects
+
+  def test_index
+    get :index, params: { :project_id => test_projects(:test_projects_001).id }
+
+    assert_response :success
+    #assert_template 'index' # needs rails-controller-testing
   end
 end
