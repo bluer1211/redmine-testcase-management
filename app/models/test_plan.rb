@@ -1,7 +1,7 @@
 class TestPlan < ActiveRecord::Base
-  belongs_to :user, foreign_key: true
-  belongs_to :issue_status, foreign_key: true
-  belongs_to :test_project, foreign_key: true
+  belongs_to :user
+  belongs_to :issue_status
+  belongs_to :test_project
   has_many :test_case_executions
   has_many :test_cases, dependent: :destroy
 
