@@ -1,0 +1,20 @@
+<div class="box tabular">
+  <p><%= form.label :name %>
+    <%= form.text_field :name, size: 80, required: true %></p>
+  <p>
+    <%= form.label :begin_date %>
+    <%= form.date_select :begin_date, {}, class: 'form-control' %></p>
+  <p>
+    <%= form.label :end_date %>
+    <%= form.date_select :end_date, {}, class: 'form-control' %></p>
+  <p>
+    <%= form.label :user %>
+    <%= form.select :user, @user_candidates %></p>
+  <p>
+    <%= form.label :estimated_bug %>
+    <%= form.number_field :estimated_bug, in: 0..9999 %></p>
+  <p>
+    <%= form.label :issue_status %>
+    <%= form.select :issue_status, @issue_status_candidates %></p>
+  <%= form.hidden_field :test_project_id, :value => @project_id %></p>
+</div>
