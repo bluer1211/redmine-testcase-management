@@ -1,8 +1,8 @@
 class TestCase < ActiveRecord::Base
-  belongs_to :user
-  belongs_to :test_project
-  belongs_to :issue_status
-  belongs_to :test_plan
+  belongs_to :user, foreign_key: true
+  belongs_to :test_project, foreign_key: true
+  belongs_to :issue_status, foreign_key: true
+  belongs_to :test_plan, foreign_key: true
   has_many :test_case_executions
   acts_as_attachable
 
