@@ -4,9 +4,15 @@ en:
   label_test_plans: "Test Plans"
   label_test_cases: "Test Cases"
   label_test_case_executions: "Test Case Executions"
+
+  permission_edit_test_plan: Edit Test Plan
+  permission_edit_test_case: Edit Test Case
+  permission_edit_test_case_execution: Edit Test Case Execution
+
   error_create_failure: "Failed to create"
   error_update_failure: "Failed to update"
   error_delete_failure: "Failed to delete"
+
   field_estimated_bugs: "Estimated Bugs"
   field_begin_date: "Begin Date"
   field_end_date: "End Date"
