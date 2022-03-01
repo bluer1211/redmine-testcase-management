@@ -18,6 +18,21 @@ class TestPlansController < ApplicationController
   end
 
   def update
+    @test_plan = TestPlan.find(params.permit(:id)[:id])
+    update_params = {}
+    update_params[:name] = test_plan_params[:name]
+    update_params[:begin_date] = test_plan_params[:begin_date]
+    update_params[:end_date] = test_plan_params[:end_date]
+    update_params[:estimated_bug] = test_plan_params[:estimated_bug]
+    user = User.find(test_plan_params[:user])
+    update_params[:user_id] = user.id if user.present?
+    issue_status = IssueStatus.find(test_plan_params[:issue_status])
+    update_params[:issue_status_id] = issue_status.id if issue_status.present?
+    if @test_plan.update(update_params)
+      redirect_to project_test_plan_path
+    else
+      render :edit
+    end
   end
 
   def new
