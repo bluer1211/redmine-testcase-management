@@ -1,1 +1,28 @@
-<h2>TestPlansController#index</h2>
+<h2>Test Plans</h2>
+
+<div class="autoscroll">
+  <table class="list issues odd-even sort-by-id sort-desc">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Issue Status</th>
+        <th>Estimated Bugs</th>
+        <th>User</th>
+        <th>Begin Date</th>
+        <th>End Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @test_plans.each do |test_plan| %>
+      <tr>
+        <td><%= link_to test_plan.name, "/projects/#{@project.name}/test_plans/#{test_plan.id}" %></td>
+        <td><%= test_plan.issue_status.name %></td>
+        <td><%= test_plan.estimated_bug %></td>
+        <td><%= test_plan.user.name %></td>
+        <td><%= test_plan.begin_date %></td>
+        <td><%= test_plan.end_date %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
