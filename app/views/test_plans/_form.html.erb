@@ -9,12 +9,20 @@
     <%= form.date_field :end_date %></p>
   <p>
     <%= form.label :user %>
-    <%= form.select :user, @user_candidates, selected: @test_plan.user.id %></p>
+    <% if @test_plan and @test_plan.user %>
+      <%= form.select :user, @user_candidates, selected: @test_plan.user.id %></p>
+    <% else %>
+      <%= form.select :user, @user_candidates %></p>
+    <% end %>
   <p>
     <%= form.label :estimated_bug %>
     <%= form.number_field :estimated_bug, in: 0..9999 %></p>
   <p>
     <%= form.label :status %>
-    <%= form.select :issue_status, @issue_status_candidates, selected: @test_plan.issue_status.id %></p>
+    <% if @test_plan and @test_plan.issue_status %>
+      <%= form.select :issue_status, @issue_status_candidates, selected: @test_plan.issue_status.id %></p>
+    <% else %>
+      <%= form.select :issue_status, @issue_status_candidates %></p>
+    <% end %>
   <%= form.hidden_field :test_project_id, :value => @project_id %></p>
 </div>
