@@ -29,8 +29,10 @@ class TestPlansController < ApplicationController
     issue_status = IssueStatus.find(test_plan_params[:issue_status])
     update_params[:issue_status_id] = issue_status.id if issue_status.present?
     if @test_plan.update(update_params)
+      flash[:notice] = l(:notice_successful_update)
       redirect_to project_test_plan_path
     else
+      flash.now[:error] = l(:error_update_failure)
       render :edit
     end
   end
@@ -52,6 +54,7 @@ class TestPlansController < ApplicationController
                               :issue_status => IssueStatus.find(test_plan_params[:issue_status].to_i))
     if @test_plan.valid?
       @test_plan.save
+      flash[:notice] = l(:notice_successful_create)
       redirect_to project_test_plans_path
     else
       render :new, status: :unprocessable_entity
