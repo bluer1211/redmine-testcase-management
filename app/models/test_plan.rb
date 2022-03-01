@@ -11,4 +11,12 @@ class TestPlan < ActiveRecord::Base
 
   validates_associated :test_cases
   validates_associated :test_case_executions
+
+  def editable?
+    true
+  end
+
+  def deletable?
+    true
+  end
 end
