@@ -1,6 +1,6 @@
-<h2><%= "Edit #{@test_plan.name}" %></h2>
+<h2><%=l(:permission_edit_test_plan)%> <%= @test_plan.name %></h2>
 
 <%= form_with model: @test_plan, url: project_test_plan_path do |f| %>
   <%= render partial: 'test_plans/form', locals: {form: f} %>
-  <%= f.submit %>
+  <%= f.submit l(:button_update) %>
 <% end %>

@@ -14,7 +14,7 @@
     <%= form.label :estimated_bug %>
     <%= form.number_field :estimated_bug, in: 0..9999 %></p>
   <p>
-    <%= form.label :issue_status %>
+    <%= form.label :status %>
     <%= form.select :issue_status, @issue_status_candidates %></p>
   <%= form.hidden_field :test_project_id, :value => @project_id %></p>
 </div>
