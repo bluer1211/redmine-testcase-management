@@ -1,0 +1,37 @@
+<h2 class="inline-flex">Test Plan #<%= @test_plan.id %></h2>
+
+<div class="issue details">
+  <div class="subject">
+    <div>
+      <h3><%= @test_plan.name %></h3>
+    </div>
+  </div>
+  <div class="attributes">
+    <div class="splitcontent">
+      <div class="splitcontentleft">
+        <div class="status attribute">
+          <div class="label">Status</div>
+          <div class="value"><%= @test_plan.issue_status.name if @test_plan.issue_status %></div>
+        </div>
+        <div class="estimated-bug attribute">
+          <div class="label">Estimated Bug</div>
+          <div class="value"><%= @test_plan.estimated_bug %></div>
+        </div>
+        <div class="assigned-to attribute">
+          <div class="label">Author</div>
+          <div class="value"><%= @test_plan.user.name if @test_plan.user %></div>
+        </div>
+      </div>
+      <div class="splitcontentleft">
+        <div class="start-date attribute">
+          <div class="label">Begin Date</div>
+          <div class="value"><%= @test_plan.begin_date %></div>
+        </div>
+        <div class="end-date attribute">
+          <div class="label">End Date</div>
+          <div class="value"><%= @test_plan.end_date %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
