@@ -1,3 +1,9 @@
 # English strings go here for Rails i18n
 en:
-  # my_label: "My label"
+  testcase_management: "TestCase Management"
+  test_plans: "Test Plans"
+  test_cases: "Test Cases"
+  test_case_executions: "Test Case Executions"
+  error_create_failure: "Failed to create"
+  error_update_failure: "Failed to update"
+  error_delete_failure: "Failed to delete"
