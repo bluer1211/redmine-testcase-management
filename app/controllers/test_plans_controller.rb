@@ -6,7 +6,9 @@ class TestPlansController < ApplicationController
   end
 
   def show
-    @test_plan = TestPlan.find(test_plan_params[:id])
+    @project = Project.find(params.permit(:project_id)[:project_id])
+    @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
+  end
   end
 
   def new
