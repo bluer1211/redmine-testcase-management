@@ -1,8 +1,12 @@
 ja:
-  label_testcase_management: "テストケース管理"
-  label_test_plans: "テスト計画"
-  label_test_cases: "テストケース"
-  label_test_case_executions: "テスト実行結果"
-  error_create_failure: "作成に失敗しました"
-  error_update_failure: "更新に失敗しました"
-  error_delete_failure: "削除に失敗しました"
+  label_testcase_management: テストケース管理
+  label_test_plans: テスト計画
+  label_test_cases: テストケース
+  label_test_case_executions: テスト実行結果
+  error_create_failure: 作成に失敗しました
+  error_update_failure: 更新に失敗しました
+  error_delete_failure: 削除に失敗しました
+  field_estimated_bugs: 想定バグ数
+  field_begin_date: 開始日
+  field_end_date: 終了日
+  field_scheduled_date: 予定日
