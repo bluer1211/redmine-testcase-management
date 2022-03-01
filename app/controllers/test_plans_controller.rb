@@ -1,18 +1,23 @@
 class TestPlansController < ApplicationController
 
   def index
-    @project = Project.find(params.permit(:project_id)[:project_id])
+    find_or_create_test_project(params.permit(:project_id)[:project_id])
     @test_plans = TestPlan.all
   end
 
   def show
-    @project = Project.find(params.permit(:project_id)[:project_id])
+    find_or_create_test_project(params.permit(:project_id)[:project_id])
     @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
   end
 
   def edit
-    @project = Project.find(params.permit(:project_id)[:project_id])
-    @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
+    find_or_create_test_project(params.permit(:project_id)[:project_id])
+    @test_plan = TestPlan.find(params.permit(:id)[:id])
+    prepare_issue_status_candidates
+    prepare_user_candidates
+  end
+
+  def update
   end
 
   def new
@@ -39,6 +44,21 @@ class TestPlansController < ApplicationController
   end
 
   private
+
+  def find_or_create_test_project(id_or_name)
+    begin
+      id = Integer(id_or_name)
+      @project = Project.find(id)
+      @test_project = TestProject.where(:project_id => @project.id).first
+    rescue ArgumentError
+      @project = project = Project.where(:name => id_or_name).first
+      @test_project = TestProject.where(:project_id => @project.id).first
+      unless @test_project.present?
+        # automatically create it!
+        @test_project = TestProject.create(:project_id => @project.id)
+      end
+    end
+  end
 
   def test_plan_params
     params.require(:test_plan).permit(:project_id,
