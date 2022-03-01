@@ -61,6 +61,18 @@ class TestPlansController < ApplicationController
     end
   end
 
+  def destroy
+    find_or_create_test_project(params.permit(:project_id)[:project_id])
+    @test_plan = TestPlan.find(params.permit(:id)[:id])
+    if @test_plan.delete
+      flash[:notice] = l(:notice_successful_delete)
+      redirect_to project_test_plans_path
+    else
+      flash.now[:error] = l(:error_delete_failure)
+      render :show
+    end
+  end
+
   private
 
   def find_or_create_test_project(id_or_name)
