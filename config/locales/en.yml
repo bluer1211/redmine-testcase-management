@@ -4,6 +4,9 @@ en:
   label_test_plans: "Test Plans"
   label_test_cases: "Test Cases"
   label_test_case_executions: "Test Case Executions"
+  label_test_plan_new: "New Test Plan"
+  label_test_case_new: "New Test Case"
+  label_test_case_execution_new: "New Test Case Execution"
 
   permission_edit_test_plan: Edit Test Plan
   permission_edit_test_case: Edit Test Case
