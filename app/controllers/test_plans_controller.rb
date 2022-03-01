@@ -9,6 +9,10 @@ class TestPlansController < ApplicationController
     @project = Project.find(params.permit(:project_id)[:project_id])
     @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
   end
+
+  def edit
+    @project = Project.find(params.permit(:project_id)[:project_id])
+    @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
   end
 
   def new
