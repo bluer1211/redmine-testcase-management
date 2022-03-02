@@ -67,6 +67,17 @@ class TestCasesController < ApplicationController
     end
   end
 
+  def destroy
+    @test_case = TestCase.find(params.permit(:id)[:id])
+    if @test_case.delete
+      flash[:notice] = l(:notice_successful_delete)
+      redirect_to project_test_cases_path
+    else
+      flash.now[:error] = l(:error_delete_failure)
+      render :show
+    end
+  end
+
   private
 
   def test_case_params
