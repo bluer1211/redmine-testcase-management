@@ -29,11 +29,11 @@
   </p>
   <p>
     <%= form.label :scenario %>
-    <%= form.text_area :scenario %>
+    <%= form.text_area :scenario, required: true %>
   </p>
   <p>
     <%= form.label :expected %>
-    <%= form.text_area :expected %>
+    <%= form.text_area :expected, required: true %>
   </p>
   <%= form.hidden_field :test_project_id, :value => @project_id %>
 </div>
