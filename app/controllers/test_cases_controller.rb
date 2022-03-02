@@ -45,6 +45,28 @@ class TestCasesController < ApplicationController
     @test_plan = @test_case.test_plan
   end
 
+  def update
+    @test_case = TestCase.find(params.permit(:id)[:id])
+    update_params = {
+      name: test_case_params[:name],
+      scheduled_date: test_case_params[:scheduled_date],
+      scenario: test_case_params[:scenario],
+      expected: test_case_params[:expected],
+      environment: test_case_params[:environment]
+    }
+    user = User.find(test_case_params[:user])
+    update_params[:user_id] = user.id if user.present?
+    issue_status = IssueStatus.find(test_case_params[:issue_status])
+    update_params[:issue_status_id] = issue_status.id if issue_status.present?
+    if @test_case.update(update_params)
+      flash[:notice] = l(:notice_successful_update)
+      redirect_to project_test_case_path
+    else
+      flash.now[:error] = l(:error_update_failure)
+      render :edit
+    end
+  end
+
   private
 
   def test_case_params
