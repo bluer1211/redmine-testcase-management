@@ -31,7 +31,7 @@ class TestCasesController < ApplicationController
     if @test_case.valid?
       @test_case.save
       flash[:notice] = l(:notice_successful_create)
-      redirect_to project_test_case_path(:id => @test_case.id)
+      redirect_to project_test_plan_test_case_path(:id => @test_case.id)
     else
       render :new, status: :unprocessable_entity
     end
@@ -65,7 +65,7 @@ class TestCasesController < ApplicationController
     update_params[:issue_status_id] = issue_status.id if issue_status.present?
     if @test_case.update(update_params)
       flash[:notice] = l(:notice_successful_update)
-      redirect_to project_test_case_path
+      redirect_to project_test_plan_test_case_path
     else
       flash.now[:error] = l(:error_update_failure)
       render :edit
@@ -76,7 +76,7 @@ class TestCasesController < ApplicationController
     @test_case = TestCase.find(params.permit(:id)[:id])
     if @test_case.delete
       flash[:notice] = l(:notice_successful_delete)
-      redirect_to project_test_cases_path
+      redirect_to project_test_plan_test_cases_path
     else
       flash.now[:error] = l(:error_delete_failure)
       render :show

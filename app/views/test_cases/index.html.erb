@@ -1,5 +1,5 @@
 <div class="contextual">
-  <%= link_to l(:label_test_case_new), new_project_test_case_path(@project), :class => 'icon icon-add new-issue' %>
+  <%= link_to l(:label_test_case_new), new_project_test_plan_test_case_path, :class => 'icon icon-add new-issue' %>
 </div>
 
 <h2><%=l(:label_test_cases)%></h2>
@@ -20,7 +20,7 @@
     <tbody>
       <% @test_cases.each do |test_case| %>
       <tr>
-        <td><%= link_to test_case.name, "/projects/#{@project.name}/test_cases/#{test_case.id}" %></td>
+        <td><%= link_to test_case.name, project_test_plan_test_case_path(id: test_case.id) %></td>
         <td><%= test_case.issue_status.name %></td>
         <td><%= test_case.user.name %></td>
         <td><%= test_case.scheduled_date %></td>
