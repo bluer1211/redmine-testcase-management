@@ -21,6 +21,7 @@ ja:
   field_scheduled_date: "予定日"
 
   # TestCase
+  field_test_plan: "テスト計画"
   field_environment: "環境"
   field_scenario: "シナリオ"
   field_expected: "期待する結果"

@@ -7,9 +7,14 @@ class TestCasesController < ApplicationController
 
   def new
     @test_case = TestCase.new
-    @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
+    if params.permit(:test_plan_id)[:test_plan_id]
+      @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
+    else
+      @test_plan = nil
+    end
     prepare_issue_status_candidates
     prepare_user_candidates
+    prepare_test_plan_candidates
   end
 
   def create
@@ -108,6 +113,13 @@ class TestCasesController < ApplicationController
     @issue_status_candidates = {}
     IssueStatus.all.each do |issue_status|
       @issue_status_candidates[issue_status.name] = issue_status.id
+    end
+  end
+
+  def prepare_test_plan_candidates
+    @test_plan_candidates = {}
+    TestPlan.all.each do |test_plan|
+      @test_plan_candidates[test_plan.name] = test_plan.id
     end
   end
 

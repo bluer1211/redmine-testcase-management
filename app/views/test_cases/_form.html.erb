@@ -1,5 +1,14 @@
 <div class="box tabular">
   <p>
+    <%= form.label :test_plan %>
+    <% if @test_plan %>
+      <%= @test_plan.name %>
+      <%= form.hidden_field :test_plan_id, :value => @test_plan.id %>
+    <% else %>
+      <%= form.select :test_plan_id, @test_plan_candidates %>
+    <% end %>
+  </p>
+  <p>
     <%= form.label :name %>
     <%= form.text_field :name, size: 80, required: true %>
   </p>
@@ -36,5 +45,4 @@
     <%= form.text_area :expected, required: true %>
   </p>
   <%= form.hidden_field :test_project_id, :value => @project_id %>
-  <%= form.hidden_field :test_plan_id, :value => @test_plan.id %>
 </div>
