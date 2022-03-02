@@ -16,10 +16,16 @@ en:
   error_update_failure: "Failed to update"
   error_delete_failure: "Failed to delete"
 
+  # TestPlan
   field_estimated_bugs: "Estimated Bugs"
   field_begin_date: "Begin Date"
   field_end_date: "End Date"
   field_scheduled_date: "Scheduled Date"
+
+  # TestCase
+  field_environment: "Environment"
+  field_scenario: "Scenario"
+  field_expected: "Expected"
 
   text_test_plan_destroy_confirmation: "Are you sure you want to delete this test plan and related data?"
   text_test_case_destroy_confirmation: "Are you sure you want to delete this test case and related data?"

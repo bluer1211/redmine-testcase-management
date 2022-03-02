@@ -20,6 +20,11 @@ ja:
   field_end_date: 終了日
   field_scheduled_date: 予定日
 
+  # TestCase
+  field_environment: "環境"
+  field_scenario: "シナリオ"
+  field_expected: "期待する結果"
+
   text_test_plan_destroy_confirmation: "本当にこのテスト計画と関連データを削除しますか？"
   text_test_case_destroy_confirmation: "本当にこのテストケースと関連データを削除しますか？"
   text_test_case_execution_destroy_confirmation: "本当にこのテスト計画と関連データを削除しますか？"

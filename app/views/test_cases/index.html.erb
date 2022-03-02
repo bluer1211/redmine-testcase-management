@@ -1,1 +1,34 @@
-<h2>TestCasesController#index</h2>
+<div class="contextual">
+  <%= link_to l(:label_test_case_new), new_project_test_case_path(@project), :class => 'icon icon-add new-issue' %>
+</div>
+
+<h2><%=l(:label_test_cases)%></h2>
+
+<div class="autoscroll">
+  <table class="list issues odd-even sort-by-id sort-desc">
+    <thead>
+      <tr>
+        <th><%=l(:field_name)%></th>
+        <th><%=l(:field_status)%></th>
+        <th><%=l(:field_user)%></th>
+        <th><%=l(:field_scheduled_date)%></th>
+        <th><%=l(:field_environment)%></th>
+        <th><%=l(:field_scenario)%></th>
+        <th><%=l(:field_expected)%></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @test_cases.each do |test_case| %>
+      <tr>
+        <td><%= link_to test_case.name, "/projects/#{@project.name}/test_cases/#{test_case.id}" %></td>
+        <td><%= test_case.issue_status.name %></td>
+        <td><%= test_case.user.name %></td>
+        <td><%= test_case.scheduled_date %></td>
+        <td><%= test_case.environment %></td>
+        <td><%= test_case.scenario[0..10] %></td>
+        <td><%= test_case.expected[0..10] %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
