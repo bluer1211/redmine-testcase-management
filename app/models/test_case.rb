@@ -14,4 +14,12 @@ class TestCase < ActiveRecord::Base
   validates :issue_status, presence: true
 
   validates_associated :test_case_executions
+
+  def editable?
+    true
+  end
+
+  def deletable?
+    true
+  end
 end
