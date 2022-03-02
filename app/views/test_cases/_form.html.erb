@@ -5,7 +5,7 @@
   </p>
   <p>
     <%= form.label :status %>
-    <% if @test_plan and @test_plan.issue_status %>
+    <% if @test_case and @test_case.issue_status %>
       <%= form.select :issue_status, @issue_status_candidates, selected: @test_case.issue_status.id %>
     <% else %>
       <%= form.select :issue_status, @issue_status_candidates %>
