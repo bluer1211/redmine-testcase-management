@@ -4,11 +4,32 @@ class TestPlansControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issue_statuses
   fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
 
+  def setup
+    # FIXME: use test_plan.test_project.project_id
+    @project_id = 2
+  end
+
   def test_index
-    get :index, params: { :project_id => test_projects(:test_projects_001).id }
+    test_plan = test_plans(:test_plans_002)
+    get :index, params: { project_id: @project_id }
 
     assert_response :success
-    #assert_template 'index' # needs rails-controller-testing
+    assert_select "tbody tr", 3
+  end
+
+  def test_show
+    test_plan = test_plans(:test_plans_002)
+    get :show, params: { project_id: @project_id, id: test_plan.id }
+
+    assert_response :success
+    assert_select "tbody tr", 1
+  end
+
+  def test_destroy
+    test_plan = test_plans(:test_plans_002)
+    assert_difference("TestPlan.count", -1) do
+      delete :destroy, params: { project_id: @project_id, id: test_plan.id }
+    end
   end
 
   def test_create_test_plan
