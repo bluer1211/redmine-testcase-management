@@ -8,9 +8,9 @@ en:
   label_test_case_new: "New Test Case"
   label_test_case_execution_new: "New Test Case Execution"
 
-  permission_edit_test_plan: Edit Test Plan
-  permission_edit_test_case: Edit Test Case
-  permission_edit_test_case_execution: Edit Test Case Execution
+  permission_edit_test_plan: "Edit Test Plan"
+  permission_edit_test_case: "Edit Test Case"
+  permission_edit_test_case_execution: "Edit Test Case Execution"
 
   error_create_failure: "Failed to create"
   error_update_failure: "Failed to update"
