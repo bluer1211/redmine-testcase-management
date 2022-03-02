@@ -1,0 +1,39 @@
+<div class="box tabular">
+  <p>
+    <%= form.label :name %>
+    <%= form.text_field :name, size: 80, required: true %>
+  </p>
+  <p>
+    <%= form.label :status %>
+    <% if @test_plan and @test_plan.issue_status %>
+      <%= form.select :issue_status, @issue_status_candidates, selected: @test_case.issue_status.id %>
+    <% else %>
+      <%= form.select :issue_status, @issue_status_candidates %>
+    <% end %>
+  </p>
+  <p>
+    <%= form.label :user %>
+    <% if @test_case and @test_case.user %>
+      <%= form.select :user, @user_candidates, selected: @test_case.user.id %>
+    <% else %>
+      <%= form.select :user, @user_candidates %>
+    <% end %>
+  </p>
+  <p>
+    <%= form.label :scheduled_date %>
+    <%= form.date_field :scheduled_date %>
+  </p>
+  <p>
+    <%= form.label :environment %>
+    <%= form.text_field :environment, size: 80, required: true %>
+  </p>
+  <p>
+    <%= form.label :scenario %>
+    <%= form.text_area :scenario %>
+  </p>
+  <p>
+    <%= form.label :expected %>
+    <%= form.text_area :expected %>
+  </p>
+  <%= form.hidden_field :test_project_id, :value => @project_id %>
+</div>

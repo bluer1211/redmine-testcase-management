@@ -1,0 +1,6 @@
+<h2><%= l(:label_test_case_new) %></h2>
+
+<%= form_with model: @test_case, url: project_test_plans_path do |f| %>
+  <%= render partial: 'test_cases/form', locals: {form: f} %>
+  <%= f.submit l(:button_create) %>
+<% end %>
