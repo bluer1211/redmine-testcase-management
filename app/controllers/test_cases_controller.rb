@@ -7,6 +7,7 @@ class TestCasesController < ApplicationController
 
   def new
     @test_case = TestCase.new
+    @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
     prepare_issue_status_candidates
     prepare_user_candidates
   end
