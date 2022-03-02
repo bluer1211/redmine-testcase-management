@@ -2,7 +2,7 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class TestPlansControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issue_statuses
-  fixtures :test_projects
+  fixtures :test_projects, :test_plans
 
   def test_index
     get :index, params: { :project_id => test_projects(:test_projects_001).id }
