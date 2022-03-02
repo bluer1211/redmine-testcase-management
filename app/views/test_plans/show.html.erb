@@ -39,7 +39,7 @@
   <hr>
   <div id="test_case_tree">
     <div class="contextual">
-      <%= link_to l(:label_added), "/projects/#{@project.name}/test_cases/new?back_url=/projects/#{@project.name}/test_plans/#{@test_plan.id}&parent_test_plan_id=#{@test_plan.id}" %> 
+      <%= link_to l(:label_added), "/projects/#{@project.name}/test_cases/new?back_url=/projects/#{@project.name}/test_plans/#{@test_plan.id}&test_plan_id=#{@test_plan.id}" %> 
     </div>
     <p><%=l(:label_test_cases)%></p>
   </div>
