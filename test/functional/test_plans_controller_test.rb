@@ -19,7 +19,7 @@ class TestPlansControllerTest < ActionController::TestCase
     assert_redirected_to project_test_plan_path(:id => TestPlan.last.id)
   end
 
-  def test_create_missing_test_plan_name
+  def test_create_without_test_plan_name
     assert_no_difference("TestPlan.count") do
       project_id = test_projects(:test_projects_002).project_id
       post :create, params: { project_id: project_id, test_plan: { user: 2, issue_status: 1 } }
