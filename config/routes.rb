@@ -5,4 +5,8 @@ Rails.application.routes.draw do |map|
   resources :projects do
     resources :test_plans
   end
+
+  resources :projects do
+    resources :test_cases
+  end
 end
