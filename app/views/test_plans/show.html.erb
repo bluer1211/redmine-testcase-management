@@ -39,14 +39,14 @@
   <hr>
   <div id="test_case_tree">
     <div class="contextual">
-      <%= link_to l(:label_added), "/projects/#{@project.name}/test_cases/new?back_url=/projects/#{@project.name}/test_plans/#{@test_plan.id}&test_plan_id=#{@test_plan.id}" %> 
+      <%= link_to l(:label_added), new_project_test_plan_test_case_path(test_plan_id: @test_plan.id) %>
     </div>
     <p><%=l(:label_test_cases)%></p>
     <table class="list issues odd-even">
       <tbody>
         <% @test_plan.test_cases.each do |test_case| %>
           <tr class="list issue">
-            <td><%= link_to test_case.name, "/projects/#{@project.name}/test_cases/#{test_case.id}" %></td>
+            <td><%= link_to test_case.name, project_test_plan_test_case_url(test_plan_id: @test_plan.id, id: test_case.id) %></td>
             <td><%= test_case.issue_status.name %></td>
             <td><%= test_case.user.name %></td>
             <td><%= test_case.scheduled_date %></td>
