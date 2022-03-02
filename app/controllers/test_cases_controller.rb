@@ -35,6 +35,7 @@ class TestCasesController < ApplicationController
   def test_case_params
     params.require(:test_case).permit(:project_id,
                                       :test_project_id,
+                                      :test_plan_id,
                                       :name,
                                       :user,
                                       :scheduled_date,
