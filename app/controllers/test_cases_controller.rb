@@ -31,6 +31,11 @@ class TestCasesController < ApplicationController
     end
   end
 
+  def show
+    find_test_project(params.permit(:project_id)[:project_id])
+    @test_case = TestCase.find(params.permit(:id)[:id])
+  end
+
   private
 
   def test_case_params
