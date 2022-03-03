@@ -54,6 +54,24 @@ class TestCaseExecutionsController < ApplicationController
     @test_case = TestCase.find(permit_param(:test_case_id))
   end
 
+  def update
+    @test_case_execution = TestCaseExecution.find(params.permit(:id)[:id])
+    update_params = {
+      execution_date: test_case_execution_params[:execution_date],
+      result: test_case_execution_params[:result],
+      comment: test_case_execution_params[:comment],
+    }
+    user = User.find(test_case_execution_params[:user])
+    update_params[:user_id] = user.id if user.present?
+    if @test_case_execution.update(update_params)
+      flash[:notice] = l(:notice_successful_update)
+      redirect_to project_test_plan_test_case_test_case_execution_path
+    else
+      flash.now[:error] = l(:error_update_failure)
+      render :edit
+    end
+  end
+
   private
 
   def permit_param(symbol)
