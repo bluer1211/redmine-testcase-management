@@ -35,7 +35,9 @@ class TestCaseExecutionsController < ApplicationController
       create_params[:issue_id] = test_case_execution_params[:issue_id]
     end
     @test_case_execution = TestCaseExecution.new(create_params)
+    @test_case_execution.save_attachments params.permit(:attachments)[:attachments]
     if @test_case_execution.valid?
+      render_attachment_warning_if_needed @test_case_execution
       @test_case_execution.save
       flash[:notice] = l(:notice_successful_create)
       redirect_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
@@ -62,18 +64,18 @@ class TestCaseExecutionsController < ApplicationController
 
   def update
     @test_case_execution = TestCaseExecution.find(params.permit(:id)[:id])
-    update_params = {
-      execution_date: test_case_execution_params[:execution_date],
-      result: test_case_execution_params[:result],
-      comment: test_case_execution_params[:comment],
-    }
+    @test_case_execution.execution_date = test_case_execution_params[:execution_date]
+    @test_case_execution.result = test_case_execution_params[:result]
+    @test_case_execution.comment = test_case_execution_params[:comment]
     user = User.find(test_case_execution_params[:user])
-    update_params[:user] = user if user.present?
+    @test_case_execution.user = user if user.present?
     if test_case_execution_params[:issue_id].present?
       issue = Issue.find(test_case_execution_params[:issue_id])
-      update_params[:issue] = issue if issue.present?
+      @test_case_execution.issue = issue if issue.present?
     end
-    if @test_case_execution.update(update_params)
+    @test_case_execution.save_attachments permit_param(:attachments)
+    if @test_case_execution.save
+      render_attachment_warning_if_needed @test_case_execution
       flash[:notice] = l(:notice_successful_update)
       redirect_to project_test_plan_test_case_test_case_execution_path
     else

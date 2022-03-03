@@ -56,4 +56,5 @@
       <%= @test_case_execution.comment %>
     </div>
   </div>
+  <%= render partial: 'attachments/links', locals: {attachments: @test_case_execution.attachments, options: { deletable: User.current.logged? }} %>
 </div>

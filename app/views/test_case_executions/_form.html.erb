@@ -37,3 +37,10 @@
   </p>
   <%= form.hidden_field :test_project_id, :value => @test_project.id %>
 </div>
+
+<div class="box">
+  <p>
+    <%= form.label l :label_attachment_plural %>
+    <%= render partial: 'attachments/form' %>
+  </p>
+</div>
