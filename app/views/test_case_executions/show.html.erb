@@ -27,7 +27,13 @@
       <div class="splitcontentleft">
         <div class="environment-date attribute">
           <div class="label"><%=l(:field_result)%></div>
-          <div class="value"><%= @test_case_execution.result %></div>
+          <div class="value">
+            <% if @test_case_execution.result %>
+              <%= l(:label_succeed) %>
+            <% else %>
+              <%= l(:label_failure) %>
+            <% end %>
+          </div>
         </div>
         <div class="scheduled-date attribute">
           <div class="label"><%=l(:field_execution_date)%></div>
