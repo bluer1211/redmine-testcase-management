@@ -72,6 +72,22 @@ class TestCaseExecutionsController < ApplicationController
     end
   end
 
+  def destroy
+    begin
+      @test_case_execution = TestCaseExecution.find(params.permit(:id)[:id])
+      if @test_case_execution.delete
+        flash[:notice] = l(:notice_successful_delete)
+        redirect_to project_test_plan_test_case_test_case_executions_path
+      else
+        flash.now[:error] = l(:error_delete_failure)
+        render :show
+      end
+    rescue
+      flash.now[:error] = l(:error_delete_failure)
+      redirect_to project_test_plan_test_case_test_case_executions_path
+    end
+  end
+
   private
 
   def permit_param(symbol)
