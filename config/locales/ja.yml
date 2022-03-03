@@ -7,6 +7,9 @@ ja:
   label_test_case_new: "新しいテストケース"
   label_test_case_execution_new: "新しいテスト実行結果"
 
+  label_succeed: "成功"
+  label_failure: "失敗"
+
   permission_edit_test_plan: "テスト計画の編集"
   permission_edit_test_case: "テストケースの編集"
   permission_edit_test_case_execution: "テスト実行結果の編集"
@@ -25,6 +28,12 @@ ja:
   field_environment: "環境"
   field_scenario: "シナリオ"
   field_expected: "期待する結果"
+
+  # TestCaseExecution
+  field_test_case: "テストケース"
+  field_comment: "コメント"
+  field_execution_date: "実行日"
+  field_result: "実行結果"
 
   text_test_plan_destroy_confirmation: "本当にこのテスト計画と関連データを削除しますか？"
   text_test_case_destroy_confirmation: "本当にこのテストケースと関連データを削除しますか？"

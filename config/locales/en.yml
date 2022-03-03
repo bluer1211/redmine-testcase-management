@@ -8,6 +8,9 @@ en:
   label_test_case_new: "New Test Case"
   label_test_case_execution_new: "New Test Case Execution"
 
+  label_succeed: "Succeed"
+  label_failure: "Failure"
+
   permission_edit_test_plan: "Edit Test Plan"
   permission_edit_test_case: "Edit Test Case"
   permission_edit_test_case_execution: "Edit Test Case Execution"
@@ -27,6 +30,12 @@ en:
   field_environment: "Environment"
   field_scenario: "Scenario"
   field_expected: "Expected"
+
+  # TestCaseExecution
+  field_test_case: "Test Case"
+  field_comment: "Comment"
+  field_execution_date: "Execution Date"
+  field_result: "Result"
 
   text_test_plan_destroy_confirmation: "Are you sure you want to delete this test plan and related data?"
   text_test_case_destroy_confirmation: "Are you sure you want to delete this test case and related data?"
