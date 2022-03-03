@@ -43,7 +43,7 @@
           <div class="label"><%=l(:field_issue)%></div>
           <div class="value">
             <% if @test_case_execution.issue %>
-              <%= link_to @test_case_execution.issue.subject, issue_path(id: @test_case_execution.issue.id) %>
+              <%= link_to @test_case_execution.issue, issue_path(id: @test_case_execution.issue.id) %>
             <% end %>
           </div>
         </div>
