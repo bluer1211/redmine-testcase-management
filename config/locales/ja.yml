@@ -37,4 +37,4 @@ ja:
 
   text_test_plan_destroy_confirmation: "本当にこのテスト計画と関連データを削除しますか？"
   text_test_case_destroy_confirmation: "本当にこのテストケースと関連データを削除しますか？"
-  text_test_case_execution_destroy_confirmation: "本当にこのテスト計画と関連データを削除しますか？"
+  text_test_case_execution_destroy_confirmation: "本当にこのテスト実行結果と関連データを削除しますか？"
