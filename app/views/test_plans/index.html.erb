@@ -23,8 +23,8 @@
         <td><%= test_plan.issue_status.name %></td>
         <td><%= test_plan.estimated_bug %></td>
         <td><%= test_plan.user.name %></td>
-        <td><%= test_plan.begin_date %></td>
-        <td><%= test_plan.end_date %></td>
+        <td><%= yyyymmdd_date(test_plan.begin_date) %></td>
+        <td><%= yyyymmdd_date(test_plan.end_date) %></td>
       </tr>
       <% end %>
     </tbody>

@@ -23,7 +23,7 @@
         <td><%= link_to test_case.name, project_test_plan_test_case_path(id: test_case.id) %></td>
         <td><%= test_case.issue_status.name %></td>
         <td><%= test_case.user.name %></td>
-        <td><%= test_case.scheduled_date %></td>
+        <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
         <td><%= test_case.environment %></td>
         <td><%= test_case.scenario[0..10] %></td>
         <td><%= test_case.expected[0..10] %></td>

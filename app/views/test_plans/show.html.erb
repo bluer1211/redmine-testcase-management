@@ -27,11 +27,11 @@
       <div class="splitcontentleft">
         <div class="start-date attribute">
           <div class="label"><%=l(:field_begin_date)%></div>
-          <div class="value"><%= @test_plan.begin_date %></div>
+          <div class="value"><%= yyyymmdd_date(@test_plan.begin_date) %></div>
         </div>
         <div class="end-date attribute">
           <div class="label"><%=l(:field_end_date)%></div>
-          <div class="value"><%= @test_plan.end_date %></div>
+          <div class="value"><%= yyyymmdd_date(@test_plan.end_date) %></div>
         </div>
       </div>
     </div>
@@ -49,7 +49,7 @@
             <td><%= link_to test_case.name, project_test_plan_test_case_url(test_plan_id: @test_plan.id, id: test_case.id) %></td>
             <td><%= test_case.issue_status.name %></td>
             <td><%= test_case.user.name %></td>
-            <td><%= test_case.scheduled_date %></td>
+            <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
           </tr>
         <% end %>
       </tbody>

@@ -37,7 +37,7 @@
         </div>
         <div class="scheduled-date attribute">
           <div class="label"><%=l(:field_execution_date)%></div>
-          <div class="value"><%= @test_case_execution.execution_date %></div>
+          <div class="value"><%= yyyymmdd_date(@test_case_execution.execution_date) %></div>
         </div>
         <div class="issue_id attribute">
           <div class="label"><%=l(:field_issue)%></div>
