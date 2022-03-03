@@ -39,6 +39,14 @@
           <div class="label"><%=l(:field_execution_date)%></div>
           <div class="value"><%= @test_case_execution.execution_date %></div>
         </div>
+        <div class="issue_id attribute">
+          <div class="label"><%=l(:field_issue)%></div>
+          <div class="value">
+            <% if @test_case_execution.issue %>
+              <%= link_to @test_case_execution.issue.subject, issue_path(id: @test_case_execution.issue.id) %>
+            <% end %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
