@@ -1,0 +1,8 @@
+<div class="contextual">
+<%= link_to l(:button_edit), edit_project_test_plan_test_case_test_case_execution_path,
+            :onclick => 'showAndScrollTo("update", "issue_notes"); return false;',
+            :class => 'icon icon-edit', :accesskey => accesskey(:edit) if @test_case_execution.editable? %>
+<%= link_to l(:button_delete), project_test_plan_test_case_test_case_execution_path,
+            :data => {:confirm => test_case_destroy_confirmation_message(@test_case_execution)},
+            :method => :delete, :class => 'icon icon-del' if @test_case_execution.deletable? %>
+</div>
