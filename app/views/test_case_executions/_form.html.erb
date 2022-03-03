@@ -1,0 +1,39 @@
+<div class="box tabular">
+  <p>
+    <%= form.label :test_plan %>
+    <%= @test_plan.name %>
+  </p>
+  <p>
+    <%= form.label :test_case %>
+    <%= @test_case.name %>
+  </p>
+  <p>
+    <%= form.label :name %>
+    <%= form.text_field :name, size: 80, required: true %>
+  </p>
+  <p>
+    <%= form.label :environment %>
+    <%= @test_case.environment %>
+  </p>
+  <p>
+    <%= form.label :result %>
+    <%= form.select :result, { l(:label_failure) => false, l(:label_succeed) => true } %>
+  </p>
+  <p>
+    <%= form.label :user %>
+    <% if @test_case and @test_case.user %>
+      <%= form.select :user, @user_candidates, selected: @test_case.user.id %>
+    <% else %>
+      <%= form.select :user, @user_candidates %>
+    <% end %>
+  </p>
+  <p>
+    <%= form.label :execution_date %>
+    <%= form.date_field :execution_date %>
+  </p>
+  <p>
+    <%= form.label :comment %>
+    <%= form.text_area :comment, required: true %>
+  </p>
+  <%= form.hidden_field :test_project_id, :value => @test_project.id %>
+</div>
