@@ -33,7 +33,6 @@ class TestCaseExecutionsController < ApplicationController
                                                 :test_project_id,
                                                 :test_plan_id,
                                                 :test_case_id,
-                                                :name,
                                                 :user,
                                                 :execution_date,
                                                 :comment,
