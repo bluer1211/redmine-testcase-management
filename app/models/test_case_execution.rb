@@ -9,4 +9,12 @@ class TestCaseExecution < ActiveRecord::Base
   validates :result, inclusion: { in: [true, false] }
   validates :comment, presence: true
   validates :user, presence: true
+
+  def editable?
+    true
+  end
+
+  def deletable?
+    true
+  end
 end
