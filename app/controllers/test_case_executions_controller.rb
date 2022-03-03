@@ -38,6 +38,14 @@ class TestCaseExecutionsController < ApplicationController
     end
   end
 
+  def show
+    find_test_project(params.permit(:project_id)[:project_id])
+    @test_case_execution = TestCaseExecution.find(params.permit(:id)[:id])
+    # FIXME:
+    @test_plan = TestPlan.find(permit_param(:test_plan_id))
+    @test_case = TestCase.find(permit_param(:test_case_id))
+  end
+
   private
 
   def permit_param(symbol)
