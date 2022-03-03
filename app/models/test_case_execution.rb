@@ -6,7 +6,7 @@ class TestCaseExecution < ActiveRecord::Base
   belongs_to :test_case
   acts_as_attachable
 
-  validates :result, presence: true
+  validates :result, inclusion: { in: [true, false] }
   validates :comment, presence: true
   validates :user, presence: true
 end
