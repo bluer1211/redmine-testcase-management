@@ -23,12 +23,18 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   def create
-    @test_case_execution = TestCaseExecution.new(:result => test_case_execution_params[:result],
-                                                 :user => User.find(test_case_execution_params[:user]),
-                                                 :comment => test_case_execution_params[:comment],
-                                                 :execution_date => test_case_execution_params[:execution_date],
-                                                 :test_plan => TestPlan.find(permit_param(:test_plan_id)),
-                                                 :test_case => TestCase.find(permit_param(:test_case_id)))
+    create_params = {
+      result: test_case_execution_params[:result],
+      user: User.find(test_case_execution_params[:user]),
+      comment: test_case_execution_params[:comment],
+      execution_date: test_case_execution_params[:execution_date],
+      test_plan: TestPlan.find(permit_param(:test_plan_id)),
+      test_case: TestCase.find(permit_param(:test_case_id))
+    }
+    if test_case_execution_params[:issue_id]
+      create_params[:issue_id] = test_case_execution_params[:issue_id]
+    end
+    @test_case_execution = TestCaseExecution.new(create_params)
     if @test_case_execution.valid?
       @test_case_execution.save
       flash[:notice] = l(:notice_successful_create)
@@ -62,7 +68,11 @@ class TestCaseExecutionsController < ApplicationController
       comment: test_case_execution_params[:comment],
     }
     user = User.find(test_case_execution_params[:user])
-    update_params[:user_id] = user.id if user.present?
+    update_params[:user] = user if user.present?
+    if test_case_execution_params[:issue].present?
+      issue = Issue.find(test_case_execution_params[:issue])
+      update_params[:issue] = issue if issue.present?
+    end
     if @test_case_execution.update(update_params)
       flash[:notice] = l(:notice_successful_update)
       redirect_to project_test_plan_test_case_test_case_execution_path
