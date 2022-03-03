@@ -30,4 +30,12 @@ module ApplicationsHelper
       @user_candidates[user.name] = user.id
     end
   end
+
+  def yyyymmdd_date(date)
+    if date
+      date.strftime("%Y/%m/%d")
+    else
+      "-"
+    end
+  end
 end
