@@ -1,0 +1,6 @@
+<h2><%=l(:permission_edit_test_case_execution)%> <%= @test_case_execution.id %></h2>
+
+<%= form_with model: @test_case_execution, url: project_test_plan_test_case_test_case_execution_path do |f| %>
+  <%= render partial: 'test_case_executions/form', locals: {form: f} %>
+  <%= f.submit l(:button_update) %>
+<% end %>
