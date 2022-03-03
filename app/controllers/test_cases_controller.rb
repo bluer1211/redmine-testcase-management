@@ -1,5 +1,13 @@
 class TestCasesController < ApplicationController
 
+  include ApplicationsHelper
+
+  before_action do
+    prepare_user_candidates
+    prepare_issue_status_candidates
+    prepare_test_plan_candidates
+  end
+
   def index
     find_test_project(params.permit(:project_id)[:project_id])
     @test_cases = TestCase.all
@@ -12,9 +20,6 @@ class TestCasesController < ApplicationController
     else
       @test_plan = nil
     end
-    prepare_issue_status_candidates
-    prepare_user_candidates
-    prepare_test_plan_candidates
   end
 
   def create
@@ -109,24 +114,4 @@ class TestCasesController < ApplicationController
     end
   end
 
-  def prepare_issue_status_candidates
-    @issue_status_candidates = {}
-    IssueStatus.all.each do |issue_status|
-      @issue_status_candidates[issue_status.name] = issue_status.id
-    end
-  end
-
-  def prepare_test_plan_candidates
-    @test_plan_candidates = {}
-    TestPlan.all.each do |test_plan|
-      @test_plan_candidates[test_plan.name] = test_plan.id
-    end
-  end
-
-  def prepare_user_candidates
-    @user_candidates = {}
-    User.all.each do |user|
-      @user_candidates[user.name] = user.id
-    end
-  end
 end
