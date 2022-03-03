@@ -69,8 +69,8 @@ class TestCaseExecutionsController < ApplicationController
     }
     user = User.find(test_case_execution_params[:user])
     update_params[:user] = user if user.present?
-    if test_case_execution_params[:issue].present?
-      issue = Issue.find(test_case_execution_params[:issue])
+    if test_case_execution_params[:issue_id].present?
+      issue = Issue.find(test_case_execution_params[:issue_id])
       update_params[:issue] = issue if issue.present?
     end
     if @test_case_execution.update(update_params)
@@ -113,6 +113,6 @@ class TestCaseExecutionsController < ApplicationController
                                                 :execution_date,
                                                 :comment,
                                                 :result,
-                                                :issue)
+                                                :issue_id)
   end
 end
