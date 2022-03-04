@@ -8,7 +8,10 @@ class TestProjectTest < ActiveSupport::TestCase
 
   def test_initialize
     test_project = TestProject.new
-    assert_nil test_project.project_id
+    assert_nil test_project.project
+    assert_equal [], test_project.test_plans.pluck(:id)
+    assert_equal [], test_project.test_cases.pluck(:id)
+    assert_equal [], test_project.test_case_executions.pluck(:id)
   end
 
   def test_create
