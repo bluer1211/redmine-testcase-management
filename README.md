@@ -19,5 +19,6 @@ And then restart your Redmine.
 
 ```console
 $ cd /path/to/redmine
+$ cp plugins/testcase_management/test/fixtures/*.yml test/fixtures/
 $ bin/rails redmine:plugins:test RAILS_ENV=test NAME=testcase_management
 ```
