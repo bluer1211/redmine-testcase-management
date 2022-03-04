@@ -86,6 +86,9 @@ class TestPlanTest < ActiveSupport::TestCase
     test_plan = TestPlan.new
     assert_nil test_plan.user
     assert_nil test_plan.issue_status
+    assert_nil test_plan.test_project
+    assert_equal [], test_plan.test_cases.pluck(:id)
+    assert_equal [], test_plan.test_case_executions.pluck(:id)
   end
 
   def test_no_test_case
