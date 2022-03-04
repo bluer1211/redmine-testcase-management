@@ -132,16 +132,21 @@ class TestPlanTest < ActiveSupport::TestCase
     test_case.destroy
   end
 
-  def test_save_test_case
+  def test_destroy_dependent_test_case
     test_plan = test_plans(:test_plans_001)
     test_case = test_plan.test_cases.new(:name => "dummy",
                                          :scenario => "test scenario",
                                          :expected => "expected situation",
                                          :environment => "Debian GNU/Linux",
+                                         :test_plan => test_plan,
                                          :test_project => test_projects(:test_projects_001),
                                          :user => users(:users_001),
                                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_save test_plan
-    test_case.destroy
+    assert_difference("TestPlan.count", -1) do
+      assert_difference("TestCase.count", -1) do
+        test_plan.destroy
+      end
+    end
   end
 end
