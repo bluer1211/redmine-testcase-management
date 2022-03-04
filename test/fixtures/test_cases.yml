@@ -21,6 +21,7 @@ test_cases_002:
   user_id: 2
   issue_status_id: 1
   scheduled_date: 2022-02-09 00:00:00 +09:00
+  test_case_executions: test_case_executions_001
 test_cases_003:
   id: 3
   test_project: test_projects_003
@@ -32,3 +33,4 @@ test_cases_003:
   user_id: 2
   issue_status_id: 1
   scheduled_date: 2022-02-09 00:00:00 +09:00
+  test_case_executions: test_case_executions_002, test_case_executions_003

@@ -17,6 +17,7 @@ test_plans_002:
   estimated_bug: 10
   issue_status_id: 1
   test_project: test_projects_003
+  test_cases: test_cases_001
 test_plans_003:
   id: 3
   name: Test Plan (2 test cases)
@@ -26,3 +27,4 @@ test_plans_003:
   estimated_bug: 10
   issue_status_id: 1
   test_project: test_projects_003
+  test_cases: test_cases_002, test_cases_003
