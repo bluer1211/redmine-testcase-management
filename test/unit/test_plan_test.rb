@@ -111,14 +111,25 @@ class TestPlanTest < ActiveSupport::TestCase
 
   def test_incomplete_test_case
     test_plan = test_plans(:test_plans_001)
-    test_case = test_plan.test_cases.new(:scenario => "test scenario",
+    test_case = test_plan.test_cases.new(:name => "dummy")
+    assert_equal true, test_case.invalid? # no test case name
+    assert_equal false, test_plan.save
+  end
+
+  def test_save_test_case
+    test_plan = test_plans(:test_plans_001)
+    test_case = test_plan.test_cases.new(:name => "dummy",
+                                         :scenario => "test scenario",
                                          :expected => "expected situation",
                                          :environment => "Debian GNU/Linux",
+                                         :test_plan => test_plan,
                                          :test_project => test_projects(:test_projects_001),
                                          :user => users(:users_001),
                                          :issue_status => issue_statuses(:issue_statuses_001))
-    assert_equal true, test_case.invalid?
-    assert_equal false, test_plan.save
+    assert_save test_plan
+    assert_equal 1, test_plan.test_cases.size
+    assert_equal test_plan, test_plan.test_cases.first.test_plan
+    test_case.destroy
   end
 
   def test_save_test_case
