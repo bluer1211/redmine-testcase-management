@@ -1,11 +1,10 @@
 module ApplicationsHelper
-  def find_test_project(id_or_name)
+  def find_test_project(id_or_identifier)
     begin
-      id = Integer(id_or_name)
-      @project = Project.find(id)
+      @project = Project.find(id_or_identifier)
       @test_project = TestProject.where(:project_id => @project.id).first
     rescue ArgumentError
-      @project = project = Project.where(:name => id_or_name).first
+      @project = project = Project.where(:identifier => id_or_identifier).first
       @test_project = TestProject.where(:project_id => @project.id).first
     end
   end
