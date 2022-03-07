@@ -1,5 +1,7 @@
 class TestPlansController < ApplicationController
 
+  include ApplicationsHelper
+
   before_action do
     prepare_issue_status_candidates
     prepare_user_candidates
