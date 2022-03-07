@@ -10,7 +10,6 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   def test_index
-    test_plan = test_plans(:test_plans_002)
     get :index, params: { project_id: @project_id }
 
     assert_response :success
