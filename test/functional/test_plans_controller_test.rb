@@ -20,7 +20,23 @@ class TestPlansControllerTest < ActionController::TestCase
         plans << td.text
       end
     end
-    assert_equal plans, test_plans.pluck(:name)
+    assert_equal test_plans.pluck(:name), plans
+    # verify columns
+    test_plans = test_plans(:test_plans_001, :test_plans_002, :test_plans_003)
+    columns = []
+    assert_select "thead tr:first-child th" do |ths|
+      ths.each do |th|
+        columns << th.text
+      end
+    end
+    assert_equal [I18n.t(:field_name),
+                  I18n.t(:field_status),
+                  I18n.t(:field_estimated_bug),
+                  I18n.t(:field_user),
+                  I18n.t(:field_begin_date),
+                  I18n.t(:field_end_date)
+                 ],
+                 columns
   end
 
   def test_show
