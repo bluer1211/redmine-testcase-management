@@ -6,6 +6,7 @@ ja:
   label_test_plan_new: "新しいテスト計画"
   label_test_case_new: "新しいテストケース"
   label_test_case_execution_new: "新しいテスト実行結果"
+  label_back_to_lists: "一覧に戻る"
 
   label_succeed: "成功"
   label_failure: "失敗"
@@ -17,6 +18,11 @@ ja:
   error_create_failure: "作成に失敗しました"
   error_update_failure: "更新に失敗しました"
   error_delete_failure: "削除に失敗しました"
+
+  error_test_project_not_found: "テストプロジェクトが存在しません。"
+  error_test_plan_not_found: "テスト計画が存在しません。"
+  error_test_case: "テストケースが存在しません。"
+  error_test_case_execution_not_found: "テスト実行結果が存在しません。"
 
   field_estimated_bug: "想定バグ数"
   field_begin_date: "開始日"

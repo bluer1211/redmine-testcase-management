@@ -40,6 +40,14 @@ class TestPlansControllerTest < ActionController::TestCase
     end
   end
 
+  def test_show_nonexistent_test_plan
+    get :show, params: { project_id: @project_id, id: 1000 }
+    assert_response :missing
+    assert_select "div#flash_error" do |div|
+      assert_equal I18n.t(:error_test_plan_not_found), div.text
+    end
+  end
+
   def test_destroy
     test_plan = test_plans(:test_plans_002)
     assert_difference("TestPlan.count", -1) do

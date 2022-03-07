@@ -7,7 +7,12 @@ class TestPlansController < ApplicationController
 
   def show
     find_or_create_test_project(params.permit(:project_id)[:project_id])
-    @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
+    begin
+      @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
+    rescue
+      flash.now[:error] = l(:error_test_plan_not_found)
+      render 'forbidden', status: 404
+    end
   end
 
   def edit

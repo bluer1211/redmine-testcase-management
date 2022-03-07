@@ -7,6 +7,7 @@ en:
   label_test_plan_new: "New Test Plan"
   label_test_case_new: "New Test Case"
   label_test_case_execution_new: "New Test Case Execution"
+  label_back_to_lists: "Back to lists"
 
   label_succeed: "Succeed"
   label_failure: "Failure"
@@ -18,6 +19,11 @@ en:
   error_create_failure: "Failed to create"
   error_update_failure: "Failed to update"
   error_delete_failure: "Failed to delete"
+
+  error_test_project_not_found: "The test project was not found."
+  error_test_plan_not_found: "The test plan was not found."
+  error_test_case: "The test case was not found."
+  error_test_case_execution_not_found: "The test case execution was not found."
 
   # TestPlan
   field_estimated_bugs: "Estimated Bugs"
