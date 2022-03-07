@@ -167,7 +167,7 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_equal true, test_case_execution.invalid?
     assert_equal true, test_case.invalid?
     assert_equal false, test_case.save
-    assert_equal 0, test_cases(:test_cases_001).test_case_executions.size
+    assert_equal 0, test_cases(:test_cases_001).reload.test_case_executions.size
   end
 
   def test_save_test_case
