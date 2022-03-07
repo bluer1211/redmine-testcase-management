@@ -69,8 +69,10 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   def test_missing_result
     object = TestCaseExecution.new(:comment => "dummy",
                                    :user => users(:users_001))
-    assert_equal true, object.invalid?
-    assert_equal ["cannot be blank"], object.errors[:result]
+    # the default value of result is false
+    assert_equal false, object.result
+    assert_equal false, object.invalid?
+    assert_equal [], object.errors[:result]
   end
 
   def test_missing_user
