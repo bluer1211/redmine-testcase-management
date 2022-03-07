@@ -30,6 +30,15 @@ class TestPlansControllerTest < ActionController::TestCase
 
     assert_response :success
     assert_select "tbody tr", 1
+    assert_select "h2.inline-flex" do |h2|
+      assert_equal "Test Plans \##{test_plan.id}", h2.text
+    end
+    assert_select "div.subject div h3" do |h3|
+      assert_equal test_plan.name, h3.text
+    end
+    assert_select "div#test_case_tree table tbody tr td:first-child" do |td|
+      assert_equal test_cases(:test_cases_001).name, td.text
+    end
   end
 
   def test_destroy
