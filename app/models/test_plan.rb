@@ -12,6 +12,8 @@ class TestPlan < ActiveRecord::Base
   validates_associated :test_cases
   validates_associated :test_case_executions
 
+  validates_length_of :name, :maximum => 255
+
   def editable?
     true
   end

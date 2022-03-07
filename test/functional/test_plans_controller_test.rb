@@ -90,4 +90,12 @@ class TestPlansControllerTest < ActionController::TestCase
     end
     assert_response :unprocessable_entity
   end
+
+  def test_create_with_maximum_test_plan_name
+    assert_no_difference("TestPlan.count") do
+      project_id = test_projects(:test_projects_002).project_id
+      post :create, params: { project_id: project_id, test_plan: { name: "t" * 256, user: 2, issue_status: 1 } }
+    end
+    assert_response :unprocessable_entity
+  end
 end
