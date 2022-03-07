@@ -6,7 +6,7 @@ class TestPlansControllerTest < ActionController::TestCase
 
   def setup
     # FIXME: use test_plan.test_project.project_id
-    @project_id = test_projects(:test_projects_002)
+    @project_id = test_projects(:test_projects_002).id
   end
 
   def test_index
