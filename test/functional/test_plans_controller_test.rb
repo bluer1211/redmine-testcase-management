@@ -13,7 +13,15 @@ class TestPlansControllerTest < ActionController::TestCase
     get :index, params: { project_id: @project_id }
 
     assert_response :success
+    # show all test plans
     assert_select "tbody tr", 3
+    plans = []
+    assert_select "tbody tr td:first-child" do |tds|
+      tds.each do |td|
+        plans << td.text
+      end
+    end
+    assert_equal plans, test_plans.pluck(:name)
   end
 
   def test_show
