@@ -5,7 +5,6 @@ class TestPlansControllerTest < ActionController::TestCase
   fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
 
   def setup
-    # FIXME: use test_plan.test_project.project_id
     @project_id = test_projects(:test_projects_002).id
   end
 
