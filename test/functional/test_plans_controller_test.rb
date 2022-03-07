@@ -22,7 +22,6 @@ class TestPlansControllerTest < ActionController::TestCase
     end
     assert_equal test_plans.pluck(:name), plans
     # verify columns
-    test_plans = test_plans(:test_plans_001, :test_plans_002, :test_plans_003)
     columns = []
     assert_select "thead tr:first-child th" do |ths|
       ths.each do |th|
