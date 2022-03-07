@@ -1,5 +1,10 @@
 class TestPlansController < ApplicationController
 
+  before_action do
+    prepare_issue_status_candidates
+    prepare_user_candidates
+  end
+
   def index
     find_or_create_test_project(params.permit(:project_id)[:project_id])
     @test_plans = TestPlan.all
@@ -18,8 +23,6 @@ class TestPlansController < ApplicationController
   def edit
     find_or_create_test_project(params.permit(:project_id)[:project_id])
     @test_plan = TestPlan.find(params.permit(:id)[:id])
-    prepare_issue_status_candidates
-    prepare_user_candidates
   end
 
   def update
@@ -44,13 +47,9 @@ class TestPlansController < ApplicationController
 
   def new
     @test_plan = TestPlan.new
-    prepare_issue_status_candidates
-    prepare_user_candidates
   end
 
   def create
-    prepare_issue_status_candidates
-    prepare_user_candidates
     @test_plan = TestPlan.new(:name => test_plan_params[:name],
                               :begin_date => test_plan_params[:begin_date],
                               :end_date => test_plan_params[:end_date],
@@ -103,19 +102,5 @@ class TestPlansController < ApplicationController
                                       :end_date,
                                       :estimated_bug,
                                       :issue_status)
-  end
-
-  def prepare_issue_status_candidates
-    @issue_status_candidates = {}
-    IssueStatus.all.each do |issue_status|
-      @issue_status_candidates[issue_status.name] =  issue_status.id
-    end
-  end
-
-  def prepare_user_candidates
-    @user_candidates = {}
-    User.all.each do |user|
-      @user_candidates[user.name] =  user.id
-    end
   end
 end
