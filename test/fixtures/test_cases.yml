@@ -1,8 +1,10 @@
 --- 
 test_cases_001: 
   id: 1
-  test_project: test_projects_003
-  test_plan: test_plans_002
+  # test_project: test_projects_003
+  test_project_id: 3
+  # test_plan: test_plans_002
+  test_plan_id: 2
   name: Test Case 1 (No test case execution)
   scenario: Scenario 1
   expected: Expected 1
@@ -12,8 +14,10 @@ test_cases_001:
   scheduled_date: 2022-02-09 00:00:00 +09:00
 test_cases_002:
   id: 2
-  test_project: test_projects_003
-  test_plan: test_plans_003
+  # test_project: test_projects_003
+  test_project_id: 3
+  # test_plan: test_plans_003
+  test_plan_id: 3
   name: Test Case 2 (1 test case execution)
   scenario: Scenario 2
   expected: Expected 2
@@ -21,11 +25,13 @@ test_cases_002:
   user_id: 2
   issue_status_id: 1
   scheduled_date: 2022-02-09 00:00:00 +09:00
-  test_case_executions: test_case_executions_001
+  #test_case_executions: test_case_executions_001
 test_cases_003:
   id: 3
-  test_project: test_projects_003
-  test_plan: test_plans_003
+  # test_project: test_projects_003
+  test_project_id: 3
+  # test_plan: test_plans_003
+  test_plan_id: 3
   name: Test Case 3 (2 test case execution)
   scenario: Scenario 3
   expected: Expected 3
@@ -33,4 +39,4 @@ test_cases_003:
   user_id: 2
   issue_status_id: 1
   scheduled_date: 2022-02-09 00:00:00 +09:00
-  test_case_executions: test_case_executions_002, test_case_executions_003
+  #test_case_executions: test_case_executions_002, test_case_executions_003
