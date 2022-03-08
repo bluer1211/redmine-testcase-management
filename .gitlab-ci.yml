@@ -17,7 +17,7 @@
 test:
   image: ruby:2.6
   script:
-    - dev/ci.sh redmine:plugins:test
+    - dev/ci.sh redmine:plugins:test:units
 
 functionals:
   image: ruby:2.6
