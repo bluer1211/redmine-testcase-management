@@ -23,8 +23,6 @@ class TestCasesController < ApplicationController
   end
 
   def create
-    prepare_issue_status_candidates
-    prepare_user_candidates
     @test_case = TestCase.new(:name => test_case_params[:name],
                               :scheduled_date => test_case_params[:scheduled_date],
                               :user => User.find(test_case_params[:user]),
