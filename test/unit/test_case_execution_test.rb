@@ -37,7 +37,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     assert_equal "2022-02-09 15:00:00 UTC", test_case_execution.execution_date.to_s
     assert_equal users(:users_002), test_case_execution.user
     assert_equal issues(:issues_001), test_case_execution.issue
-    assert_equal test_plans(:test_plans_002), test_case_execution.test_plan
+    assert_equal test_plans(:test_plans_003), test_case_execution.test_plan
   end
 
   def test_not_unique

@@ -6,8 +6,8 @@ test_case_executions_001:
   user_id: 2
   issue_id: 1
   execution_date: 2022-02-10 00:00:00 +09:00
-  # test_plan: test_plans_002
-  test_plan_id: 2
+  # test_plan: test_plans_003
+  test_plan_id: 3
   # test_case: test_cases_002
   test_case_id: 2
   # test_project: test_projects_003
@@ -18,8 +18,8 @@ test_case_executions_002:
   comment: Comment 2
   user_id: 2
   execution_date: 2022-02-10 00:00:00 +09:00
-  # test_plan: test_plans_002
-  test_plan_id: 2
+  # test_plan: test_plans_003
+  test_plan_id: 3
   # test_case: test_cases_003
   test_case_id: 3
   # test_project: test_projects_003
@@ -31,8 +31,8 @@ test_case_executions_003:
   user_id: 2
   issue_id: 1
   execution_date: 2022-02-10 00:00:00 +09:00
-  # test_plan: test_plans_002
-  test_plan_id: 2
+  # test_plan: test_plans_003
+  test_plan_id: 3
   # test_case: test_cases_003
   test_case_id: 3
   # test_project: test_projects_003
