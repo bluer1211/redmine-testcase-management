@@ -1,0 +1,13 @@
+development:
+  adapter: postgresql
+  database: redmine
+  host: localhost
+  username: redmine
+  password: redmine
+
+test:
+  adapter: postgresql
+  database: redmine
+  host: localhost
+  username: redmine
+  password: redmine
