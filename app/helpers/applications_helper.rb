@@ -30,9 +30,9 @@ module ApplicationsHelper
     end
   end
 
-  def yyyymmdd_date(date)
+  def yyyymmdd_date(date, separator="/")
     if date
-      date.strftime("%Y/%m/%d")
+      date.strftime("%Y#{separator}%m#{separator}%d")
     else
       "-"
     end
