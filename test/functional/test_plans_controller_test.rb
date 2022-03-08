@@ -4,6 +4,8 @@ class TestPlansControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issue_statuses
   fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
 
+  include ApplicationsHelper
+
   NONEXISTENT_PROJECT_ID = 404
   NONEXISTENT_TEST_PLAN_ID = 404
 
@@ -79,8 +81,69 @@ class TestPlansControllerTest < ActionController::TestCase
     end
   end
 
-  def test_show_nonexistent_test_plan
+  def test_show_with_nonexistent_project
+    test_plan = test_plans(:test_plans_002)
+    get :show, params: { project_id: NONEXISTENT_PROJECT_ID, id: test_plan.id }
+    assert_response :missing
+    assert_select "div#flash_error" do |div|
+      assert_equal I18n.t(:error_project_not_found), div.text
+    end
+    assert_select "div#content a" do |link|
+      link.each do |a|
+        assert_equal projects_path, a.attributes["href"].text
+      end
+    end
+  end
+
+  def test_show_with_nonexistent_test_plan
     get :show, params: { project_id: @project_id, id: NONEXISTENT_TEST_PLAN_ID }
+    assert_response :missing
+    assert_select "div#flash_error" do |div|
+      assert_equal I18n.t(:error_test_plan_not_found), div.text
+    end
+    assert_select "div#content a" do |link|
+      link.each do |a|
+        assert_equal project_test_plans_path, a.attributes["href"].text
+      end
+    end
+  end
+
+  def test_edit
+    test_plan = test_plans(:test_plans_002)
+    get :edit, params: { project_id: @project_id, id: test_plan.id }
+    assert_select "div#content h2" do |h2|
+      assert_equal "#{I18n.t(:permission_edit_test_plan)} #{test_plan.name}", h2.text
+    end
+    assert_select "input[name='test_plan[name]']" do |input|
+      assert_equal test_plan.name, input.first.attributes["value"].value
+    end
+    assert_select "input[name='test_plan[begin_date]']" do |input|
+      assert_equal yyyymmdd_date(test_plan.begin_date, "-"), input.first.attributes["value"].value
+    end
+    assert_select "input[name='test_plan[end_date]']" do |input|
+      assert_equal yyyymmdd_date(test_plan.end_date, "-"), input.first.attributes["value"].value
+    end
+    assert_select "input[name='test_plan[estimated_bug]']" do |input|
+      assert_equal test_plan.estimated_bug.to_s, input.first.attributes["value"].value
+    end
+  end
+
+  def test_edit_with_nonexistent_project
+    test_plan = test_plans(:test_plans_002)
+    get :edit, params: { project_id: NONEXISTENT_PROJECT_ID, id: test_plan.id }
+    assert_response :missing
+    assert_select "div#flash_error" do |div|
+      assert_equal I18n.t(:error_project_not_found), div.text
+    end
+    assert_select "div#content a" do |link|
+      link.each do |a|
+        assert_equal projects_path, a.attributes["href"].text
+      end
+    end
+  end
+
+  def test_edit_with_nonexistent_test_plan
+    get :edit, params: { project_id: @project_id, id: NONEXISTENT_TEST_PLAN_ID }
     assert_response :missing
     assert_select "div#flash_error" do |div|
       assert_equal I18n.t(:error_test_plan_not_found), div.text
@@ -99,6 +162,33 @@ class TestPlansControllerTest < ActionController::TestCase
         assert_no_difference("TestCaseExecution.count") do
           delete :destroy, params: { project_id: @project_id, id: test_plan.id }
         end
+      end
+    end
+  end
+
+  def test_destroy_with_nonexistent_project
+    test_plan = test_plans(:test_plans_001)
+    delete :destroy, params: { project_id: NONEXISTENT_PROJECT_ID, id: test_plan.id }
+    assert_response :missing
+    assert_select "div#flash_error" do |div|
+      assert_equal I18n.t(:error_project_not_found), div.text
+    end
+    assert_select "div#content a" do |link|
+      link.each do |a|
+        assert_equal projects_path, a.attributes["href"].text
+      end
+    end
+  end
+
+  def test_destroy_with_nonexistent_test_plan
+    delete :destroy, params: { project_id: @project_id, id: NONEXISTENT_TEST_PLAN_ID }
+    assert_response :missing
+    assert_select "div#flash_error" do |div|
+      assert_equal I18n.t(:error_test_plan_not_found), div.text
+    end
+    assert_select "div#content a" do |link|
+      link.each do |a|
+        assert_equal project_test_plans_path, a.attributes["href"].text
       end
     end
   end

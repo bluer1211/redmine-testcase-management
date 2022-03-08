@@ -18,18 +18,33 @@ class TestPlansController < ApplicationController
   end
 
   def show
-    find_or_create_test_project(params.permit(:project_id)[:project_id])
     begin
-      @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
+      find_or_create_test_project(params.permit(:project_id)[:project_id])
+      begin
+        @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
+      rescue
+        flash.now[:error] = l(:error_test_plan_not_found)
+        render 'forbidden', status: 404
+      end
     rescue
-      flash.now[:error] = l(:error_test_plan_not_found)
+      flash.now[:error] = l(:error_project_not_found)
       render 'forbidden', status: 404
     end
   end
 
   def edit
-    find_or_create_test_project(params.permit(:project_id)[:project_id])
-    @test_plan = TestPlan.find(params.permit(:id)[:id])
+    begin
+      find_or_create_test_project(params.permit(:project_id)[:project_id])
+      begin
+        @test_plan = TestPlan.find(params.permit(:id)[:id])
+      rescue
+        flash.now[:error] = l(:error_test_plan_not_found)
+        render 'forbidden', status: 404
+      end
+    rescue
+      flash.now[:error] = l(:error_project_not_found)
+      render 'forbidden', status: 404
+    end
   end
 
   def update
@@ -73,14 +88,24 @@ class TestPlansController < ApplicationController
   end
 
   def destroy
-    find_or_create_test_project(params.permit(:project_id)[:project_id])
-    @test_plan = TestPlan.find(params.permit(:id)[:id])
-    if @test_plan.destroy
-      flash[:notice] = l(:notice_successful_delete)
-      redirect_to project_test_plans_path
-    else
-      flash.now[:error] = l(:error_delete_failure)
-      render :show
+    begin
+      find_or_create_test_project(params.permit(:project_id)[:project_id])
+      begin
+        @test_plan = TestPlan.find(params.permit(:id)[:id])
+        if @test_plan.destroy
+          flash[:notice] = l(:notice_successful_delete)
+          redirect_to project_test_plans_path
+        else
+          flash.now[:error] = l(:error_delete_failure)
+          render :show
+        end
+      rescue
+        flash.now[:error] = l(:error_test_plan_not_found)
+        render 'forbidden', status: 404
+      end
+    rescue
+      flash.now[:error] = l(:error_project_not_found)
+      render 'forbidden', status: 404
     end
   end
 
