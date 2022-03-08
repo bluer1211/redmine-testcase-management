@@ -46,8 +46,6 @@ class TestCasesController < ApplicationController
   end
 
   def edit
-    prepare_issue_status_candidates
-    prepare_user_candidates
     find_test_project(params.permit(:project_id)[:project_id])
     @test_case = TestCase.find(params.permit(:id)[:id])
     @test_plan = @test_case.test_plan
