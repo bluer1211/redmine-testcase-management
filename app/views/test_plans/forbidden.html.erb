@@ -1,1 +1,5 @@
-<%= link_to l(:label_back_to_lists), project_test_plans_path %>
+<% if @project %>
+  <%= link_to l(:label_back_to_lists), project_test_plans_path %>
+<% else %>
+  <%= link_to l(:label_back_to_lists), projects_path %>
+<% end %>
