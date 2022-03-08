@@ -43,4 +43,4 @@ bin/rails db:migrate
 bin/rails redmine:load_default_data REDMINE_LANG=en
 bin/rails redmine:plugins:migrate
 
-plugins/testcase_management/dev/run-test.sh
+plugins/testcase_management/dev/run-test.sh "$@"

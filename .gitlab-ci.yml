@@ -17,4 +17,19 @@
 test:
   image: ruby:2.6
   script:
-    - dev/ci.sh
+    - dev/ci.sh redmine:plugins:test
+
+functionals:
+  image: ruby:2.6
+  script:
+    - dev/ci.sh redmine:plugins:test:functionals
+
+integration:
+  image: ruby:2.6
+  script:
+    - dev/ci.sh redmine:plugins:test:integration
+
+system:
+  image: ruby:2.6
+  script:
+    - dev/ci.sh redmine:plugins:test:system
