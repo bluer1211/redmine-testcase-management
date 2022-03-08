@@ -4,6 +4,9 @@ class TestPlansControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issue_statuses
   fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
 
+  NONEXISTENT_PROJECT_ID = 404
+  NONEXISTENT_TEST_PLAN_ID = 404
+
   def setup
     @project_id = test_projects(:test_projects_002).id
   end
@@ -43,7 +46,7 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   def test_index_with_nonexistent_project
-    get :index, params: { project_id: 9999 }
+    get :index, params: { project_id: NONEXISTENT_PROJECT_ID }
     assert_response :missing
     assert_select "div#flash_error" do |div|
       assert_equal I18n.t(:error_project_not_found), div.text
@@ -77,7 +80,7 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   def test_show_nonexistent_test_plan
-    get :show, params: { project_id: @project_id, id: 1000 }
+    get :show, params: { project_id: @project_id, id: NONEXISTENT_TEST_PLAN_ID }
     assert_response :missing
     assert_select "div#flash_error" do |div|
       assert_equal I18n.t(:error_test_plan_not_found), div.text
