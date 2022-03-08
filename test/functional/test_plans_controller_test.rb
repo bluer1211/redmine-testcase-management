@@ -75,6 +75,17 @@ class TestPlansControllerTest < ActionController::TestCase
     end
   end
 
+  def test_destroy_dependent
+    test_plan = test_plans(:test_plans_003)
+    assert_difference("TestPlan.count", -1) do
+      assert_difference("TestCase.count", -2) do
+        assert_difference("TestCaseExecution.count", -3) do
+          delete :destroy, params: { project_id: @project_id, id: test_plan.id }
+        end
+      end
+    end
+  end
+
   def test_create_test_plan
     assert_difference("TestPlan.count") do
       project_id = test_projects(:test_projects_002).project_id
