@@ -70,7 +70,7 @@ class TestPlansController < ApplicationController
   def destroy
     find_or_create_test_project(params.permit(:project_id)[:project_id])
     @test_plan = TestPlan.find(params.permit(:id)[:id])
-    if @test_plan.delete
+    if @test_plan.destroy
       flash[:notice] = l(:notice_successful_delete)
       redirect_to project_test_plans_path
     else

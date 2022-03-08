@@ -3,7 +3,7 @@ class TestCase < ActiveRecord::Base
   belongs_to :test_project
   belongs_to :issue_status
   belongs_to :test_plan
-  has_many :test_case_executions
+  has_many :test_case_executions, dependent: :destroy
   acts_as_attachable
 
   validates :name, presence: true
