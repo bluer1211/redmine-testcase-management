@@ -9,7 +9,7 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   def test_index
-    get :index, params: { project_id: @project_id }
+    get :index, params: { project_id: projects(:projects_001).identifier }
 
     assert_response :success
     # show all test plans
@@ -36,6 +36,10 @@ class TestPlansControllerTest < ActionController::TestCase
                   I18n.t(:field_end_date)
                  ],
                  columns
+    assert_select "div#content div.contextual a:first-child" do |a|
+      assert_equal new_project_test_plan_path(project_id: projects(:projects_001).identifier), a.first.attributes["href"].text
+      assert_equal I18n.t(:label_test_plan_new), a.text
+    end
   end
 
   def test_show
