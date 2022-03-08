@@ -42,6 +42,14 @@ class TestPlansControllerTest < ActionController::TestCase
     end
   end
 
+  def test_index_with_nonexistent_project
+    get :index, params: { project_id: 9999 }
+    assert_response :missing
+    assert_select "div#flash_error" do |div|
+      assert_equal I18n.t(:error_project_not_found), div.text
+    end
+  end
+
   def test_show
     test_plan = test_plans(:test_plans_002)
     get :show, params: { project_id: @project_id, id: test_plan.id }

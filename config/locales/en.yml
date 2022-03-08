@@ -20,6 +20,7 @@ en:
   error_update_failure: "Failed to update"
   error_delete_failure: "Failed to delete"
 
+  error_project_not_found: "The project was not found."
   error_test_project_not_found: "The test project was not found."
   error_test_plan_not_found: "The test plan was not found."
   error_test_case: "The test case was not found."
