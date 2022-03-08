@@ -106,6 +106,7 @@ class TestPlansControllerTest < ActionController::TestCase
       project_id = test_projects(:test_projects_002).project_id
       post :create, params: { project_id: project_id, test_plan: { name: "test", user: 2, issue_status: 1 } }
     end
+    assert_equal I18n.t(:notice_successful_create), flash[:notice]
     assert_redirected_to project_test_plan_path(:id => TestPlan.last.id)
   end
 
