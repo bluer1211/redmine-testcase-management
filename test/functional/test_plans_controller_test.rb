@@ -53,6 +53,10 @@ class TestPlansControllerTest < ActionController::TestCase
     assert_select "div#test_case_tree table tbody tr td:first-child" do |td|
       assert_equal test_cases(:test_cases_001).name, td.text
     end
+    assert_select "div#test_case_tree div.contextual a:first-child" do |a|
+      assert_equal new_project_test_plan_test_case_path(test_plan_id: test_plan.id), a.first.attributes["href"].text
+      assert_equal I18n.t(:label_added), a.text
+    end
   end
 
   def test_show_nonexistent_test_plan
