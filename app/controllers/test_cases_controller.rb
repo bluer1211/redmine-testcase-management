@@ -2,8 +2,8 @@ class TestCasesController < ApplicationController
 
   include ApplicationsHelper
 
-  before_action :find_test_project_id, :only => [:new, :show, :edit, :index, :update]
-  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update]
+  before_action :find_test_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
+  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
 
   before_action do
