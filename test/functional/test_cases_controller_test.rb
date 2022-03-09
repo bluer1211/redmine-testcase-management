@@ -198,15 +198,68 @@ class TestCasesControllerTest < ActionController::TestCase
   class Edit < self
 
     def test_edit
+      test_plan = test_plans(:test_plans_002)
+      test_case = test_cases(:test_cases_001)
+      get :edit, params: { project_id: projects(:projects_002).identifier,
+                           test_plan_id: test_plan.id,
+                           id: test_case.id
+                         }
+      assert_response :success
+      assert_select "div#content h2" do |h2|
+        assert_equal "#{I18n.t(:permission_edit_test_case)} #{test_case.name}", h2.text
+      end
+      assert_select "input[name='test_case[name]']" do |input|
+        assert_equal test_case.name, input.first.attributes["value"].value
+      end
+      assert_select "select[name='test_case[issue_status]']" do |select|
+        select.first.children.each do |option|
+          assert_equal test_case.issue_status.name, option.text if option.attributes["selected"]
+        end
+      end
+      assert_select "select[name='test_case[user]']" do |select|
+        select.first.children.each do |option|
+          assert_equal test_case.user.name, option.text if option.attributes["selected"]
+        end
+      end
+      assert_select "input[name='test_case[scheduled_date]']" do |input|
+        assert_equal yyyymmdd_date(test_case.scheduled_date, "-"), input.first.attributes["value"].value
+      end
+      assert_select "input[name='test_case[environment]']" do |input|
+        assert_equal test_case.environment, input.first.attributes["value"].value
+      end
+      assert_select "textarea[name='test_case[scenario]']" do |textarea|
+        assert_equal test_case.scenario, textarea.text.strip
+      end
+      assert_select "textarea[name='test_case[expected]']" do |textarea|
+        assert_equal test_case.expected, textarea.text.strip
+      end
     end
 
     def test_edit_with_nonexistent_project
+      get :edit, params: { project_id: NONEXISTENT_PROJECT_ID,
+                           test_plan_id: test_plans(:test_plans_002).id,
+                           id: test_cases(:test_cases_001).id,
+                         }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_project_not_found)
     end
 
     def test_edit_with_nonexistent_test_plan
+      get :edit, params: { project_id: projects(:projects_002).identifier,
+                           test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+                           id: test_cases(:test_cases_001).id,
+                         }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_plan_not_found)
     end
 
     def test_edit_with_nonexistent_test_case
+      get :edit, params: { project_id: projects(:projects_002).identifier,
+                           test_plan_id: test_plans(:test_plans_002).id,
+                           id: NONEXISTENT_TEST_CASE_ID,
+                         }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_not_found)
     end
   end
 
