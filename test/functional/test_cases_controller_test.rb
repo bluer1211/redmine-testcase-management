@@ -52,9 +52,7 @@ class TestCasesControllerTest < ActionController::TestCase
             test_plan_id: test_plans(:test_plans_003).id
           }
       assert_response :missing
-      assert_select "div#flash_error" do |div|
-        assert_equal I18n.t(:error_project_not_found), div.text
-      end
+      assert_equal I18n.t(:error_project_not_found), flash[:error]
       assert_select "div#content a" do |link|
         link.each do |a|
           assert_equal projects_path, a.attributes["href"].text
@@ -68,9 +66,7 @@ class TestCasesControllerTest < ActionController::TestCase
             test_plan_id: NONEXISTENT_TEST_PLAN_ID
           }
       assert_response :missing
-      assert_select "div#flash_error" do |div|
-        assert_equal I18n.t(:error_test_plan_not_found), div.text
-      end
+      assert_equal I18n.t(:error_test_plan_not_found), flash[:error]
       assert_select "div#content a" do |link|
         link.each do |a|
           assert_equal project_test_plans_path, a.attributes["href"].text
@@ -136,6 +132,7 @@ class TestCasesControllerTest < ActionController::TestCase
                            id: test_cases(:test_cases_001).id,
                          }
       assert_response :missing
+      assert_equal I18n.t(:error_project_not_found), flash[:error]
     end
 
     def test_show_with_nonexistent_test_plan
@@ -144,6 +141,7 @@ class TestCasesControllerTest < ActionController::TestCase
                            id: test_cases(:test_cases_001).id,
                          }
       assert_response :missing
+      assert_equal I18n.t(:error_test_plan_not_found), flash[:error]
     end
 
     def test_show_with_nonexistent_test_case
