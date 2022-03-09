@@ -8,6 +8,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
   NONEXISTENT_PROJECT_ID = 404
   NONEXISTENT_TEST_PLAN_ID = 404
+  NONEXISTENT_TEST_CASE_ID = 404
 
   class Index < self
     def test_index
@@ -185,6 +186,12 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     def test_show_with_nonexistent_test_case
+      get :show, params: { project_id: projects(:projects_002).identifier,
+                           test_plan_id: test_plans(:test_plans_002).id,
+                           id: NONEXISTENT_TEST_CASE_ID,
+                         }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_not_found)
     end
   end
 
