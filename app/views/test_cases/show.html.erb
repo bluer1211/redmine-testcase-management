@@ -13,25 +13,25 @@
       <div class="splitcontentleft">
         <div class="status attribute">
           <div class="label"><%=l(:field_test_plan)%></div>
-          <div class="value"><%= link_to @test_case.test_plan.name, project_test_plan_path(:project_id => @project.name, :id => @test_case.test_plan.id) %></div>
+          <div id="test_plan" class="value"><%= link_to @test_case.test_plan.name, project_test_plan_path(:project_id => @project.name, :id => @test_case.test_plan.id) %></div>
         </div>
         <div class="status attribute">
           <div class="label"><%=l(:field_status)%></div>
-          <div class="value"><%= @test_case.issue_status.name if @test_case.issue_status %></div>
+          <div id="issue_status" class="value"><%= @test_case.issue_status.name if @test_case.issue_status %></div>
         </div>
         <div class="assigned-to attribute">
           <div class="label"><%=l(:field_user)%></div>
-          <div class="value"><%= @test_case.user.name if @test_case.user %></div>
+          <div id="user" class="value"><%= @test_case.user.name if @test_case.user %></div>
         </div>
       </div>
       <div class="splitcontentleft">
         <div class="scheduled-date attribute">
           <div class="label"><%=l(:field_scheduled_date)%></div>
-          <div class="value"><%= yyyymmdd_date(@test_case.scheduled_date) %></div>
+          <div id="scheduled_date" class="value"><%= yyyymmdd_date(@test_case.scheduled_date) %></div>
         </div>
         <div class="environment-date attribute">
           <div class="label"><%=l(:field_environment)%></div>
-          <div class="value"><%= @test_case.environment %></div>
+          <div id="environment" class="value"><%= @test_case.environment %></div>
         </div>
       </div>
     </div>
