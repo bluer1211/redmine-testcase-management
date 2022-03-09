@@ -265,6 +265,60 @@ class TestCasesControllerTest < ActionController::TestCase
 
   class Update < self
     def test_update
+      test_case = test_cases(:test_cases_001)
+      test_plan = test_plans(:test_plans_002)
+      assert_no_difference("TestCase.count") do
+        put :update, params: { project_id: projects(:projects_003).identifier,
+                               test_plan_id: test_plan.id,
+                               id: test_case.id,
+                               test_case: { test_plan_id: test_plans(:test_plans_002).id,
+                                            name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                                            user: 2, issue_status: 1 } }
+      end
+      assert_equal I18n.t(:notice_successful_update), flash[:notice]
+      assert_redirected_to project_test_plan_test_case_path(:id => test_case.id)
+    end
+
+    def test_update_with_nonexistent_project
+      put :update, params: { project_id: NONEXISTENT_PROJECT_ID,
+                             test_plan_id: test_plans(:test_plans_002).id,
+                             id: test_cases(:test_cases_001).id,
+                           }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_project_not_found)
+    end
+
+    def test_update_with_nonexistent_test_plan
+      put :update, params: { project_id: projects(:projects_002).identifier,
+                             test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+                             id: test_cases(:test_cases_001).id,
+                           }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_plan_not_found)
+    end
+
+    def test_update_with_nonexistent_test_case
+      put :update, params: { project_id: projects(:projects_002).identifier,
+                             test_plan_id: test_plans(:test_plans_002).id,
+                             id: NONEXISTENT_TEST_CASE_ID,
+                           }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_not_found)
+    end
+
+    def test_update_with_missing_params
+      test_case = test_cases(:test_cases_001)
+      test_plan = test_plans(:test_plans_002)
+      assert_no_difference("TestCase.count") do
+        put :update, params: { project_id: projects(:projects_003).identifier,
+                               test_plan_id: test_plan.id,
+                               id: test_case.id,
+                               test_case: { test_plan_id: test_plans(:test_plans_002).id,
+                                            name: "test",
+                                            user: 2, issue_status: 1 } }
+      end
+      assert_response :unprocessable_entity
+      assert_flash_error I18n.t(:error_update_failure)
     end
   end
 

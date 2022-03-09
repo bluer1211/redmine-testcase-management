@@ -2,8 +2,8 @@ class TestCasesController < ApplicationController
 
   include ApplicationsHelper
 
-  before_action :find_test_project_id, :only => [:new, :show, :edit, :index]
-  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index]
+  before_action :find_test_project_id, :only => [:new, :show, :edit, :index, :update]
+  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
 
   before_action do
@@ -75,7 +75,7 @@ class TestCasesController < ApplicationController
       redirect_to project_test_plan_test_case_path
     else
       flash.now[:error] = l(:error_update_failure)
-      render :edit
+      render :edit, status: :unprocessable_entity
     end
   end
 
