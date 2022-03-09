@@ -124,6 +124,46 @@ class TestCasesControllerTest < ActionController::TestCase
 
   class Show < self
     def test_show
+      test_case = test_cases(:test_cases_002)
+      test_plan = test_plans(:test_plans_003)
+        get :show, params: { project_id: projects(:projects_002).identifier,
+                             test_plan_id: test_plan.id,
+                             id: test_case.id,
+                           }
+      assert_response :success
+      assert_select "h2.inline-flex" do |h2|
+        assert_equal "#{I18n.t(:label_test_cases)} \##{test_case.id}", h2.text
+      end
+      assert_select "div.subject div h3" do |h3|
+        assert_equal test_case.name, h3.text
+      end
+      assert_select "div#test_plan" do |div|
+        assert_equal test_case.test_plan.name, div.text
+      end
+      assert_select "div#issue_status" do |div|
+        assert_equal test_case.issue_status.name, div.text
+      end
+      assert_select "div#user" do |div|
+        assert_equal test_case.user.name, div.text
+      end
+      assert_select "div#scheduled_date" do |div|
+        assert_equal yyyymmdd_date(test_case.scheduled_date), div.text
+      end
+      assert_select "div#environment" do |div|
+        assert_equal test_case.environment, div.text
+      end
+      assert_select "div#scenario div.wiki" do |div|
+        assert_equal test_case.scenario, div.text.strip
+      end
+      assert_select "div#expected div.wiki" do |div|
+        assert_equal test_case.expected, div.text.strip
+      end
+      assert_select "div#test_case_execution_tree div.contextual a:first-child" do |a|
+        assert_equal new_project_test_plan_test_case_test_case_execution_path(test_plan_id: test_plan.id, test_case_id: test_case.id),
+                     a.first.attributes["href"].text
+        assert_equal I18n.t(:label_added), a.text
+      end
+      assert_select "div#test_case_execution_tree tbody tr", 1
     end
 
     def test_show_with_nonexistent_project
