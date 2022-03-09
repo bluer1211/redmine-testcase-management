@@ -2,6 +2,10 @@ class TestCasesController < ApplicationController
 
   include ApplicationsHelper
 
+  before_action :find_test_project_id, :only => [:new, :show, :edit, :index]
+  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index]
+  before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
+
   before_action do
     prepare_user_candidates
     prepare_issue_status_candidates
@@ -9,7 +13,6 @@ class TestCasesController < ApplicationController
   end
 
   def index
-    find_test_project(params.permit(:project_id)[:project_id])
     @test_cases = TestCase.all
   end
 
@@ -23,30 +26,33 @@ class TestCasesController < ApplicationController
   end
 
   def create
-    @test_case = TestCase.new(:name => test_case_params[:name],
-                              :scheduled_date => test_case_params[:scheduled_date],
-                              :user => User.find(test_case_params[:user]),
-                              :test_plan => TestPlan.find(test_case_params[:test_plan_id]),
-                              :environment => test_case_params[:environment],
-                              :scenario => test_case_params[:scenario],
-                              :expected => test_case_params[:expected],
-                              :issue_status => IssueStatus.find(test_case_params[:issue_status]))
-    if @test_case.valid?
-      @test_case.save
-      flash[:notice] = l(:notice_successful_create)
-      redirect_to project_test_plan_test_case_path(:id => @test_case.id)
-    else
+    begin
+      find_test_project(params.permit(:project_id)[:project_id])
+      @test_case = TestCase.new(:name => test_case_params[:name],
+                                :scheduled_date => test_case_params[:scheduled_date],
+                                :user => User.find(test_case_params[:user]),
+                                :test_plan => TestPlan.find(test_case_params[:test_plan_id]),
+                                :environment => test_case_params[:environment],
+                                :scenario => test_case_params[:scenario],
+                                :expected => test_case_params[:expected],
+                                :issue_status => IssueStatus.find(test_case_params[:issue_status]))
+      if @test_case.valid?
+        @test_case.save
+        flash[:notice] = l(:notice_successful_create)
+        redirect_to project_test_plan_test_case_path(:id => @test_case.id)
+      else
+        render :new, status: :unprocessable_entity
+      end
+    rescue
       render :new, status: :unprocessable_entity
     end
   end
 
   def show
-    find_test_project(params.permit(:project_id)[:project_id])
     @test_case = TestCase.find(params.permit(:id)[:id])
   end
 
   def edit
-    find_test_project(params.permit(:project_id)[:project_id])
     @test_case = TestCase.find(params.permit(:id)[:id])
     @test_plan = @test_case.test_plan
   end
@@ -74,13 +80,18 @@ class TestCasesController < ApplicationController
   end
 
   def destroy
-    @test_case = TestCase.find(params.permit(:id)[:id])
-    if @test_case.destroy
-      flash[:notice] = l(:notice_successful_delete)
-      redirect_to project_test_plan_test_cases_path
-    else
-      flash.now[:error] = l(:error_delete_failure)
-      render :show
+    begin
+      @test_case = TestCase.find(params.permit(:id)[:id])
+      if @test_case.destroy
+        flash[:notice] = l(:notice_successful_delete)
+        redirect_to project_test_plan_test_cases_path
+      else
+        flash.now[:error] = l(:error_delete_failure)
+        render :show
+      end
+    rescue
+      flash.now[:error] = l(:error_test_case_not_found)
+      render 'forbidden', status: 404
     end
   end
 
