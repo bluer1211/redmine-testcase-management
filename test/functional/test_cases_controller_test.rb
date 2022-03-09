@@ -69,11 +69,11 @@ class TestCasesControllerTest < ActionController::TestCase
           }
       assert_response :missing
       assert_select "div#flash_error" do |div|
-        assert_equal I18n.t(:error_project_not_found), div.text
+        assert_equal I18n.t(:error_test_plan_not_found), div.text
       end
       assert_select "div#content a" do |link|
         link.each do |a|
-          assert_equal projects_path, a.attributes["href"].text
+          assert_equal project_test_plans_path, a.attributes["href"].text
         end
       end
     end
