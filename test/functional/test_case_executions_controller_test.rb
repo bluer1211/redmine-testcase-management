@@ -1,7 +1,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class TestCaseExecutionsControllerTest < ActionController::TestCase
-  fixtures :projects, :users, :issue_statuses
+  fixtures :projects, :users, :issues, :issue_statuses
   fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
 
   include ApplicationsHelper
@@ -78,6 +78,82 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_response :missing
       assert_flash_error I18n.t(:error_test_case_not_found)
       assert_back_to_lists_link(project_test_plan_test_cases_path)
+    end
+  end
+
+  class Create < self
+    def test_create
+      assert_difference("TestCaseExecution.count") do
+        post :create, params: { project_id: projects(:projects_003).identifier,
+                                test_plan_id: test_plans(:test_plans_002).id,
+                                test_case_id: test_cases(:test_cases_001).id,
+                                test_case_execution: {
+                                  result: true, user: 2, issue_id: issues(:issues_001).id,
+                                  comment: "dummy", execution_date: "2022-01-01"
+                                }
+                              }
+      end
+      assert_equal I18n.t(:notice_successful_create), flash[:notice]
+      assert_redirected_to project_test_plan_test_case_test_case_execution_path(:id => TestCaseExecution.last.id)
+    end
+
+    def test_create_with_nonexistent_project
+      assert_no_difference("TestCaseExecution.count") do
+        post :create, params: { project_id: NONEXISTENT_PROJECT_ID,
+                                test_plan_id: test_plans(:test_plans_002).id,
+                                test_case_id: test_cases(:test_cases_001).id,
+                                test_case_execution: {
+                                  result: true, user: 2, issue_id: issues(:issues_001).id,
+                                  comment: "dummy", execution_date: "2022-01-01"
+                                }
+                              }
+      end
+      assert_response :unprocessable_entity
+      assert_back_to_lists_link(projects_path)
+    end
+
+    def test_create_with_nonexistent_test_plan
+      assert_no_difference("TestCaseExecution.count") do
+        post :create, params: { project_id: projects(:projects_001).identifier,
+                                test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+                                test_case_id: test_cases(:test_cases_001).id,
+                                test_case_execution: {
+                                  result: true, user: 2, issue_id: issues(:issues_001).id,
+                                  comment: "dummy", execution_date: "2022-01-01"
+                                }
+                              }
+      end
+      assert_response :unprocessable_entity
+      assert_back_to_lists_link(project_test_plans_path)
+    end
+
+    def test_create_with_nonexistent_test_case
+      assert_no_difference("TestCaseExecution.count") do
+        post :create, params: { project_id: projects(:projects_001).identifier,
+                                test_plan_id: test_plans(:test_plans_002).id,
+                                test_case_id: NONEXISTENT_TEST_CASE_ID,
+                                test_case_execution: {
+                                  result: true, user: 2, issue_id: issues(:issues_001).id,
+                                  comment: "dummy", execution_date: "2022-01-01"
+                                }
+                              }
+      end
+      assert_response :unprocessable_entity
+      assert_back_to_lists_link(project_test_plan_test_cases_path)
+    end
+
+    def test_create_with_missing_params
+      assert_no_difference("TestCaseExecution.count") do
+        post :create, params: { project_id: projects(:projects_001).identifier,
+                                test_plan_id: test_plans(:test_plans_002).id,
+                                test_case_id: test_cases(:test_cases_001).id,
+                                test_case_execution: {
+                                  user: 2, issue_id: issues(:issues_001).id,
+                                  comment: "dummy", execution_date: "2022-01-01"
+                                }
+                              }
+      end
+      assert_response :unprocessable_entity
     end
   end
 end
