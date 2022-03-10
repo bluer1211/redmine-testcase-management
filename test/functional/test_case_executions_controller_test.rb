@@ -156,4 +156,98 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_response :unprocessable_entity
     end
   end
+
+  class Show < self
+    def setup
+      @test_plan = test_plans(:test_plans_003)
+      @test_case = test_cases(:test_cases_002)
+      @test_case_execution = test_case_executions(:test_case_executions_001)
+    end
+
+    def test_show
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id
+          }
+      assert_response :success
+      assert_select "h2.inline-flex" do |h2|
+        assert_equal "#{I18n.t(:label_test_case_executions)} \##{@test_case_execution.id}", h2.text
+      end
+      assert_select "div.subject div h3" do |h3|
+        assert_equal "#{@test_case.name} #{I18n.t(:field_result)}", h3.text
+      end
+      assert_select "div#test_plan" do |div|
+        assert_equal @test_plan.name, div.text
+      end
+      assert_select "div#test_case" do |div|
+        assert_equal @test_case.name, div.text
+      end
+      assert_select "div#user" do |div|
+        assert_equal @test_case_execution.user.name, div.text
+      end
+      assert_select "div#execution_date" do |div|
+        assert_equal yyyymmdd_date(@test_case_execution.execution_date), div.text
+      end
+      assert_select "div#result" do |div|
+        assert_equal I18n.t(:label_succeed), div.text.strip
+      end
+      assert_select "div#issue_id" do |div|
+        assert_equal @test_case_execution.issue.to_s, " #{div.text.strip}"
+      end
+
+      assert_select "div#comment div.wiki" do |div|
+        assert_equal @test_case_execution.comment, div.text.strip
+      end
+    end
+
+    def test_show_with_nonexistent_project
+      get :show, params: {
+            project_id: NONEXISTENT_PROJECT_ID,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id
+          }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_project_not_found)
+      assert_back_to_lists_link(projects_path)
+    end
+
+    def test_show_with_nonexistent_test_plan
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id
+          }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_plan_not_found)
+      assert_back_to_lists_link(project_test_plans_path)
+    end
+
+    def test_show_with_nonexistent_test_case
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: NONEXISTENT_TEST_CASE_ID,
+            id: @test_case_execution.id
+          }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_not_found)
+      assert_back_to_lists_link(project_test_plan_test_cases_path)
+    end
+
+    def test_show_with_nonexistent_test_case_execution
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: NONEXISTENT_TEST_CASE_EXECUTION_ID
+          }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_execution_not_found)
+      assert_back_to_lists_link(project_test_plan_test_case_test_case_executions_path)
+    end
+  end
 end
