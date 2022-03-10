@@ -11,9 +11,9 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   def index
-    find_test_project(params.permit(:project_id)[:project_id])
-    # FIXME: limit project
-    @test_case_executions = TestCaseExecution.all
+    @test_case_executions = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+                                                                      test_plan_id: @test_plan.id,
+                                                                      test_case_id: @test_case.id)
   end
 
   def new
