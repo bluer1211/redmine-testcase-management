@@ -430,4 +430,96 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_flash_error I18n.t(:error_update_failure)
     end
   end
+
+  class Destroy < self
+    def setup
+      @test_plan = test_plans(:test_plans_003)
+      @test_case = test_cases(:test_cases_002)
+      @test_case_execution = test_case_executions(:test_case_executions_001)
+    end
+
+    def test_destroy
+      assert_difference("TestCaseExecution.count", -1) do
+        delete :destroy, params: {
+                 project_id: projects(:projects_002).identifier,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: @test_case.id,
+                 id: @test_case_execution.id
+               }
+      end
+      assert_equal I18n.t(:notice_successful_delete), flash[:notice]
+      assert_redirected_to project_test_plan_test_case_test_case_executions_path
+    end
+
+    def test_destroy_with_nonexistent_project
+      assert_no_difference("TestCaseExecution.count") do
+        delete :destroy, params: {
+                 project_id: NONEXISTENT_PROJECT_ID,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: @test_case.id,
+                 id: @test_case_execution.id
+               }
+      end
+      assert_response :missing
+      assert_flash_error I18n.t(:error_project_not_found)
+      assert_back_to_lists_link(projects_path)
+    end
+
+    def test_destroy_with_nonexistent_test_plan
+      assert_no_difference("TestCaseExecution.count") do
+        delete :destroy, params: {
+                 project_id: projects(:projects_002).identifier,
+                 test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+                 test_case_id: @test_case.id,
+                 id: @test_case_execution.id
+               }
+      end
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_plan_not_found)
+      assert_back_to_lists_link(project_test_plans_path)
+    end
+
+    def test_destroy_with_nonexistent_test_case
+      assert_no_difference("TestCaseExecution.count") do
+        delete :destroy, params: {
+                 project_id: projects(:projects_002).identifier,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: NONEXISTENT_TEST_CASE_ID,
+                 id: @test_case_execution.id
+               }
+      end
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_not_found)
+      assert_back_to_lists_link(project_test_plan_test_cases_path)
+    end
+
+    def test_destroy_with_nonexistent_test_case_execution
+      assert_no_difference("TestCaseExecution.count") do
+        delete :destroy, params: {
+                 project_id: projects(:projects_002).identifier,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: @test_case.id,
+                 id: NONEXISTENT_TEST_CASE_EXECUTION_ID
+               }
+      end
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_execution_not_found)
+      assert_back_to_lists_link(project_test_plan_test_case_test_case_executions_path)
+    end
+
+    def test_destroy_dependent_test_case_executions
+      assert_difference("TestCaseExecution.count", -1) do
+        assert_difference("TestCaseExecution.count", -1) do
+          delete :destroy, params: {
+                   project_id: projects(:projects_002).identifier,
+                   test_plan_id: @test_plan.id,
+                   test_case_id: @test_case.id,
+                   id: @test_case_execution.id
+                 }
+        end
+      end
+      assert_equal I18n.t(:notice_successful_delete), flash[:notice]
+      assert_redirected_to project_test_plan_test_case_test_case_executions_path
+    end
+  end
 end

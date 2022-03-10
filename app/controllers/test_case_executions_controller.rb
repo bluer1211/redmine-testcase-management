@@ -119,7 +119,14 @@ class TestCaseExecutionsController < ApplicationController
 
   def destroy
     begin
-      @test_case_execution = TestCaseExecution.find(params.permit(:id)[:id])
+      @test_case_execution = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+                                                                       test_plan_id: @test_plan.id,
+                                                                       test_case_id: @test_case.id,
+                                                                       id: params.permit(:id)[:id]).first
+
+      unless @test_case_execution
+        raise ActiveRecord::RecordNotFound
+      end
       if @test_case_execution.destroy
         flash[:notice] = l(:notice_successful_delete)
         redirect_to project_test_plan_test_case_test_case_executions_path
@@ -128,8 +135,8 @@ class TestCaseExecutionsController < ApplicationController
         render :show
       end
     rescue
-      flash.now[:error] = l(:error_delete_failure)
-      redirect_to project_test_plan_test_case_test_case_executions_path
+      flash.now[:error] = l(:error_test_case_execution_not_found)
+      render 'forbidden', status: 404
     end
   end
 
