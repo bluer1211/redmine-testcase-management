@@ -5,7 +5,7 @@
 <div class="issue details">
   <div class="subject">
     <div>
-      <h3><%= @test_case.name %><%=l(:field_result) %></h3>
+      <h3><%= @test_case.name %> <%=l(:field_result) %></h3>
     </div>
   </div>
   <div class="attributes">
@@ -13,21 +13,21 @@
       <div class="splitcontentleft">
         <div class="status attribute">
           <div class="label"><%=l(:field_test_plan)%></div>
-          <div class="value"><%= link_to @test_plan.name, project_test_plan_path(:project_id => @project.name, :id => @test_plan.id) %></div>
+          <div id="test_plan" class="value"><%= link_to @test_plan.name, project_test_plan_path(:project_id => @project.name, :id => @test_plan.id) %></div>
         </div>
         <div class="status attribute">
           <div class="label"><%=l(:field_test_case)%></div>
-          <div class="value"><%= link_to @test_case.name, project_test_plan_test_case_path(:project_id => @project.name, :id => @test_case.id) %></div>
+          <div id="test_case" class="value"><%= link_to @test_case.name, project_test_plan_test_case_path(:project_id => @project.name, :id => @test_case.id) %></div>
         </div>
         <div class="assigned-to attribute">
           <div class="label"><%=l(:field_user)%></div>
-          <div class="value"><%= @test_case_execution.user.name if @test_case_execution.user %></div>
+          <div is="user" class="value"><%= @test_case_execution.user.name if @test_case_execution.user %></div>
         </div>
       </div>
       <div class="splitcontentleft">
         <div class="environment-date attribute">
           <div class="label"><%=l(:field_result)%></div>
-          <div class="value">
+          <div id="environment" class="value">
             <% if @test_case_execution.result %>
               <%= l(:label_succeed) %>
             <% else %>
@@ -37,11 +37,11 @@
         </div>
         <div class="scheduled-date attribute">
           <div class="label"><%=l(:field_execution_date)%></div>
-          <div class="value"><%= yyyymmdd_date(@test_case_execution.execution_date) %></div>
+          <div id="execution_date" class="value"><%= yyyymmdd_date(@test_case_execution.execution_date) %></div>
         </div>
         <div class="issue_id attribute">
           <div class="label"><%=l(:field_issue)%></div>
-          <div class="value">
+          <div id="issue_id" class="value">
             <% if @test_case_execution.issue %>
               <%= link_to @test_case_execution.issue, issue_path(id: @test_case_execution.issue.id) %>
             <% end %>
@@ -52,7 +52,7 @@
   </div>
   <div id="comment">
     <p><%=l(:field_comment)%></p>
-    <div class="wiki">
+    <div id="comment" class="wiki">
       <%= @test_case_execution.comment %>
     </div>
   </div>
