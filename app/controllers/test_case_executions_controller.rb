@@ -58,11 +58,16 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   def show
-    find_test_project(params.permit(:project_id)[:project_id])
-    @test_case_execution = TestCaseExecution.find(params.permit(:id)[:id])
-    # FIXME:
-    @test_plan = TestPlan.find(permit_param(:test_plan_id))
-    @test_case = TestCase.find(permit_param(:test_case_id))
+    @test_case_execution = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+                                                                     test_plan_id: @test_plan.id,
+                                                                     test_case_id: @test_case.id,
+                                                                     id: params.permit(:id)[:id]).first
+    if @test_case_execution
+      render :show
+    else
+      flash[:error] = l(:error_test_case_execution_not_found)
+      render 'forbidden', status: 404
+    end
   end
 
   def edit
