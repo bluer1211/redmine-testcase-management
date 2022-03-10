@@ -14,22 +14,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-test:
+.template:
   image: ruby:2.6
-  script:
-    - dev/ci.sh redmine:plugins:test:units
+  parallel:
+    matrix:
+      - TESTS:
+          - redmine:plugins:test:units
+          - redmine:plugins:test:functionals
+          - redmine:plugins:test:integration
+          - redmine:plugins:test:system
 
-functionals:
-  image: ruby:2.6
+sqlite3:
+  extends: .template
   script:
-    - dev/ci.sh redmine:plugins:test:functionals
+    - dev/ci.sh sqlite3 $TESTS
 
-integration:
-  image: ruby:2.6
+postgresql:
+  extends: .template
+  services:
+    - postgres:12.2
+  variables:
+    POSTGRES_DB: redmine
+    POSTGRES_USER: redmine
+    POSTGRES_PASSWORD: redmine
+  before_script:
+    - apt update -qq && apt install -y libpq-dev
   script:
-    - dev/ci.sh redmine:plugins:test:integration
-
-system:
-  image: ruby:2.6
-  script:
-    - dev/ci.sh redmine:plugins:test:system
+    - dev/ci.sh postgresql $TESTS
