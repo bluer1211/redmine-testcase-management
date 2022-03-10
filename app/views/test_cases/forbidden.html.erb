@@ -1,0 +1,7 @@
+<% if @project and @test_plan %>
+  <%= link_to l(:label_back_to_lists), project_test_plan_test_cases_path %>
+<% elsif @project %>
+  <%= link_to l(:label_back_to_lists), project_test_plans_path %>
+<% else %>
+  <%= link_to l(:label_back_to_lists), projects_path %>
+<% end %>
