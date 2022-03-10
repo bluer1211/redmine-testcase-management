@@ -2,6 +2,10 @@ class TestCaseExecutionsController < ApplicationController
 
   include ApplicationsHelper
 
+  before_action :find_test_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
+  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update, :destroy]
+  before_action :find_test_case_id, :only => [:show, :edit, :index, :update, :destroy]
+
   before_action do
     prepare_user_candidates
   end
