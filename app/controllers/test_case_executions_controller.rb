@@ -27,26 +27,33 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   def create
-    create_params = {
-      result: test_case_execution_params[:result],
-      user: User.find(test_case_execution_params[:user]),
-      comment: test_case_execution_params[:comment],
-      execution_date: test_case_execution_params[:execution_date],
-      test_plan: TestPlan.find(permit_param(:test_plan_id)),
-      test_case: TestCase.find(permit_param(:test_case_id))
-    }
-    if test_case_execution_params[:issue_id]
-      create_params[:issue_id] = test_case_execution_params[:issue_id]
-    end
-    @test_case_execution = TestCaseExecution.new(create_params)
-    @test_case_execution.save_attachments params.permit(:attachments)[:attachments]
-    if @test_case_execution.valid?
-      render_attachment_warning_if_needed @test_case_execution
-      @test_case_execution.save
-      flash[:notice] = l(:notice_successful_create)
-      redirect_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
-    else
-      render :new, status: :unprocessable_entity
+    begin
+      find_test_project(params.permit(:project_id)[:project_id])
+      @test_plan = TestPlan.find(permit_param(:test_plan_id))
+      @test_case = TestCase.find(permit_param(:test_case_id))
+      create_params = {
+        result: test_case_execution_params[:result],
+        user: User.find(test_case_execution_params[:user]),
+        comment: test_case_execution_params[:comment],
+        execution_date: test_case_execution_params[:execution_date],
+        test_plan: @test_plan,
+        test_case: @test_case
+      }
+      if test_case_execution_params[:issue_id]
+        create_params[:issue_id] = test_case_execution_params[:issue_id]
+      end
+      @test_case_execution = TestCaseExecution.new(create_params)
+      @test_case_execution.save_attachments params.permit(:attachments)[:attachments]
+      if @test_case_execution.valid?
+        render_attachment_warning_if_needed @test_case_execution
+        @test_case_execution.save
+        flash[:notice] = l(:notice_successful_create)
+        redirect_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
+      else
+        render :new, status: :unprocessable_entity
+      end
+    rescue
+      render 'forbidden', status: :unprocessable_entity
     end
   end
 
