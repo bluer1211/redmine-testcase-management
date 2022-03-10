@@ -339,4 +339,95 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_back_to_lists_link(project_test_plan_test_case_test_case_executions_path)
     end
   end
+
+  class Update < self
+
+    def setup
+      @test_plan = test_plans(:test_plans_003)
+      @test_case = test_cases(:test_cases_002)
+      @test_case_execution = test_case_executions(:test_case_executions_001)
+    end
+
+    def test_update
+      assert_no_difference("TestCase.count") do
+        put :update, params: {
+              project_id: projects(:projects_002).identifier,
+              test_plan_id: @test_plan.id,
+              test_case_id: @test_case.id,
+              id: @test_case_execution.id,
+              test_case_execution: {
+                result: true, user: 2, issue_id: issues(:issues_001).id,
+                comment: "dummy", execution_date: "2022-01-01"
+              }
+            }
+      end
+      assert_equal I18n.t(:notice_successful_update), flash[:notice]
+      assert_redirected_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
+    end
+
+    def test_update_with_nonexistent_project
+      put :update, params: {
+            project_id: NONEXISTENT_PROJECT_ID,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id
+          }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_project_not_found)
+      assert_back_to_lists_link(projects_path)
+    end
+
+    def test_update_with_nonexistent_test_plan
+      put :update, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id
+          }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_plan_not_found)
+      assert_back_to_lists_link(project_test_plans_path)
+    end
+
+    def test_update_with_nonexistent_test_case
+      put :update, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: NONEXISTENT_TEST_CASE_ID,
+            id: @test_case_execution.id
+          }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_not_found)
+      assert_back_to_lists_link(project_test_plan_test_cases_path)
+    end
+
+    def test_update_with_nonexistent_test_case_execution
+      put :update, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: NONEXISTENT_TEST_CASE_EXECUTION_ID
+          }
+      assert_response :missing
+      assert_flash_error I18n.t(:error_test_case_execution_not_found)
+      assert_back_to_lists_link(project_test_plan_test_case_test_case_executions_path)
+    end
+
+    def test_update_with_missing_params
+      assert_no_difference("TestCaseExecution.count") do
+        put :update, params: {
+              project_id: projects(:projects_002).identifier,
+              test_plan_id: @test_plan.id,
+              test_case_id: @test_case.id,
+              id: @test_case_execution.id,
+              test_case_execution: {
+                user: 2, issue_id: issues(:issues_001).id,
+                comment: "dummy", execution_date: "2022-01-01"
+              }
+            }
+      end
+      assert_response :unprocessable_entity
+      assert_flash_error I18n.t(:error_update_failure)
+    end
+  end
 end

@@ -84,24 +84,36 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   def update
-    @test_case_execution = TestCaseExecution.find(params.permit(:id)[:id])
-    @test_case_execution.execution_date = test_case_execution_params[:execution_date]
-    @test_case_execution.result = test_case_execution_params[:result]
-    @test_case_execution.comment = test_case_execution_params[:comment]
-    user = User.find(test_case_execution_params[:user])
-    @test_case_execution.user = user if user.present?
-    if test_case_execution_params[:issue_id].present?
-      issue = Issue.find(test_case_execution_params[:issue_id])
-      @test_case_execution.issue = issue if issue.present?
-    end
-    @test_case_execution.save_attachments permit_param(:attachments)
-    if @test_case_execution.save
-      render_attachment_warning_if_needed @test_case_execution
-      flash[:notice] = l(:notice_successful_update)
-      redirect_to project_test_plan_test_case_test_case_execution_path
-    else
-      flash.now[:error] = l(:error_update_failure)
-      render :edit
+    begin
+      @test_case_execution = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+                                                                       test_plan_id: @test_plan.id,
+                                                                       test_case_id: @test_case.id,
+                                                                       id: params.permit(:id)[:id]).first
+
+      unless @test_case_execution
+        raise ActiveRecord::RecordNotFound
+      end
+      @test_case_execution.execution_date = test_case_execution_params[:execution_date]
+      @test_case_execution.result = test_case_execution_params[:result]
+      @test_case_execution.comment = test_case_execution_params[:comment]
+      user = User.find(test_case_execution_params[:user])
+      @test_case_execution.user = user if user.present?
+      if test_case_execution_params[:issue_id].present?
+        issue = Issue.find(test_case_execution_params[:issue_id])
+        @test_case_execution.issue = issue if issue.present?
+      end
+      @test_case_execution.save_attachments permit_param(:attachments)
+      if @test_case_execution.save
+        render_attachment_warning_if_needed @test_case_execution
+        flash[:notice] = l(:notice_successful_update)
+        redirect_to project_test_plan_test_case_test_case_execution_path
+      else
+        flash.now[:error] = l(:error_update_failure)
+        render :edit, status: :unprocessable_entity
+      end
+    rescue
+      flash.now[:error] = l(:error_test_case_execution_not_found)
+      render 'forbidden', status: 404
     end
   end
 
