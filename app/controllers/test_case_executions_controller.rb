@@ -104,7 +104,7 @@ class TestCaseExecutionsController < ApplicationController
         issue = Issue.find(test_case_execution_params[:issue_id])
         @test_case_execution.issue = issue if issue.present?
       end
-      @test_case_execution.save_attachments permit_param(:attachments)
+      @test_case_execution.save_attachments params.require(:attachments).permit!
       if @test_case_execution.save
         render_attachment_warning_if_needed @test_case_execution
         flash[:notice] = l(:notice_successful_update)
