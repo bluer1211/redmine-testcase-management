@@ -79,11 +79,15 @@ class TestCasesControllerTest < ActionController::TestCase
   class Create < self
     def test_create
       assert_difference("TestCase.count") do
-        post :create, params: { project_id: projects(:projects_001).identifier,
-                                test_plan_id: test_plans(:test_plans_001).id,
-                                test_case: { test_plan_id: test_plans(:test_plans_001).id,
-                                             name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
-                                             user: 2, issue_status: 1 } }
+        post :create, params: {
+               project_id: projects(:projects_001).identifier,
+               test_plan_id: test_plans(:test_plans_001).id,
+               test_case: {
+                 test_plan_id: test_plans(:test_plans_001).id,
+                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                 user: 2, issue_status: 1
+               }
+             }
       end
       assert_equal I18n.t(:notice_successful_create), flash[:notice]
       assert_redirected_to project_test_plan_test_case_path(:id => TestCase.last.id)
@@ -91,33 +95,45 @@ class TestCasesControllerTest < ActionController::TestCase
 
     def test_create_with_nonexistent_project
       assert_no_difference("TestCase.count") do
-        post :create, params: { project_id: NONEXISTENT_PROJECT_ID,
-                                test_plan_id: test_plans(:test_plans_001).id,
-                                test_case: { test_plan_id: test_plans(:test_plans_001).id,
-                                             name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
-                                             user: 2, issue_status: 1 } }
+        post :create, params: {
+               project_id: NONEXISTENT_PROJECT_ID,
+               test_plan_id: test_plans(:test_plans_001).id,
+               test_case: {
+                 test_plan_id: test_plans(:test_plans_001).id,
+                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                 user: 2, issue_status: 1
+               }
+             }
       end
       assert_response :unprocessable_entity
     end
 
     def test_create_with_nonexistent_test_plan
       assert_no_difference("TestCase.count") do
-        post :create, params: { project_id: projects(:projects_001).identifier,
-                                test_plan_id: test_plans(:test_plans_001).id,
-                                test_case: { test_plan_id: NONEXISTENT_TEST_PLAN_ID,
-                                             name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
-                                             user: 2, issue_status: 1 } }
+        post :create, params: {
+               project_id: projects(:projects_001).identifier,
+               test_plan_id: test_plans(:test_plans_001).id,
+               test_case: {
+                 test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                 user: 2, issue_status: 1
+               }
+             }
       end
       assert_response :unprocessable_entity
     end
 
     def test_create_with_missing_params
       assert_no_difference("TestCase.count") do
-        post :create, params: { project_id: projects(:projects_001).identifier,
-                                test_plan_id: test_plans(:test_plans_001).id,
-                                test_case: { test_plan_id: test_plans(:test_plans_001).id,
-                                             name: "test",
-                                             user: 2, issue_status: 1 } }
+        post :create, params: {
+               project_id: projects(:projects_001).identifier,
+               test_plan_id: test_plans(:test_plans_001).id,
+               test_case: {
+                 test_plan_id: test_plans(:test_plans_001).id,
+                 name: "test",
+                 user: 2, issue_status: 1
+               }
+             }
       end
       assert_response :unprocessable_entity
     end
@@ -127,10 +143,11 @@ class TestCasesControllerTest < ActionController::TestCase
     def test_show
       test_case = test_cases(:test_cases_002)
       test_plan = test_plans(:test_plans_003)
-        get :show, params: { project_id: projects(:projects_002).identifier,
-                             test_plan_id: test_plan.id,
-                             id: test_case.id,
-                           }
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plan.id,
+            id: test_case.id
+          }
       assert_response :success
       assert_select "h2.inline-flex" do |h2|
         assert_equal "#{I18n.t(:label_test_cases)} \##{test_case.id}", h2.text
@@ -168,28 +185,31 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     def test_show_with_nonexistent_project
-      get :show, params: { project_id: NONEXISTENT_PROJECT_ID,
-                           test_plan_id: test_plans(:test_plans_002).id,
-                           id: test_cases(:test_cases_001).id,
-                         }
+      get :show, params: {
+            project_id: NONEXISTENT_PROJECT_ID,
+            test_plan_id: test_plans(:test_plans_002).id,
+            id: test_cases(:test_cases_001).id
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_project_not_found)
     end
 
     def test_show_with_nonexistent_test_plan
-      get :show, params: { project_id: projects(:projects_002).identifier,
-                           test_plan_id: NONEXISTENT_TEST_PLAN_ID,
-                           id: test_cases(:test_cases_001).id,
-                         }
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+            id: test_cases(:test_cases_001).id
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_test_plan_not_found)
     end
 
     def test_show_with_nonexistent_test_case
-      get :show, params: { project_id: projects(:projects_002).identifier,
-                           test_plan_id: test_plans(:test_plans_002).id,
-                           id: NONEXISTENT_TEST_CASE_ID,
-                         }
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plans(:test_plans_002).id,
+            id: NONEXISTENT_TEST_CASE_ID
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_test_case_not_found)
     end
@@ -200,10 +220,11 @@ class TestCasesControllerTest < ActionController::TestCase
     def test_edit
       test_plan = test_plans(:test_plans_002)
       test_case = test_cases(:test_cases_001)
-      get :edit, params: { project_id: projects(:projects_002).identifier,
-                           test_plan_id: test_plan.id,
-                           id: test_case.id
-                         }
+      get :edit, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plan.id,
+            id: test_case.id
+          }
       assert_response :success
       assert_select "div#content h2" do |h2|
         assert_equal "#{I18n.t(:permission_edit_test_case)} #{test_case.name}", h2.text
@@ -236,28 +257,31 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     def test_edit_with_nonexistent_project
-      get :edit, params: { project_id: NONEXISTENT_PROJECT_ID,
-                           test_plan_id: test_plans(:test_plans_002).id,
-                           id: test_cases(:test_cases_001).id,
-                         }
+      get :edit, params: {
+            project_id: NONEXISTENT_PROJECT_ID,
+            test_plan_id: test_plans(:test_plans_002).id,
+            id: test_cases(:test_cases_001).id
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_project_not_found)
     end
 
     def test_edit_with_nonexistent_test_plan
-      get :edit, params: { project_id: projects(:projects_002).identifier,
-                           test_plan_id: NONEXISTENT_TEST_PLAN_ID,
-                           id: test_cases(:test_cases_001).id,
-                         }
+      get :edit, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+            id: test_cases(:test_cases_001).id
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_test_plan_not_found)
     end
 
     def test_edit_with_nonexistent_test_case
-      get :edit, params: { project_id: projects(:projects_002).identifier,
-                           test_plan_id: test_plans(:test_plans_002).id,
-                           id: NONEXISTENT_TEST_CASE_ID,
-                         }
+      get :edit, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plans(:test_plans_002).id,
+            id: NONEXISTENT_TEST_CASE_ID
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_test_case_not_found)
     end
@@ -268,40 +292,47 @@ class TestCasesControllerTest < ActionController::TestCase
       test_case = test_cases(:test_cases_001)
       test_plan = test_plans(:test_plans_002)
       assert_no_difference("TestCase.count") do
-        put :update, params: { project_id: projects(:projects_003).identifier,
-                               test_plan_id: test_plan.id,
-                               id: test_case.id,
-                               test_case: { test_plan_id: test_plans(:test_plans_002).id,
-                                            name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
-                                            user: 2, issue_status: 1 } }
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: test_plan.id,
+              id: test_case.id,
+              test_case: {
+                test_plan_id: test_plans(:test_plans_002).id,
+                name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                user: 2, issue_status: 1
+              }
+            }
       end
       assert_equal I18n.t(:notice_successful_update), flash[:notice]
       assert_redirected_to project_test_plan_test_case_path(:id => test_case.id)
     end
 
     def test_update_with_nonexistent_project
-      put :update, params: { project_id: NONEXISTENT_PROJECT_ID,
-                             test_plan_id: test_plans(:test_plans_002).id,
-                             id: test_cases(:test_cases_001).id,
-                           }
+      put :update, params: {
+            project_id: NONEXISTENT_PROJECT_ID,
+            test_plan_id: test_plans(:test_plans_002).id,
+            id: test_cases(:test_cases_001).id
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_project_not_found)
     end
 
     def test_update_with_nonexistent_test_plan
-      put :update, params: { project_id: projects(:projects_002).identifier,
-                             test_plan_id: NONEXISTENT_TEST_PLAN_ID,
-                             id: test_cases(:test_cases_001).id,
-                           }
+      put :update, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+            id: test_cases(:test_cases_001).id
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_test_plan_not_found)
     end
 
     def test_update_with_nonexistent_test_case
-      put :update, params: { project_id: projects(:projects_002).identifier,
-                             test_plan_id: test_plans(:test_plans_002).id,
-                             id: NONEXISTENT_TEST_CASE_ID,
-                           }
+      put :update, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plans(:test_plans_002).id,
+            id: NONEXISTENT_TEST_CASE_ID
+          }
       assert_response :missing
       assert_flash_error I18n.t(:error_test_case_not_found)
     end
@@ -310,12 +341,16 @@ class TestCasesControllerTest < ActionController::TestCase
       test_case = test_cases(:test_cases_001)
       test_plan = test_plans(:test_plans_002)
       assert_no_difference("TestCase.count") do
-        put :update, params: { project_id: projects(:projects_003).identifier,
-                               test_plan_id: test_plan.id,
-                               id: test_case.id,
-                               test_case: { test_plan_id: test_plans(:test_plans_002).id,
-                                            name: "test",
-                                            user: 2, issue_status: 1 } }
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: test_plan.id,
+              id: test_case.id,
+              test_case: {
+                test_plan_id: test_plans(:test_plans_002).id,
+                name: "test",
+                user: 2, issue_status: 1
+              }
+            }
       end
       assert_response :unprocessable_entity
       assert_flash_error I18n.t(:error_update_failure)
@@ -325,10 +360,11 @@ class TestCasesControllerTest < ActionController::TestCase
   class Destroy < self
     def test_destroy
       assert_difference("TestCase.count", -1) do
-        delete :destroy, params: { project_id: projects(:projects_002).identifier,
-                                   test_plan_id: test_plans(:test_plans_002).id,
-                                   id: test_cases(:test_cases_001).id
-                                 }
+        delete :destroy, params: {
+                 project_id: projects(:projects_002).identifier,
+                 test_plan_id: test_plans(:test_plans_002).id,
+                 id: test_cases(:test_cases_001).id
+               }
       end
       assert_equal I18n.t(:notice_successful_delete), flash[:notice]
       assert_redirected_to project_test_plan_test_cases_path
@@ -336,10 +372,11 @@ class TestCasesControllerTest < ActionController::TestCase
 
     def test_destroy_with_nonexistent_project
       assert_no_difference("TestCase.count") do
-        delete :destroy, params: { project_id: NONEXISTENT_PROJECT_ID,
-                                   test_plan_id: test_plans(:test_plans_002).id,
-                                   id: test_cases(:test_cases_001).id,
-                                 }
+        delete :destroy, params: {
+                 project_id: NONEXISTENT_PROJECT_ID,
+                 test_plan_id: test_plans(:test_plans_002).id,
+                 id: test_cases(:test_cases_001).id
+               }
       end
       assert_response :missing
       assert_flash_error I18n.t(:error_project_not_found)
@@ -347,10 +384,11 @@ class TestCasesControllerTest < ActionController::TestCase
 
     def test_destroy_with_nonexistent_test_plan
       assert_no_difference("TestCase.count") do
-        delete :destroy, params: { project_id: projects(:projects_002).identifier,
-                                   test_plan_id: NONEXISTENT_TEST_PLAN_ID,
-                                   id: test_cases(:test_cases_001).id,
-                                 }
+        delete :destroy, params: {
+                 project_id: projects(:projects_002).identifier,
+                 test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+                 id: test_cases(:test_cases_001).id
+               }
       end
       assert_response :missing
       assert_flash_error I18n.t(:error_test_plan_not_found)
@@ -358,10 +396,11 @@ class TestCasesControllerTest < ActionController::TestCase
 
     def test_destroy_with_nonexistent_test_case
       assert_no_difference("TestCase.count") do
-        delete :destroy, params: { project_id: projects(:projects_002).identifier,
-                                   test_plan_id: test_plans(:test_plans_002).id,
-                                   id: NONEXISTENT_TEST_CASE_ID,
-                                 }
+        delete :destroy, params: {
+                 project_id: projects(:projects_002).identifier,
+                 test_plan_id: test_plans(:test_plans_002).id,
+                 id: NONEXISTENT_TEST_CASE_ID
+               }
       end
       assert_response :missing
       assert_flash_error I18n.t(:error_test_case_not_found)
@@ -370,10 +409,11 @@ class TestCasesControllerTest < ActionController::TestCase
     def test_destroy_dependent_test_case_executions
       assert_difference("TestCase.count", -1) do
         assert_difference("TestCaseExecution.count", -1) do
-          delete :destroy, params: { project_id: projects(:projects_002).identifier,
-                                     test_plan_id: test_plans(:test_plans_003).id,
-                                     id: test_cases(:test_cases_002).id
-                                   }
+          delete :destroy, params: {
+                   project_id: projects(:projects_002).identifier,
+                   test_plan_id: test_plans(:test_plans_003).id,
+                   id: test_cases(:test_cases_002).id
+                 }
         end
       end
       assert_equal I18n.t(:notice_successful_delete), flash[:notice]
