@@ -56,5 +56,9 @@
       <%= @test_case_execution.comment %>
     </div>
   </div>
-  <%= render partial: 'attachments/links', locals: {attachments: @test_case_execution.attachments, options: { deletable: User.current.logged? }} %>
+  <% if @test_case_execution.attachments.any? %>
+    <hr />
+    <p><strong><%=l(:label_attachment_plural)%></strong></p>
+    <%= link_to_attachments @test_case_execution, :thumbnails => true %>
+  <% end %>
 </div>

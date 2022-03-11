@@ -10,6 +10,8 @@ class TestCaseExecutionsController < ApplicationController
     prepare_user_candidates
   end
 
+  helper :attachments
+
   def index
     @test_case_executions = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
                                                                       test_plan_id: @test_plan.id,
