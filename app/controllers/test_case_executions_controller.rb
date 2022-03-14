@@ -45,7 +45,7 @@ class TestCaseExecutionsController < ApplicationController
         create_params[:issue_id] = test_case_execution_params[:issue_id]
       end
       @test_case_execution = TestCaseExecution.new(create_params)
-      @test_case_execution.save_attachments params.permit(:attachments)[:attachments]
+      @test_case_execution.save_attachments params.require(:attachments).permit!
       if @test_case_execution.valid?
         render_attachment_warning_if_needed @test_case_execution
         @test_case_execution.save
