@@ -77,7 +77,8 @@ class TestPlansController < ApplicationController
                               :end_date => test_plan_params[:end_date],
                               :user => User.find(test_plan_params[:user].to_i),
                               :estimated_bug => test_plan_params[:estimated_bug],
-                              :issue_status => IssueStatus.find(test_plan_params[:issue_status].to_i))
+                              :issue_status => IssueStatus.find(test_plan_params[:issue_status].to_i),
+                              :test_project => @test_project)
     if @test_plan.valid?
       @test_plan.save
       flash[:notice] = l(:notice_successful_create)
