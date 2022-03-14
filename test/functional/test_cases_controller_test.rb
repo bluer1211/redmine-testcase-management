@@ -2,7 +2,7 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class TestCasesControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issue_statuses
-  fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
+  fixtures :test_plans, :test_cases, :test_case_executions
 
   include ApplicationsHelper
 
@@ -13,7 +13,7 @@ class TestCasesControllerTest < ActionController::TestCase
   class Index < self
     def test_index
       get :index, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: projects(:projects_003).identifier,
             test_plan_id: test_plans(:test_plans_003).id
           }
       assert_response :success
@@ -42,7 +42,7 @@ class TestCasesControllerTest < ActionController::TestCase
                    ],
                    columns
       assert_select "div#content div.contextual a:first-child" do |a|
-        assert_equal new_project_test_plan_test_case_path(project_id: projects(:projects_002).identifier), a.first.attributes["href"].text
+        assert_equal new_project_test_plan_test_case_path(project_id: projects(:projects_003).identifier), a.first.attributes["href"].text
         assert_equal I18n.t(:label_test_case_new), a.text
       end
     end

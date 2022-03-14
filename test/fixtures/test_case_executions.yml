@@ -10,8 +10,8 @@ test_case_executions_001:
   test_plan_id: 3
   # test_case: test_cases_002
   test_case_id: 2
-  # test_project: test_projects_003
-  test_project_id: 3
+  # project: projects_003
+  project_id: 3
 test_case_executions_002:
   id: 2
   result: true
@@ -22,8 +22,8 @@ test_case_executions_002:
   test_plan_id: 3
   # test_case: test_cases_003
   test_case_id: 3
-  # test_project: test_projects_003
-  test_project_id: 3
+  # project: projects_003
+  project_id: 3
 test_case_executions_003:
   id: 3
   result: false
@@ -35,5 +35,5 @@ test_case_executions_003:
   test_plan_id: 3
   # test_case: test_cases_003
   test_case_id: 3
-  # test_project: test_projects_003
-  test_project_id: 3
+  # project: projects_003
+  project_id: 3

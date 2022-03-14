@@ -5,7 +5,9 @@ module TestCaseManagement
     extend ActiveSupport::Concern
 
     included do
-      has_one :test_project, dependent: :destroy
+      has_many :test_cases, dependent: :destroy
+      has_many :test_case_executions, dependent: :destroy
+      has_many :test_plans, dependent: :destroy
     end
   end
 end

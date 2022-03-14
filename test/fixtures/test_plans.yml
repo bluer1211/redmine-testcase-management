@@ -7,8 +7,8 @@ test_plans_001:
   user_id: 2
   estimated_bug: 10
   issue_status_id: 1
-  # test_project: test_projects_002
-  test_project_id: 2
+  # project: projects_001
+  project_id: 1
 test_plans_002:
   id: 2
   name: Test Plan (1 test case)
@@ -17,8 +17,8 @@ test_plans_002:
   user_id: 2
   estimated_bug: 10
   issue_status_id: 1
-  # test_project: test_projects_003
-  test_project_id: 3
+  # project: projects_003
+  project_id: 3
   #test_cases: test_cases_001
 test_plans_003:
   id: 3
@@ -28,6 +28,6 @@ test_plans_003:
   user_id: 2
   estimated_bug: 10
   issue_status_id: 1
-  # test_project: test_projects_003
-  test_project_id: 3
+  # project: projects_003
+  project_id: 3
   #test_cases: test_cases_002, test_cases_003

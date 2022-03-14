@@ -3,13 +3,6 @@ require 'test_helper'
 class TestPlanFlowTest < ActionDispatch::IntegrationTest
   fixtures :projects, :users, :issues, :issue_statuses
 
-  test "test_plans#index creates test_project automatically" do
-    assert_difference("TestProject.count") do
-      get "/projects/#{projects(:projects_001).identifier}/test_plans"
-    end
-    assert_response :success
-  end
-
   test "add new test plan" do
     url = "/projects/#{projects(:projects_001).identifier}/test_plans"
 

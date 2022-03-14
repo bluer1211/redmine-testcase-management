@@ -2,7 +2,7 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class TestCaseExecutionsControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issues, :issue_statuses
-  fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
+  fixtures :test_plans, :test_cases, :test_case_executions
 
   include ApplicationsHelper
 
@@ -14,7 +14,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class Index < self
     def test_index
       get :index, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: projects(:projects_003).identifier,
             test_plan_id: test_plans(:test_plans_003).id,
             test_case_id: test_cases(:test_cases_002).id
           }
@@ -114,7 +114,6 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_difference("TestCaseExecution.count") do
         post :create, params: {
                project_id: projects(:projects_002).identifier,
-               test_project_id: test_projects(:test_projects_003).id,
                test_plan_id: test_plans(:test_plans_002).id,
                test_case_id: test_cases(:test_cases_001).id,
                test_case_execution: {
@@ -200,7 +199,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_show
       get :show, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: projects(:projects_003).identifier,
             test_plan_id: @test_plan.id,
             test_case_id: @test_case.id,
             id: @test_case_execution.id
@@ -295,7 +294,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_edit
       get :edit, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: projects(:projects_003).identifier,
             test_plan_id: @test_plan.id,
             test_case_id: @test_case.id,
             id: @test_case_execution.id
@@ -385,7 +384,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_update
       assert_no_difference("TestCase.count") do
         put :update, params: {
-              project_id: projects(:projects_002).identifier,
+              project_id: projects(:projects_003).identifier,
               test_plan_id: @test_plan.id,
               test_case_id: @test_case.id,
               id: @test_case_execution.id,
@@ -413,7 +412,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_update_with_nonexistent_test_plan
       put :update, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: projects(:projects_003).identifier,
             test_plan_id: NONEXISTENT_TEST_PLAN_ID,
             test_case_id: @test_case.id,
             id: @test_case_execution.id
@@ -425,7 +424,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_update_with_nonexistent_test_case
       put :update, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: projects(:projects_003).identifier,
             test_plan_id: @test_plan.id,
             test_case_id: NONEXISTENT_TEST_CASE_ID,
             id: @test_case_execution.id
@@ -437,7 +436,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_update_with_nonexistent_test_case_execution
       put :update, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: projects(:projects_003).identifier,
             test_plan_id: @test_plan.id,
             test_case_id: @test_case.id,
             id: NONEXISTENT_TEST_CASE_EXECUTION_ID
@@ -450,7 +449,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_update_with_missing_params
       assert_no_difference("TestCaseExecution.count") do
         put :update, params: {
-              project_id: projects(:projects_002).identifier,
+              project_id: projects(:projects_003).identifier,
               test_plan_id: @test_plan.id,
               test_case_id: @test_case.id,
               id: @test_case_execution.id,
@@ -475,7 +474,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_destroy
       assert_difference("TestCaseExecution.count", -1) do
         delete :destroy, params: {
-                 project_id: projects(:projects_002).identifier,
+                 project_id: projects(:projects_003).identifier,
                  test_plan_id: @test_plan.id,
                  test_case_id: @test_case.id,
                  id: @test_case_execution.id
@@ -502,7 +501,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_destroy_with_nonexistent_test_plan
       assert_no_difference("TestCaseExecution.count") do
         delete :destroy, params: {
-                 project_id: projects(:projects_002).identifier,
+                 project_id: projects(:projects_003).identifier,
                  test_plan_id: NONEXISTENT_TEST_PLAN_ID,
                  test_case_id: @test_case.id,
                  id: @test_case_execution.id
@@ -516,7 +515,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_destroy_with_nonexistent_test_case
       assert_no_difference("TestCaseExecution.count") do
         delete :destroy, params: {
-                 project_id: projects(:projects_002).identifier,
+                 project_id: projects(:projects_003).identifier,
                  test_plan_id: @test_plan.id,
                  test_case_id: NONEXISTENT_TEST_CASE_ID,
                  id: @test_case_execution.id
@@ -530,7 +529,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_destroy_with_nonexistent_test_case_execution
       assert_no_difference("TestCaseExecution.count") do
         delete :destroy, params: {
-                 project_id: projects(:projects_002).identifier,
+                 project_id: projects(:projects_003).identifier,
                  test_plan_id: @test_plan.id,
                  test_case_id: @test_case.id,
                  id: NONEXISTENT_TEST_CASE_EXECUTION_ID
@@ -545,7 +544,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_difference("TestCaseExecution.count", -1) do
         assert_difference("TestCaseExecution.count", -1) do
           delete :destroy, params: {
-                   project_id: projects(:projects_002).identifier,
+                   project_id: projects(:projects_003).identifier,
                    test_plan_id: @test_plan.id,
                    test_case_id: @test_case.id,
                    id: @test_case_execution.id

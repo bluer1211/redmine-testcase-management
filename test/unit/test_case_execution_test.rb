@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 class TestCaseExecutionTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :roles, :issues, :issue_statuses
-  fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
+  fixtures :projects, :test_plans, :test_cases, :test_case_executions
 
   def test_initialize
     test_case_execution = TestCaseExecution.new
@@ -92,7 +92,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   def test_empty_association
     test_case_execution = TestCaseExecution.new
     assert_nil test_case_execution.user
-    assert_nil test_case_execution.test_project
+    assert_nil test_case_execution.project
     assert_nil test_case_execution.issue
     assert_nil test_case_execution.test_plan
     assert_nil test_case_execution.test_case
@@ -104,7 +104,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     assert_equal users(:users_002), test_case_execution.user
     assert_equal test_cases(:test_cases_002), test_case_execution.test_case
     # T.B.D.
-    #assert_equal 2, test_case_execution.test_project.id
+    #assert_equal 2, test_case_execution.project.id
   end
 
   def test_no_issue

@@ -2,7 +2,7 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class TestPlansControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issue_statuses
-  fixtures :test_projects, :test_plans, :test_cases, :test_case_executions
+  fixtures :test_plans, :test_cases, :test_case_executions
 
   include ApplicationsHelper
 
@@ -10,7 +10,7 @@ class TestPlansControllerTest < ActionController::TestCase
   NONEXISTENT_TEST_PLAN_ID = 404
 
   def setup
-    @project_id = test_projects(:test_projects_002).id
+    @project_id = projects(:projects_002).id
   end
 
   class Index < self
@@ -212,7 +212,7 @@ class TestPlansControllerTest < ActionController::TestCase
   class Create < self
     def test_create_test_plan
       assert_difference("TestPlan.count") do
-        project_id = test_projects(:test_projects_002).project_id
+        project_id = projects(:projects_002).id
         post :create, params: { project_id: project_id, test_plan: { name: "test", user: 2, issue_status: 1 } }
       end
       assert_equal I18n.t(:notice_successful_create), flash[:notice]
@@ -221,7 +221,7 @@ class TestPlansControllerTest < ActionController::TestCase
 
     def test_create_without_test_plan_name
       assert_no_difference("TestPlan.count") do
-        project_id = test_projects(:test_projects_002).project_id
+        project_id = projects(:projects_002).id
         post :create, params: { project_id: project_id, test_plan: { user: 2, issue_status: 1 } }
       end
       assert_response :unprocessable_entity
@@ -229,7 +229,7 @@ class TestPlansControllerTest < ActionController::TestCase
 
     def test_create_with_maximum_test_plan_name
       assert_no_difference("TestPlan.count") do
-        project_id = test_projects(:test_projects_002).project_id
+        project_id = projects(:projects_002).id
         post :create, params: { project_id: project_id, test_plan: { name: "t" * 256, user: 2, issue_status: 1 } }
       end
       assert_response :unprocessable_entity
