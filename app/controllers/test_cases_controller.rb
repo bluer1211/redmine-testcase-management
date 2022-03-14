@@ -15,7 +15,8 @@ class TestCasesController < ApplicationController
   helper :attachments
 
   def index
-    @test_cases = TestCase.all
+    @test_cases = TestCase.joins(:test_plan).where(test_project_id: @test_project.id,
+                                                   test_plan_id: @test_plan.id)
   end
 
   def new
