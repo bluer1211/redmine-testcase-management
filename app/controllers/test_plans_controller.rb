@@ -115,6 +115,10 @@ class TestPlansController < ApplicationController
     begin
       @project = Project.find(id_or_identifier)
       @test_project = TestProject.where(:project_id => @project.id).first
+      unless @test_project.present?
+        # automatically create it!
+        @test_project = TestProject.create(:project_id => @project.id)
+      end
     rescue ArgumentError
       @project = project = Project.where(:identifier => id_or_identifier).first
       @test_project = TestProject.where(:project_id => @project.id).first
