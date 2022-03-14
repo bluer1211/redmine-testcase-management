@@ -25,7 +25,7 @@ class TestCasesControllerTest < ActionController::TestCase
           cases << td.text
         end
       end
-      assert_equal test_cases.pluck(:name), cases
+      assert_equal test_cases(:test_cases_002, :test_cases_003).pluck(:name), cases
       columns = []
       assert_select "thead tr:first-child th" do |ths|
         ths.each do |th|
