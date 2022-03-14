@@ -2,6 +2,7 @@ require 'test_helper'
 
 class TestPlanFlowTest < ActionDispatch::IntegrationTest
   fixtures :projects, :users, :issues, :issue_statuses
+  fixtures :test_plans
 
   test "add new test plan" do
     url = "/projects/#{projects(:projects_001).identifier}/test_plans"
@@ -16,6 +17,26 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to :controller => 'test_plans', :action => 'show', :id => test_plan.id
   end
+
+  test "edit test plan" do
+    url = "/projects/#{projects(:projects_001).identifier}/test_plans/#{test_plans(:test_plans_001).id}"
+
+    get url
+    assert_response :success
+
+    get "#{url}/edit"
+    assert_response :success
+  end
+
+  test "delete test plan" do
+    url = "/projects/#{projects(:projects_001).identifier}/test_plans/#{test_plans(:test_plans_001).id}"
+    get url
+    assert_response :success
+
+    delete url
+    assert_redirected_to :controller => 'test_plans', :action => 'index'
+  end
+
   private
 
   def create_test_plan(params={})
