@@ -111,4 +111,22 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     test_case_execution = test_case_executions(:test_case_executions_002)
     assert_nil test_case_execution.issue
   end
+
+  def test_test_plan_should_editable_by_author
+    Role.all.each do |role|
+      role.remove_permission! :edit_issues
+      role.add_permission! :edit_own_issues
+    end
+
+    test_case_execution = test_case_executions(:test_case_executions_001)
+    user = users(:users_002)
+
+    assert_equal user, test_case_execution.user
+    assert_equal [true, true, false],
+                 [
+                   test_case_execution.attributes_editable?(user), #author
+                   test_case_execution.attributes_editable?(users(:users_001)), #admin
+                   test_case_execution.attributes_editable?(users(:users_003)), #other
+                 ]
+  end
 end

@@ -1,4 +1,6 @@
 class TestPlan < ActiveRecord::Base
+  include TestCaseManagement::InheritIssuePermissions
+
   belongs_to :user
   belongs_to :issue_status
   belongs_to :project
@@ -13,12 +15,4 @@ class TestPlan < ActiveRecord::Base
   validates_associated :test_case_executions
 
   validates_length_of :name, :maximum => 255
-
-  def editable?
-    true
-  end
-
-  def deletable?
-    true
-  end
 end

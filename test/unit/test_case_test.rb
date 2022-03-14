@@ -159,7 +159,6 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_equal 1, test_cases(:test_cases_001).test_case_executions.size
   end
 
-
   def test_test_case_should_editable_by_author
     Role.all.each do |role|
       role.remove_permission! :edit_issues
