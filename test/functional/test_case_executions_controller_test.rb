@@ -81,6 +81,34 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     end
   end
 
+  class New < self
+    def setup
+      @project = projects(:projects_002)
+      @test_plan = test_plans(:test_plans_002)
+      @test_case = test_cases(:test_cases_001)
+    end
+
+    def test_new
+      assert_no_difference("TestCaseExecution.count") do
+        get :new, params: {
+              project_id: @project.identifier,
+              test_plan_id: @test_plan.id,
+              test_case_id: @test_case.id
+            }
+        #pp @response
+        assert_response :success
+        assert_select "div#content h2" do |h2|
+          assert_equal I18n.t(:label_test_case_execution_new), h2.text
+        end
+        assert_select "select[name='test_case_execution[result]']", 1
+        assert_select "select[name='test_case_execution[user]']", 1
+        assert_select "input[name='test_case_execution[execution_date]']", 1
+        assert_select "input[name='test_case_execution[issue_id]']", 1
+        assert_select "textarea[name='test_case_execution[comment]']", 1
+      end
+    end
+  end
+
   class Create < self
     def test_create
       assert_difference("TestCaseExecution.count") do
