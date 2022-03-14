@@ -39,7 +39,8 @@ class TestCaseExecutionsController < ApplicationController
         comment: test_case_execution_params[:comment],
         execution_date: test_case_execution_params[:execution_date],
         test_plan: @test_plan,
-        test_case: @test_case
+        test_case: @test_case,
+        test_project: @test_project
       }
       if test_case_execution_params[:issue_id]
         create_params[:issue_id] = test_case_execution_params[:issue_id]
