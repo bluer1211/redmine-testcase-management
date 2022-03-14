@@ -85,7 +85,8 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_create
       assert_difference("TestCaseExecution.count") do
         post :create, params: {
-               project_id: projects(:projects_003).identifier,
+               project_id: projects(:projects_002).identifier,
+               test_project_id: test_projects(:test_projects_003).id,
                test_plan_id: test_plans(:test_plans_002).id,
                test_case_id: test_cases(:test_cases_001).id,
                test_case_execution: {
