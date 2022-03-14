@@ -41,18 +41,28 @@
     <div class="contextual">
       <%= link_to l(:label_added), new_project_test_plan_test_case_path(test_plan_id: @test_plan.id) %>
     </div>
-    <p><%=l(:label_test_cases)%></p>
-    <table class="list issues odd-even">
-      <tbody>
-        <% @test_plan.test_cases.each do |test_case| %>
+    <% if @test_plan.test_cases.any? %>
+      <p><%=l(:label_test_cases)%></p>
+      <table class="list issues odd-even">
+        <thead>
+          <tr>
+            <th><%=l(:field_name)%></th>
+            <th><%=l(:field_status)%></th>
+            <th><%=l(:field_user)%></th>
+            <th><%=l(:field_scheduled_date)%></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @test_plan.test_cases.each do |test_case| %>
           <tr class="list issue">
             <td><%= link_to test_case.name, project_test_plan_test_case_url(test_plan_id: @test_plan.id, id: test_case.id) %></td>
             <td><%= test_case.issue_status.name %></td>
             <td><%= test_case.user.name %></td>
             <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
   </div>
 </div>
