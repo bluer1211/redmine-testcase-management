@@ -22,4 +22,16 @@ class TestCase < ActiveRecord::Base
   def deletable?
     true
   end
+
+  def attachments_visible?(user=User.current)
+    true
+  end
+
+  def attachments_editable?(user=User.current)
+    true
+  end
+
+  def attachments_deletable?(user=User.current)
+    true
+  end
 end

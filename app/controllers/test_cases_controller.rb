@@ -12,6 +12,8 @@ class TestCasesController < ApplicationController
     prepare_test_plan_candidates
   end
 
+  helper :attachments
+
   def index
     @test_cases = TestCase.all
   end
@@ -36,6 +38,9 @@ class TestCasesController < ApplicationController
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected],
                                 :issue_status => IssueStatus.find(test_case_params[:issue_status]))
+      if params[:attachments].present?
+        @test_case.save_attachments params.require(:attachments).permit!
+      end
       if @test_case.valid?
         @test_case.save
         flash[:notice] = l(:notice_successful_create)
@@ -70,6 +75,9 @@ class TestCasesController < ApplicationController
     update_params[:user_id] = user.id if user.present?
     issue_status = IssueStatus.find(test_case_params[:issue_status])
     update_params[:issue_status_id] = issue_status.id if issue_status.present?
+    if params[:attachments].present?
+      @test_case.save_attachments params.require(:attachments).permit!
+    end
     if @test_case.update(update_params)
       flash[:notice] = l(:notice_successful_update)
       redirect_to project_test_plan_test_case_path
@@ -109,5 +117,4 @@ class TestCasesController < ApplicationController
                                       :expected,
                                       :issue_status)
   end
-
 end
