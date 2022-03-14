@@ -32,9 +32,21 @@ git clone \
 cd redmine
 
 ln -s ${source_dir} plugins/testcase_management
-ln -s \
-   ../plugins/testcase_management/config/database.yml.example.sqlite3 \
-   config/database.yml
+case $1 in
+    postgresql)
+	sed -e 's/localhost/postgres/' \
+	    plugins/testcase_management/config/database.yml.example.postgresql | tee config/database.yml
+	shift
+	;;
+    *)
+	ln -s \
+	   ../plugins/testcase_management/config/database.yml.example.sqlite3 \
+	   config/database.yml
+	shift
+	;;
+esac
+
+cat config/database.yml
 cp plugins/testcase_management/test/fixtures/*.yml test/fixtures/
 bundle install
 bin/rails db:create
