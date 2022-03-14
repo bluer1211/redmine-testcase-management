@@ -158,4 +158,23 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_save test_case
     assert_equal 1, test_cases(:test_cases_001).test_case_executions.size
   end
+
+
+  def test_test_case_should_editable_by_author
+    Role.all.each do |role|
+      role.remove_permission! :edit_issues
+      role.add_permission! :edit_own_issues
+    end
+
+    test_case = test_cases(:test_cases_001)
+    user = users(:users_002)
+
+    assert_equal user, test_case.user
+    assert_equal [true, true, false],
+                 [
+                   test_case.attributes_editable?(user), #author
+                   test_case.attributes_editable?(users(:users_001)), #admin
+                   test_case.attributes_editable?(users(:users_003)), #other
+                 ]
+  end
 end
