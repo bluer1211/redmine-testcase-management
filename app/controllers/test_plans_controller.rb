@@ -9,7 +9,7 @@ class TestPlansController < ApplicationController
 
   def index
     begin
-      find_or_create_test_project(params.permit(:project_id)[:project_id])
+      find_project(params.permit(:project_id)[:project_id])
       @test_plans = TestPlan.all
     rescue
       flash.now[:error] = l(:error_project_not_found)
@@ -19,7 +19,7 @@ class TestPlansController < ApplicationController
 
   def show
     begin
-      find_or_create_test_project(params.permit(:project_id)[:project_id])
+      find_project(params.permit(:project_id)[:project_id])
       begin
         @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
       rescue
@@ -34,7 +34,7 @@ class TestPlansController < ApplicationController
 
   def edit
     begin
-      find_or_create_test_project(params.permit(:project_id)[:project_id])
+      find_project(params.permit(:project_id)[:project_id])
       begin
         @test_plan = TestPlan.find(params.permit(:id)[:id])
       rescue
@@ -78,7 +78,7 @@ class TestPlansController < ApplicationController
                               :user => User.find(test_plan_params[:user].to_i),
                               :estimated_bug => test_plan_params[:estimated_bug],
                               :issue_status => IssueStatus.find(test_plan_params[:issue_status].to_i),
-                              :test_project => @test_project)
+                              :project => @project)
     if @test_plan.valid?
       @test_plan.save
       flash[:notice] = l(:notice_successful_create)
@@ -90,7 +90,7 @@ class TestPlansController < ApplicationController
 
   def destroy
     begin
-      find_or_create_test_project(params.permit(:project_id)[:project_id])
+      find_project(params.permit(:project_id)[:project_id])
       begin
         @test_plan = TestPlan.find(params.permit(:id)[:id])
         if @test_plan.destroy
@@ -112,27 +112,8 @@ class TestPlansController < ApplicationController
 
   private
 
-  def find_or_create_test_project(id_or_identifier)
-    begin
-      @project = Project.find(id_or_identifier)
-      @test_project = TestProject.where(:project_id => @project.id).first
-      unless @test_project.present?
-        # automatically create it!
-        @test_project = TestProject.create(:project_id => @project.id)
-      end
-    rescue ArgumentError
-      @project = project = Project.where(:identifier => id_or_identifier).first
-      @test_project = TestProject.where(:project_id => @project.id).first
-      unless @test_project.present?
-        # automatically create it!
-        @test_project = TestProject.create(:project_id => @project.id)
-      end
-    end
-  end
-
   def test_plan_params
     params.require(:test_plan).permit(:project_id,
-                                      :test_project_id,
                                       :name,
                                       :user,
                                       :begin_date,

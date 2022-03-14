@@ -1,7 +1,7 @@
 class TestPlan < ActiveRecord::Base
   belongs_to :user
   belongs_to :issue_status
-  belongs_to :test_project
+  belongs_to :project
   has_many :test_case_executions, dependent: :destroy
   has_many :test_cases, dependent: :destroy
 

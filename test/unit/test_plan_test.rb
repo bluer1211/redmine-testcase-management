@@ -3,7 +3,7 @@ require File.expand_path('../../test_helper', __FILE__)
 class TestPlanTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :roles, :issue_statuses
-  fixtures :test_projects, :test_plans, :test_cases
+  fixtures :projects, :test_plans, :test_cases
 
   def test_initialize
     test_plan = TestPlan.new
@@ -53,9 +53,9 @@ class TestPlanTest < ActiveSupport::TestCase
     end
   end
 
-  def test_missing_test_project
+  def test_missing_project
     assert_raises ActiveRecord::RecordNotFound do
-      TestPlan.create(:test_project => TestProject.find(999))
+      TestPlan.create(:project => Project.find(999))
     end
   end
 
@@ -86,7 +86,7 @@ class TestPlanTest < ActiveSupport::TestCase
     test_plan = TestPlan.new
     assert_nil test_plan.user
     assert_nil test_plan.issue_status
-    assert_nil test_plan.test_project
+    assert_nil test_plan.project
     assert_equal [], test_plan.test_cases.pluck(:id)
     assert_equal [], test_plan.test_case_executions.pluck(:id)
   end
@@ -123,7 +123,7 @@ class TestPlanTest < ActiveSupport::TestCase
                                          :expected => "expected situation",
                                          :environment => "Debian GNU/Linux",
                                          :test_plan => test_plan,
-                                         :test_project => test_projects(:test_projects_001),
+                                         :project => projects(:projects_001),
                                          :user => users(:users_001),
                                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_save test_plan
@@ -139,7 +139,7 @@ class TestPlanTest < ActiveSupport::TestCase
                                          :expected => "expected situation",
                                          :environment => "Debian GNU/Linux",
                                          :test_plan => test_plan,
-                                         :test_project => test_projects(:test_projects_001),
+                                         :project => projects(:projects_001),
                                          :user => users(:users_001),
                                          :issue_status => issue_statuses(:issue_statuses_001))
     assert_save test_plan

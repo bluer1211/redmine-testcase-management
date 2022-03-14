@@ -2,7 +2,7 @@ class TestCaseExecutionsController < ApplicationController
 
   include ApplicationsHelper
 
-  before_action :find_test_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
+  before_action :find_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
   before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case_id, :only => [:show, :edit, :index, :update, :destroy]
 
@@ -13,13 +13,13 @@ class TestCaseExecutionsController < ApplicationController
   helper :attachments
 
   def index
-    @test_case_executions = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+    @test_case_executions = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
                                                                       test_plan_id: @test_plan.id,
                                                                       test_case_id: @test_case.id)
   end
 
   def new
-    find_test_project(params.permit(:project_id)[:project_id])
+    find_project(params.permit(:project_id)[:project_id])
     @test_case_execution = TestCaseExecution.new
     # FIXME:
     # @test_plan = @test_case_execution.test_plan
@@ -30,7 +30,7 @@ class TestCaseExecutionsController < ApplicationController
 
   def create
     begin
-      find_test_project(params.permit(:project_id)[:project_id])
+      find_project(params.permit(:project_id)[:project_id])
       @test_plan = TestPlan.find(permit_param(:test_plan_id))
       @test_case = TestCase.find(permit_param(:test_case_id))
       create_params = {
@@ -40,7 +40,7 @@ class TestCaseExecutionsController < ApplicationController
         execution_date: test_case_execution_params[:execution_date],
         test_plan: @test_plan,
         test_case: @test_case,
-        test_project: @test_project
+        project: @project,
       }
       if test_case_execution_params[:issue_id]
         create_params[:issue_id] = test_case_execution_params[:issue_id]
@@ -63,7 +63,7 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   def show
-    @test_case_execution = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+    @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
                                                                      test_plan_id: @test_plan.id,
                                                                      test_case_id: @test_case.id,
                                                                      id: params.permit(:id)[:id]).first
@@ -76,7 +76,7 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   def edit
-    @test_case_execution = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+    @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
                                                                      test_plan_id: @test_plan.id,
                                                                      test_case_id: @test_case.id,
                                                                      id: params.permit(:id)[:id]).first
@@ -90,7 +90,7 @@ class TestCaseExecutionsController < ApplicationController
 
   def update
     begin
-      @test_case_execution = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+      @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
                                                                        test_plan_id: @test_plan.id,
                                                                        test_case_id: @test_case.id,
                                                                        id: params.permit(:id)[:id]).first
@@ -126,7 +126,7 @@ class TestCaseExecutionsController < ApplicationController
 
   def destroy
     begin
-      @test_case_execution = TestCaseExecution.joins(:test_case).where(test_project_id: @test_project.id,
+      @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
                                                                        test_plan_id: @test_plan.id,
                                                                        test_case_id: @test_case.id,
                                                                        id: params.permit(:id)[:id]).first
@@ -155,7 +155,6 @@ class TestCaseExecutionsController < ApplicationController
 
   def test_case_execution_params
     params.require(:test_case_execution).permit(:project_id,
-                                                :test_project_id,
                                                 :test_plan_id,
                                                 :test_case_id,
                                                 :user,

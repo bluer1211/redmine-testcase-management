@@ -2,7 +2,7 @@ class TestCasesController < ApplicationController
 
   include ApplicationsHelper
 
-  before_action :find_test_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
+  before_action :find_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
   before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
 
@@ -15,7 +15,7 @@ class TestCasesController < ApplicationController
   helper :attachments
 
   def index
-    @test_cases = TestCase.joins(:test_plan).where(test_project_id: @test_project.id,
+    @test_cases = TestCase.joins(:test_plan).where(project_id: @project.id,
                                                    test_plan_id: @test_plan.id)
   end
 
@@ -30,7 +30,7 @@ class TestCasesController < ApplicationController
 
   def create
     begin
-      find_test_project(params.permit(:project_id)[:project_id])
+      find_project(params.permit(:project_id)[:project_id])
       @test_case = TestCase.new(:name => test_case_params[:name],
                                 :scheduled_date => test_case_params[:scheduled_date],
                                 :user => User.find(test_case_params[:user]),
@@ -108,7 +108,6 @@ class TestCasesController < ApplicationController
 
   def test_case_params
     params.require(:test_case).permit(:project_id,
-                                      :test_project_id,
                                       :test_plan_id,
                                       :name,
                                       :user,

@@ -1,11 +1,9 @@
 module ApplicationsHelper
-  def find_test_project(id_or_identifier)
+  def find_project(id_or_identifier)
     begin
       @project = Project.find(id_or_identifier)
-      @test_project = TestProject.where(:project_id => @project.id).first
     rescue ArgumentError
-      @project = project = Project.where(:identifier => id_or_identifier).first
-      @test_project = TestProject.where(:project_id => @project.id).first
+      @project = project = Project.find(:identifier => id_or_identifier).first
     end
   end
 
@@ -38,10 +36,9 @@ module ApplicationsHelper
     end
   end
 
-  def find_test_project_id
+  def find_project_id
     @project = Project.where(:identifier => params[:project_id]).first
     raise ActiveRecord::RecordNotFound unless @project
-    @test_project = TestProject.where(:project_id => @project.id).first
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_project_not_found)
     render 'forbidden', status: 404
