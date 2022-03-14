@@ -18,7 +18,7 @@ class TestCasesControllerTest < ActionController::TestCase
           }
       assert_response :success
       # match all test cases
-      assert_select "tbody tr", 3
+      assert_select "tbody tr", 2
       cases = []
       assert_select "tbody tr td:first-child" do |tds|
         tds.each do |td|
