@@ -2,8 +2,9 @@ require File.expand_path("../../test_helper", __FILE__)
 
 class TestPlanTest < ActiveSupport::TestCase
 
-  fixtures :projects, :users, :members, :roles, :issue_statuses
-  fixtures :projects, :test_plans, :test_cases
+  fixtures :projects, :users, :members, :member_roles, :roles, :issue_statuses,
+           :groups_users, :trackers, :projects_trackers, :enabled_modules
+  fixtures :test_plans, :test_cases
 
   def test_initialize
     test_plan = TestPlan.new
@@ -146,6 +147,41 @@ class TestPlanTest < ActiveSupport::TestCase
         test_plan.destroy
       end
     end
+  end
+
+  # permissions
+
+  def assert_visibility_match(user, test_plans)
+    assert_equal TestPlan.all.select {|test_plan| test_plan.visible?(user)}.collect(&:id).sort,
+                 test_plans.collect(&:id).sort
+  end
+
+  def test_visible_scope_for_anonymous
+    # Anonymous user should see test_plans of public projects only
+    test_plans = TestPlan.visible(User.anonymous).to_a
+    assert_equal [true, nil],
+                 [test_plans.any?,
+                  test_plans.detect {|test_plan| !test_plan.project.is_public?}]
+    assert_visibility_match User.anonymous, test_plans
+  end
+
+  def test_visible_scope_for_anonymous_without_view_issues_permissions
+    # Anonymous user should not see test_plans without permission
+    Role.anonymous.remove_permission!(:view_issues)
+    test_plans = TestPlan.visible(User.anonymous).to_a
+    assert test_plans.empty?
+    assert_visibility_match User.anonymous, test_plans
+  end
+
+  def test_visible_scope_for_anonymous_without_view_issues_permissions_and_membership
+    Role.anonymous.remove_permission!(:view_issues)
+    Member.create!(:project_id => 3, :principal => Group.anonymous, :role_ids => [2])
+
+    test_plans = TestPlan.visible(User.anonymous).all
+    assert_equal [true, [3]],
+                 [test_plans.any?,
+                  test_plans.map(&:project_id).uniq.sort]
+    assert_visibility_match User.anonymous, test_plans
   end
 
   def test_test_plan_should_editable_by_author

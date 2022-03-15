@@ -15,6 +15,11 @@ class TestCase < ActiveRecord::Base
 
   validates_associated :test_case_executions
 
+  scope :visible, (lambda do |*args|
+    joins(:project).
+    where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
+  end)
+
   def attachments_visible?(user=User.current)
     true
   end

@@ -12,6 +12,11 @@ class TestCaseExecution < ActiveRecord::Base
   validates :comment, presence: true
   validates :user, presence: true
 
+  scope :visible, (lambda do |*args|
+    joins(:project).
+    where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
+  end)
+
   def editable?
     true
   end

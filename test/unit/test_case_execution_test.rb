@@ -2,8 +2,9 @@ require File.expand_path("../../test_helper", __FILE__)
 
 class TestCaseExecutionTest < ActiveSupport::TestCase
 
-  fixtures :projects, :users, :members, :roles, :issues, :issue_statuses
-  fixtures :projects, :test_plans, :test_cases, :test_case_executions
+  fixtures :projects, :users, :members, :member_roles, :roles, :issues, :issue_statuses,
+           :groups_users, :trackers, :projects_trackers, :enabled_modules
+  fixtures :test_plans, :test_cases, :test_case_executions
 
   def test_initialize
     test_case_execution = TestCaseExecution.new
@@ -110,6 +111,40 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   def test_no_issue
     test_case_execution = test_case_executions(:test_case_executions_002)
     assert_nil test_case_execution.issue
+  end
+
+  # permissions
+
+  def assert_visibility_match(user, test_case_executions)
+    assert_equal TestCaseExecution.all.select {|test_case_execution| test_case_execution.visible?(user)}.collect(&:id).sort,
+                 test_case_executions.collect(&:id).sort
+  end
+
+  def test_visible_scope_for_anonymous
+    # Anonymous user should see test_case_executions of public projects only
+    test_case_executions = TestCaseExecution.visible(User.anonymous).to_a
+    assert test_case_executions.any?
+    assert_nil test_case_executions.detect {|test_case_execution| !test_case_execution.project.is_public?}
+    assert_visibility_match User.anonymous, test_case_executions
+  end
+
+  def test_visible_scope_for_anonymous_without_view_issues_permissions
+    # Anonymous user should not see test_case_executions without permission
+    Role.anonymous.remove_permission!(:view_issues)
+    test_case_executions = TestCaseExecution.visible(User.anonymous).to_a
+    assert test_case_executions.empty?
+    assert_visibility_match User.anonymous, test_case_executions
+  end
+
+  def test_visible_scope_for_anonymous_without_view_issues_permissions_and_membership
+    Role.anonymous.remove_permission!(:view_issues)
+    Member.create!(:project_id => 3, :principal => Group.anonymous, :role_ids => [2])
+
+    test_case_executions = TestCaseExecution.visible(User.anonymous).all
+    assert_equal [true, [3]],
+                 [test_case_executions.any?,
+                  test_case_executions.map(&:project_id).uniq.sort]
+    assert_visibility_match User.anonymous, test_case_executions
   end
 
   def test_test_plan_should_editable_by_author

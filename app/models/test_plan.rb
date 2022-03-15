@@ -15,4 +15,9 @@ class TestPlan < ActiveRecord::Base
   validates_associated :test_case_executions
 
   validates_length_of :name, :maximum => 255
+
+  scope :visible, (lambda do |*args|
+    joins(:project).
+    where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
+  end)
 end

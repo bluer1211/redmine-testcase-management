@@ -31,3 +31,24 @@ test_plans_003:
   # project: projects_003
   project_id: 3
   #test_cases: test_cases_002, test_cases_003
+test_plans_004:
+  id: 4
+  name: Test Plan in private project
+  begin_date: 2022-02-01 00:00:00 +09:00
+  end_date: 2022-02-28 00:00:00 +09:00
+  user_id: 3
+  estimated_bug: 10
+  issue_status_id: 1
+  # project: projects_005
+  project_id: 5
+  #test_cases: test_cases_004
+test_plans_005:
+  id: 5
+  name: Test Plan (some test cases)
+  begin_date: 2022-02-01 00:00:00 +09:00
+  end_date: 2022-02-28 00:00:00 +09:00
+  user_id: 2
+  estimated_bug: 10
+  issue_status_id: 1
+  # project: projects_001
+  project_id: 1
