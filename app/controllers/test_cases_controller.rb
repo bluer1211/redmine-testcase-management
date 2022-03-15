@@ -14,11 +14,13 @@ class TestCasesController < ApplicationController
 
   helper :attachments
 
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_cases
   def index
     @test_cases = TestCase.joins(:test_plan).where(project_id: @project.id,
                                                    test_plan_id: @test_plan.id)
   end
 
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/new
   def new
     @test_case = TestCase.new
     if params.permit(:test_plan_id)[:test_plan_id]
@@ -28,6 +30,7 @@ class TestCasesController < ApplicationController
     end
   end
 
+  # POST /projects/:project_id/test_plans/:test_plan_id/test_cases
   def create
     begin
       find_project(params.permit(:project_id)[:project_id])
@@ -54,15 +57,18 @@ class TestCasesController < ApplicationController
     end
   end
 
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def show
     @test_case = TestCase.find(params.permit(:id)[:id])
   end
 
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id/edit
   def edit
     @test_case = TestCase.find(params.permit(:id)[:id])
     @test_plan = @test_case.test_plan
   end
 
+  # PUT /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def update
     @test_case = TestCase.find(params.permit(:id)[:id])
     update_params = {
@@ -88,6 +94,7 @@ class TestCasesController < ApplicationController
     end
   end
 
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def destroy
     begin
       @test_case = TestCase.find(params.permit(:id)[:id])

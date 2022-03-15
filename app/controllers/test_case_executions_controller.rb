@@ -12,12 +12,14 @@ class TestCaseExecutionsController < ApplicationController
 
   helper :attachments
 
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions
   def index
     @test_case_executions = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
                                                                       test_plan_id: @test_plan.id,
                                                                       test_case_id: @test_case.id)
   end
 
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/new
   def new
     find_project(params.permit(:project_id)[:project_id])
     @test_case_execution = TestCaseExecution.new
@@ -28,6 +30,7 @@ class TestCaseExecutionsController < ApplicationController
     @test_case = TestCase.find(permit_param(:test_case_id))
   end
 
+  # POST /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions
   def create
     begin
       find_project(params.permit(:project_id)[:project_id])
@@ -62,6 +65,7 @@ class TestCaseExecutionsController < ApplicationController
     end
   end
 
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id
   def show
     @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
                                                                      test_plan_id: @test_plan.id,
@@ -75,6 +79,7 @@ class TestCaseExecutionsController < ApplicationController
     end
   end
 
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id/edit
   def edit
     @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
                                                                      test_plan_id: @test_plan.id,
@@ -88,6 +93,7 @@ class TestCaseExecutionsController < ApplicationController
     end
   end
 
+  # PUT /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id
   def update
     begin
       @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
@@ -124,6 +130,7 @@ class TestCaseExecutionsController < ApplicationController
     end
   end
 
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id
   def destroy
     begin
       @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,

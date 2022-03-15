@@ -7,6 +7,7 @@ class TestPlansController < ApplicationController
     prepare_user_candidates
   end
 
+  # GET /projects/:project_id/test_plans
   def index
     begin
       find_project(params.permit(:project_id)[:project_id])
@@ -17,6 +18,7 @@ class TestPlansController < ApplicationController
     end
   end
 
+  # GET /projects/:project_id/test_plans/:id
   def show
     begin
       find_project(params.permit(:project_id)[:project_id])
@@ -32,6 +34,7 @@ class TestPlansController < ApplicationController
     end
   end
 
+  # GET /projects/:project_id/test_plans/:id/edit
   def edit
     begin
       find_project(params.permit(:project_id)[:project_id])
@@ -47,6 +50,7 @@ class TestPlansController < ApplicationController
     end
   end
 
+  # PUT /projects/:project_id/test_plans/:id
   def update
     @test_plan = TestPlan.find(params.permit(:id)[:id])
     update_params = {}
@@ -71,10 +75,12 @@ class TestPlansController < ApplicationController
     end
   end
 
+  # GET /projects/:project_id/test_plans/new
   def new
     @test_plan = TestPlan.new
   end
 
+  # POST /projects/:project_id/test_plans
   def create
     @test_plan = TestPlan.new(:name => test_plan_params[:name],
                               :begin_date => test_plan_params[:begin_date],
@@ -92,6 +98,7 @@ class TestPlansController < ApplicationController
     end
   end
 
+  # DELETE /projects/:project_id/test_plans/:id
   def destroy
     begin
       find_project(params.permit(:project_id)[:project_id])
