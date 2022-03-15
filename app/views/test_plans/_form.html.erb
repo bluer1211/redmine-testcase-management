@@ -10,18 +10,20 @@
   <p>
     <%= form.label :user %>
     <% if @test_plan and @test_plan.user %>
-      <%= form.select :user, @user_candidates, selected: @test_plan.user.id %></p>
+      <%= form.select :user, @user_candidates, selected: @test_plan.user.id %>
     <% else %>
-      <%= form.select :user, @user_candidates %></p>
+      <%= form.select :user, @user_candidates %>
     <% end %>
+  </p>
   <p>
     <%= form.label :estimated_bug %>
     <%= form.number_field :estimated_bug, in: 0..9999 %></p>
   <p>
     <%= form.label :status %>
     <% if @test_plan and @test_plan.issue_status %>
-      <%= form.select :issue_status, @issue_status_candidates, selected: @test_plan.issue_status.id %></p>
+      <%= form.select :issue_status, @issue_status_candidates, selected: @test_plan.issue_status.id %>
     <% else %>
-      <%= form.select :issue_status, @issue_status_candidates %></p>
+      <%= form.select :issue_status, @issue_status_candidates %>
     <% end %>
+  </p>
 </div>
