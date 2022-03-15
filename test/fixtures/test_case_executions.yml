@@ -37,3 +37,53 @@ test_case_executions_003:
   test_case_id: 3
   # project: projects_003
   project_id: 3
+test_case_executions_004:
+  id: 4
+  result: true
+  comment: Comment 4
+  user_id: 3
+  execution_date: 2022-02-10 00:00:00 +09:00
+  # test_plan: test_plans_004
+  test_plan_id: 4
+  # test_case: test_cases_004
+  test_case_id: 4
+  # project: projects_005
+  project_id: 5
+test_case_executions_005:
+  id: 5
+  result: true
+  comment: Comment 1
+  user_id: 2
+  issue_id: 1
+  execution_date: 2022-02-10 00:00:00 +09:00
+  # test_plan: test_plans_005
+  test_plan_id: 5
+  # test_case: test_cases_005
+  test_case_id: 5
+  # project: projects_001
+  project_id: 1
+test_case_executions_006:
+  id: 6
+  result: true
+  comment: Comment 2
+  user_id: 2
+  execution_date: 2022-02-10 00:00:00 +09:00
+  # test_plan: test_plans_005
+  test_plan_id: 5
+  # test_case: test_cases_006
+  test_case_id: 6
+  # project: projects_001
+  project_id: 1
+test_case_executions_007:
+  id: 7
+  result: false
+  comment: Comment 3
+  user_id: 2
+  issue_id: 1
+  execution_date: 2022-02-10 00:00:00 +09:00
+  # test_plan: test_plans_005
+  test_plan_id: 5
+  # test_case: test_cases_007
+  test_case_id: 7
+  # project: projects_001
+  project_id: 1

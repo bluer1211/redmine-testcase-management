@@ -1,9 +1,10 @@
-require File.expand_path('../../test_helper', __FILE__)
+require File.expand_path("../../test_helper", __FILE__)
 
 class TestCaseExecutionTest < ActiveSupport::TestCase
 
-  fixtures :projects, :users, :members, :roles, :issues, :issue_statuses
-  fixtures :projects, :test_plans, :test_cases, :test_case_executions
+  fixtures :projects, :users, :members, :member_roles, :roles, :issues, :issue_statuses,
+           :groups_users, :trackers, :projects_trackers, :enabled_modules
+  fixtures :test_plans, :test_cases, :test_case_executions
 
   def test_initialize
     test_case_execution = TestCaseExecution.new
@@ -110,5 +111,148 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   def test_no_issue
     test_case_execution = test_case_executions(:test_case_executions_002)
     assert_nil test_case_execution.issue
+  end
+
+  # permissions
+
+  def assert_visibility_match(user, test_case_executions)
+    assert_equal TestCaseExecution.all.select {|test_case_execution| test_case_execution.visible?(user)}.collect(&:id).sort,
+                 test_case_executions.collect(&:id).sort
+  end
+
+  def test_visible_scope_for_anonymous
+    # Anonymous user should see test_case_executions of public projects only
+    test_case_executions = TestCaseExecution.visible(User.anonymous).to_a
+    assert test_case_executions.any?
+    assert_nil test_case_executions.detect {|test_case_execution| !test_case_execution.project.is_public?}
+    assert_visibility_match User.anonymous, test_case_executions
+  end
+
+  def test_visible_scope_for_anonymous_without_view_issues_permissions
+    # Anonymous user should not see test_case_executions without permission
+    Role.anonymous.remove_permission!(:view_issues)
+    test_case_executions = TestCaseExecution.visible(User.anonymous).to_a
+    assert test_case_executions.empty?
+    assert_visibility_match User.anonymous, test_case_executions
+  end
+
+  def test_visible_scope_for_anonymous_without_view_issues_permissions_and_membership
+    Role.anonymous.remove_permission!(:view_issues)
+    Member.create!(:project_id => 3, :principal => Group.anonymous, :role_ids => [2])
+
+    test_case_executions = TestCaseExecution.visible(User.anonymous).all
+    assert_equal [true, [3]],
+                 [test_case_executions.any?,
+                  test_case_executions.map(&:project_id).uniq.sort]
+    assert_visibility_match User.anonymous, test_case_executions
+  end
+
+  def test_visible_scope_for_non_member
+    user = User.find(9)
+    assert user.projects.empty?
+    # Non member user should see test_case_executions of public projects only
+    test_case_executions = TestCaseExecution.visible(user).to_a
+    assert_equal [true, nil],
+                 [test_case_executions.any?,
+                  test_case_executions.detect {|test_case_execution| !test_case_execution.project.is_public?}]
+    assert_visibility_match user, test_case_executions
+  end
+
+  def test_visible_scope_for_non_member_with_own_test_case_execution_visibility
+    Role.non_member.update! :issues_visibility => "own"
+    user = User.find(9)
+    TestCaseExecution.create!(project_id: 3, comment: "test case execution by non member",
+                              result: true, test_plan_id: 3, test_case_id: 3,
+                              user_id: user.id, execution_date: DateTime.new)
+
+    test_case_executions = TestCaseExecution.visible(user).to_a
+    assert_equal [true, nil],
+                 [test_case_executions.any?,
+                  test_case_executions.detect {|test_case_execution| test_case_execution.user != user}]
+    assert_visibility_match user, test_case_executions
+  end
+
+  def test_visible_scope_for_non_member_without_view_test_case_execution_permissions
+    # Non member user should not see test_case_executions without permission
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.find(9)
+    assert user.projects.empty?
+    test_case_executions = TestCaseExecution.visible(user).to_a
+    assert test_case_executions.empty?
+    assert_visibility_match user, test_case_executions
+  end
+
+  def test_visible_scope_for_non_member_without_view_test_case_executions_permissions_and_membership
+    Role.non_member.remove_permission!(:view_issues)
+    Member.create!(:project_id => 3, :principal => Group.non_member, :role_ids => [2])
+    user = User.find(9)
+
+    test_case_executions = TestCaseExecution.visible(user).all
+    assert test_case_executions.any?
+    assert_equal [3], test_case_executions.map(&:project_id).uniq.sort
+    assert_visibility_match user, test_case_executions
+  end
+
+  def test_visible_scope_for_member
+    user = User.find(9)
+    # User should see test_case_executions of projects for which user has view_issues permissions only
+    Role.non_member.remove_permission!(:view_issues)
+    Member.create!(:principal => user, :project_id => 3, :role_ids => [2])
+    test_case_executions = TestCaseExecution.visible(user).to_a
+    assert_equal [true, nil],
+                 [test_case_executions.any?,
+                  test_case_executions.detect {|test_case_execution| test_case_execution.project_id != 3}]
+    assert_visibility_match user, test_case_executions
+  end
+
+  def test_visible_scope_for_member_without_view_issues_permission_and_non_member_role_having_the_permission
+    Role.non_member.add_permission!(:view_issues)
+    Role.find(1).remove_permission!(:view_issues)
+    user = User.find(2)
+
+    assert_equal [0, false],
+                 [TestCaseExecution.where(:project_id => 1).visible(user).count,
+                  TestCaseExecution.where(:project_id => 1).first.visible?(user)]
+  end
+
+  def test_visible_scope_with_custom_non_member_role_having_restricted_permission
+    role = Role.generate!(:permissions => [:view_project])
+    assert Role.non_member.has_permission?(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => 1, :roles => [role])
+
+    test_case_executions = TestCaseExecution.visible(user).to_a
+    assert_equal [true, nil],
+                 [test_case_executions.any?,
+                  test_case_executions.detect {|test_case_execution| test_case_execution.project_id == 1}]
+  end
+
+  def test_visible_scope_with_custom_non_member_role_having_extended_permission
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => 3, :roles => [role])
+
+    test_case_executions = TestCaseExecution.visible(user).to_a
+    assert test_case_executions.any?
+    assert_not_nil test_case_executions.detect {|test_case_execution| test_case_execution.project_id == 3}
+  end
+
+  def test_test_plan_should_editable_by_author
+    Role.all.each do |role|
+      role.remove_permission! :edit_issues
+      role.add_permission! :edit_own_issues
+    end
+
+    test_case_execution = test_case_executions(:test_case_executions_001)
+    user = users(:users_002)
+
+    assert_equal user, test_case_execution.user
+    assert_equal [true, true, false],
+                 [
+                   test_case_execution.attributes_editable?(user), #author
+                   test_case_execution.attributes_editable?(users(:users_001)), #admin
+                   test_case_execution.attributes_editable?(users(:users_003)), #other
+                 ]
   end
 end

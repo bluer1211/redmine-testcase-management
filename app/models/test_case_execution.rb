@@ -1,4 +1,6 @@
 class TestCaseExecution < ActiveRecord::Base
+  include TestCaseManagement::InheritIssuePermissions
+
   belongs_to :user
   belongs_to :project
   belongs_to :issue
@@ -9,6 +11,11 @@ class TestCaseExecution < ActiveRecord::Base
   validates :result, inclusion: { in: [true, false] }
   validates :comment, presence: true
   validates :user, presence: true
+
+  scope :visible, (lambda do |*args|
+    joins(:project).
+    where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
+  end)
 
   def editable?
     true

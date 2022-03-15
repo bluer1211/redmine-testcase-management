@@ -1,4 +1,6 @@
 class TestCase < ActiveRecord::Base
+  include TestCaseManagement::InheritIssuePermissions
+
   belongs_to :user
   belongs_to :project
   belongs_to :test_plan
@@ -13,13 +15,10 @@ class TestCase < ActiveRecord::Base
 
   validates_associated :test_case_executions
 
-  def editable?
-    true
-  end
-
-  def deletable?
-    true
-  end
+  scope :visible, (lambda do |*args|
+    joins(:project).
+    where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
+  end)
 
   def attachments_visible?(user=User.current)
     true

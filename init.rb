@@ -17,3 +17,7 @@ Redmine::Plugin.register :testcase_management do
   permission :test_plans, {:test_plans => [:index]}, :public => true
   menu :project_menu, :testcase_management, {:controller => 'test_plans', :action => 'index', :caption => 'Test Plans'}, :param => :project_id
 end
+
+Rails.configuration.to_prepare do
+  require_dependency "inherit_issue_permissions"
+end
