@@ -1,23 +1,23 @@
 <div class="box tabular">
   <p><%= form.label :name %>
-    <%= form.text_field :name, size: 80, required: true %></p>
+    <%= form.text_field :name, size: 80, required: true, id: 'name' %></p>
   <p>
     <%= form.label :begin_date %>
-    <%= form.date_field :begin_date %></p>
+    <%= form.date_field :begin_date, id: 'begin_date' %></p>
   <p>
     <%= form.label :end_date %>
-    <%= form.date_field :end_date %></p>
+    <%= form.date_field :end_date, id: 'end_date' %></p>
   <p>
     <%= form.label :user %>
     <% if @test_plan and @test_plan.user %>
       <%= form.select :user, @user_candidates, selected: @test_plan.user.id %>
     <% else %>
-      <%= form.select :user, @user_candidates %>
+    <%= form.select :user, @user_candidates %>
     <% end %>
   </p>
   <p>
     <%= form.label :estimated_bug %>
-    <%= form.number_field :estimated_bug, in: 0..9999 %></p>
+    <%= form.number_field :estimated_bug, in: 0..9999, id: 'estimated_bug' %></p>
   <p>
     <%= form.label :status %>
     <% if @test_plan and @test_plan.issue_status %>
