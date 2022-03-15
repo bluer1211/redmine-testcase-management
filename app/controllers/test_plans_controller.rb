@@ -54,10 +54,14 @@ class TestPlansController < ApplicationController
     update_params[:begin_date] = test_plan_params[:begin_date]
     update_params[:end_date] = test_plan_params[:end_date]
     update_params[:estimated_bug] = test_plan_params[:estimated_bug]
-    user = User.find(test_plan_params[:user])
-    update_params[:user_id] = user.id if user.present?
-    issue_status = IssueStatus.find(test_plan_params[:issue_status])
-    update_params[:issue_status_id] = issue_status.id if issue_status.present?
+    if test_plan_params[:user].present?
+      user = User.find(test_plan_params[:user])
+      update_params[:user_id] = user.id
+    end
+    if test_plan_params[:issue_status].present?
+      issue_status = IssueStatus.find(test_plan_params[:issue_status])
+      update_params[:issue_status_id] = issue_status.id
+    end
     if @test_plan.update(update_params)
       flash[:notice] = l(:notice_successful_update)
       redirect_to project_test_plan_path
