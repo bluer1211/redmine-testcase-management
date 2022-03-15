@@ -83,7 +83,6 @@ class TestCasesControllerTest < ActionController::TestCase
                project_id: projects(:projects_001).identifier,
                test_plan_id: test_plans(:test_plans_001).id,
                test_case: {
-                 test_plan_id: test_plans(:test_plans_001).id,
                  name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
                  user: 2, issue_status: 1
                }
@@ -99,7 +98,6 @@ class TestCasesControllerTest < ActionController::TestCase
                project_id: NONEXISTENT_PROJECT_ID,
                test_plan_id: test_plans(:test_plans_001).id,
                test_case: {
-                 test_plan_id: test_plans(:test_plans_001).id,
                  name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
                  user: 2, issue_status: 1
                }
@@ -112,9 +110,8 @@ class TestCasesControllerTest < ActionController::TestCase
       assert_no_difference("TestCase.count") do
         post :create, params: {
                project_id: projects(:projects_001).identifier,
-               test_plan_id: test_plans(:test_plans_001).id,
+               test_plan_id: NONEXISTENT_TEST_PLAN_ID,
                test_case: {
-                 test_plan_id: NONEXISTENT_TEST_PLAN_ID,
                  name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
                  user: 2, issue_status: 1
                }
@@ -129,7 +126,6 @@ class TestCasesControllerTest < ActionController::TestCase
                project_id: projects(:projects_001).identifier,
                test_plan_id: test_plans(:test_plans_001).id,
                test_case: {
-                 test_plan_id: test_plans(:test_plans_001).id,
                  name: "test",
                  user: 2, issue_status: 1
                }

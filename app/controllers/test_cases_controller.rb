@@ -37,7 +37,7 @@ class TestCasesController < ApplicationController
       @test_case = TestCase.new(:name => test_case_params[:name],
                                 :scheduled_date => test_case_params[:scheduled_date],
                                 :user => User.find(test_case_params[:user]),
-                                :test_plan => TestPlan.find(test_case_params[:test_plan_id]),
+                                :test_plan => TestPlan.find(params[:test_plan_id]),
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected],
