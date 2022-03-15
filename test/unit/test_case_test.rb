@@ -10,7 +10,6 @@ class TestCaseTest < ActiveSupport::TestCase
 
     assert_nil test_case.id
     assert_nil test_case.user_id
-    assert_nil test_case.issue_status_id
     assert_nil test_case.project_id
     assert_nil test_case.name
     assert_nil test_case.scenario
@@ -25,8 +24,7 @@ class TestCaseTest < ActiveSupport::TestCase
                              :expected => "expected situation",
                              :environment => "Debian GNU/Linux",
                              :project => projects(:projects_001),
-                             :user => users(:users_001),
-                             :issue_status => issue_statuses(:issue_statuses_001))
+                             :user => users(:users_001))
     assert_save test_case
     assert test_case.destroy
   end
@@ -41,7 +39,6 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_equal "2022-02-08 15:00:00 UTC", test_case.scheduled_date.to_s
     assert_equal users(:users_002), test_case.user
     assert_equal projects(:projects_003), test_case.project
-    assert_equal issue_statuses(:issue_statuses_001), test_case.issue_status
   end
 
   def test_not_unique
@@ -51,8 +48,7 @@ class TestCaseTest < ActiveSupport::TestCase
                              :expected => "expected situation",
                              :environment => "Debian GNU/Linux",
                              :project => projects(:projects_001),
-                             :user => users(:users_001),
-                             :issue_status => issue_statuses(:issue_statuses_001))
+                             :user => users(:users_001))
     assert_raises ActiveRecord::RecordNotUnique do
       test_case.save
     end
@@ -74,8 +70,7 @@ class TestCaseTest < ActiveSupport::TestCase
     object = TestCase.new(:scenario => "dummy",
                           :expected => "dummy",
                           :user => users(:users_001),
-                          :environment => "dummy",
-                          :issue_status => issue_statuses(:issue_statuses_001))
+                          :environment => "dummy")
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:name]
   end
@@ -84,8 +79,7 @@ class TestCaseTest < ActiveSupport::TestCase
     object = TestCase.new(:name => "dummy",
                           :expected => "dummy",
                           :user => users(:users_001),
-                          :environment => "dummy",
-                          :issue_status => issue_statuses(:issue_statuses_001))
+                          :environment => "dummy")
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:scenario]
   end
@@ -94,8 +88,7 @@ class TestCaseTest < ActiveSupport::TestCase
     object = TestCase.new(:name => "dummy",
                           :scenario => "dummy",
                           :user => users(:users_001),
-                          :environment => "dummy",
-                          :issue_status => issue_statuses(:issue_statuses_001))
+                          :environment => "dummy")
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:expected]
   end
@@ -104,8 +97,7 @@ class TestCaseTest < ActiveSupport::TestCase
     object = TestCase.new(:name => "dummy",
                           :scenario => "dummy",
                           :expected => "dummy",
-                          :environment => "dummy",
-                          :issue_status => issue_statuses(:issue_statuses_001))
+                          :environment => "dummy")
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:user]
   end
@@ -114,22 +106,10 @@ class TestCaseTest < ActiveSupport::TestCase
     object = TestCase.new(:name => "dummy",
                           :scenario => "dummy",
                           :expected => "dummy",
-                          :user => users(:users_001),
-                          :issue_status => issue_statuses(:issue_statuses_001))
+                          :user => users(:users_001))
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:environment]
   end
-
-  def test_missing_issue_status
-    object = TestCase.new(:name => "dummy",
-                          :scenario => "dummy",
-                          :expected => "dummy",
-                          :environment => "dummy",
-                          :user => users(:users_001))
-    assert_equal true, object.invalid?
-    assert_equal ["cannot be blank"], object.errors[:issue_status]
-  end
-
 
   # Test Relations
 
@@ -137,7 +117,6 @@ class TestCaseTest < ActiveSupport::TestCase
     test_case = TestCase.new
     assert_nil test_case.user
     assert_nil test_case.project
-    assert_nil test_case.issue_status
     assert_nil test_case.test_plan
   end
 

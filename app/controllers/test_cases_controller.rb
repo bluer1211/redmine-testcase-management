@@ -40,8 +40,7 @@ class TestCasesController < ApplicationController
                                 :test_plan => TestPlan.find(params[:test_plan_id]),
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
-                                :expected => test_case_params[:expected],
-                                :issue_status => IssueStatus.find(test_case_params[:issue_status]))
+                                :expected => test_case_params[:expected])
       if params[:attachments].present?
         @test_case.save_attachments params.require(:attachments).permit!
       end
@@ -80,8 +79,6 @@ class TestCasesController < ApplicationController
     }
     user = User.find(test_case_params[:user])
     update_params[:user_id] = user.id if user.present?
-    issue_status = IssueStatus.find(test_case_params[:issue_status])
-    update_params[:issue_status_id] = issue_status.id if issue_status.present?
     if params[:attachments].present?
       @test_case.save_attachments params.require(:attachments).permit!
     end
@@ -121,7 +118,6 @@ class TestCasesController < ApplicationController
                                       :scheduled_date,
                                       :environment,
                                       :scenario,
-                                      :expected,
-                                      :issue_status)
+                                      :expected)
   end
 end

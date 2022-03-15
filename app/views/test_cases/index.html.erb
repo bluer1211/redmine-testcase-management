@@ -21,7 +21,15 @@
       <% @test_cases.each do |test_case| %>
       <tr>
         <td><%= link_to test_case.name, project_test_plan_test_case_path(id: test_case.id) %></td>
-        <td><%= test_case.issue_status.name %></td>
+        <td>
+          <% if test_case.test_case_executions.any? %>
+            <% if test_case.test_case_executions.all? { |tce| tce.result } %>
+              <%=l(:label_succeed) %>
+            <% else %>
+              <%=l(:label_failure) %>
+            <% end %>
+          <% end %>
+        </td>
         <td><%= test_case.user.name %></td>
         <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
         <td><%= test_case.environment %></td>

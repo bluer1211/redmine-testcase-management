@@ -124,8 +124,7 @@ class TestPlanTest < ActiveSupport::TestCase
                                          :environment => "Debian GNU/Linux",
                                          :test_plan => test_plan,
                                          :project => projects(:projects_001),
-                                         :user => users(:users_001),
-                                         :issue_status => issue_statuses(:issue_statuses_001))
+                                         :user => users(:users_001))
     assert_save test_plan
     assert_equal 1, test_plan.test_cases.size
     assert_equal test_plan, test_plan.test_cases.first.test_plan
@@ -140,8 +139,7 @@ class TestPlanTest < ActiveSupport::TestCase
                                          :environment => "Debian GNU/Linux",
                                          :test_plan => test_plan,
                                          :project => projects(:projects_001),
-                                         :user => users(:users_001),
-                                         :issue_status => issue_statuses(:issue_statuses_001))
+                                         :user => users(:users_001))
     assert_save test_plan
     assert_difference("TestPlan.count", -1) do
       assert_difference("TestCase.count", -1) do

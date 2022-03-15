@@ -1,7 +1,6 @@
 class TestCase < ActiveRecord::Base
   belongs_to :user
   belongs_to :project
-  belongs_to :issue_status
   belongs_to :test_plan
   has_many :test_case_executions, dependent: :destroy
   acts_as_attachable
@@ -11,7 +10,6 @@ class TestCase < ActiveRecord::Base
   validates :expected, presence: true
   validates :user, presence: true
   validates :environment, presence: true
-  validates :issue_status, presence: true
 
   validates_associated :test_case_executions
 

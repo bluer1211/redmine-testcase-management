@@ -84,7 +84,7 @@ class TestCasesControllerTest < ActionController::TestCase
                test_plan_id: test_plans(:test_plans_001).id,
                test_case: {
                  name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
-                 user: 2, issue_status: 1
+                 user: 2
                }
              }
       end
@@ -99,7 +99,7 @@ class TestCasesControllerTest < ActionController::TestCase
                test_plan_id: test_plans(:test_plans_001).id,
                test_case: {
                  name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
-                 user: 2, issue_status: 1
+                 user: 2
                }
              }
       end
@@ -113,7 +113,7 @@ class TestCasesControllerTest < ActionController::TestCase
                test_plan_id: NONEXISTENT_TEST_PLAN_ID,
                test_case: {
                  name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
-                 user: 2, issue_status: 1
+                 user: 2
                }
              }
       end
@@ -127,7 +127,7 @@ class TestCasesControllerTest < ActionController::TestCase
                test_plan_id: test_plans(:test_plans_001).id,
                test_case: {
                  name: "test",
-                 user: 2, issue_status: 1
+                 user: 2
                }
              }
       end
@@ -153,9 +153,6 @@ class TestCasesControllerTest < ActionController::TestCase
       end
       assert_select "div#test_plan" do |div|
         assert_equal test_case.test_plan.name, div.text
-      end
-      assert_select "div#issue_status" do |div|
-        assert_equal test_case.issue_status.name, div.text
       end
       assert_select "div#user" do |div|
         assert_equal test_case.user.name, div.text
@@ -228,11 +225,6 @@ class TestCasesControllerTest < ActionController::TestCase
       assert_select "input[name='test_case[name]']" do |input|
         assert_equal test_case.name, input.first.attributes["value"].value
       end
-      assert_select "select[name='test_case[issue_status]']" do |select|
-        select.first.children.each do |option|
-          assert_equal test_case.issue_status.name, option.text if option.attributes["selected"]
-        end
-      end
       assert_select "select[name='test_case[user]']" do |select|
         select.first.children.each do |option|
           assert_equal test_case.user.name, option.text if option.attributes["selected"]
@@ -295,7 +287,7 @@ class TestCasesControllerTest < ActionController::TestCase
               test_case: {
                 test_plan_id: test_plans(:test_plans_002).id,
                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
-                user: 2, issue_status: 1
+                user: 2
               }
             }
       end
@@ -344,7 +336,7 @@ class TestCasesControllerTest < ActionController::TestCase
               test_case: {
                 test_plan_id: test_plans(:test_plans_002).id,
                 name: "test",
-                user: 2, issue_status: 1
+                user: 2
               }
             }
       end
