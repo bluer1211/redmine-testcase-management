@@ -19,7 +19,7 @@ class TestPlansControllerTest < ActionController::TestCase
 
       assert_response :success
       # show all test plans
-      assert_select "tbody tr", 3
+      assert_select "tbody tr", 5
       plans = []
       assert_select "tbody tr td:first-child" do |tds|
         tds.each do |td|
