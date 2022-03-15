@@ -184,6 +184,97 @@ class TestPlanTest < ActiveSupport::TestCase
     assert_visibility_match User.anonymous, test_plans
   end
 
+  def test_visible_scope_for_non_member
+    user = User.find(9)
+    assert user.projects.empty?
+    # Non member user should see test_plans of public projects only
+    test_plans = TestPlan.visible(user).to_a
+    assert_equal [true, nil],
+                 [test_plans.any?,
+                  test_plans.detect {|test_plan| !test_plan.project.is_public?}]
+    assert_visibility_match user, test_plans
+  end
+
+  def test_visible_scope_for_non_member_with_own_test_plan_visibility
+    Role.non_member.update! :issues_visibility => "own"
+    user = User.find(9)
+    TestPlan.create!(project_id: 3, name: "test plan by non member",
+                     estimated_bug: 10, issue_status_id: 1,
+                     user_id: user.id, begin_date: DateTime.new, end_date: DateTime.new)
+
+    test_plans = TestPlan.visible(user).to_a
+    assert_equal [true, nil],
+                 [test_plans.any?,
+                  test_plans.detect {|test_plan| test_plan.user != user}]
+    assert_visibility_match user, test_plans
+  end
+
+  def test_visible_scope_for_non_member_without_view_test_plan_permissions
+    # Non member user should not see test_plans without permission
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.find(9)
+    assert user.projects.empty?
+    test_plans = TestPlan.visible(user).to_a
+    assert test_plans.empty?
+    assert_visibility_match user, test_plans
+  end
+
+  def test_visible_scope_for_non_member_without_view_test_plans_permissions_and_membership
+    Role.non_member.remove_permission!(:view_issues)
+    Member.create!(:project_id => 3, :principal => Group.non_member, :role_ids => [2])
+    user = User.find(9)
+
+    test_plans = TestPlan.visible(user).all
+    assert test_plans.any?
+    assert_equal [3], test_plans.map(&:project_id).uniq.sort
+    assert_visibility_match user, test_plans
+  end
+
+  def test_visible_scope_for_member
+    user = User.find(9)
+    # User should see test_plans of projects for which user has view_issues permissions only
+    Role.non_member.remove_permission!(:view_issues)
+    Member.create!(:principal => user, :project_id => 3, :role_ids => [2])
+    test_plans = TestPlan.visible(user).to_a
+    assert_equal [true, nil],
+                 [test_plans.any?,
+                  test_plans.detect {|test_plan| test_plan.project_id != 3}]
+    assert_visibility_match user, test_plans
+  end
+
+  def test_visible_scope_for_member_without_view_issues_permission_and_non_member_role_having_the_permission
+    Role.non_member.add_permission!(:view_issues)
+    Role.find(1).remove_permission!(:view_issues)
+    user = User.find(2)
+
+    assert_equal [0, false],
+                 [TestPlan.where(:project_id => 1).visible(user).count,
+                  TestPlan.where(:project_id => 1).first.visible?(user)]
+  end
+
+  def test_visible_scope_with_custom_non_member_role_having_restricted_permission
+    role = Role.generate!(:permissions => [:view_project])
+    assert Role.non_member.has_permission?(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => 1, :roles => [role])
+
+    test_plans = TestPlan.visible(user).to_a
+    assert_equal [true, nil],
+                 [test_plans.any?,
+                  test_plans.detect {|test_plan| test_plan.project_id == 1}]
+  end
+
+  def test_visible_scope_with_custom_non_member_role_having_extended_permission
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => 3, :roles => [role])
+
+    test_plans = TestPlan.visible(user).to_a
+    assert test_plans.any?
+    assert_not_nil test_plans.detect {|test_plan| test_plan.project_id == 3}
+  end
+
   def test_test_plan_should_editable_by_author
     Role.all.each do |role|
       role.remove_permission! :edit_issues
