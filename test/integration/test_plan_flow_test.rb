@@ -28,6 +28,21 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "update test plan" do
+    test_plan = test_plans(:test_plans_001)
+    url = "/projects/#{projects(:projects_001).identifier}/test_plans/#{test_plan.id}"
+
+    get "#{url}/edit"
+    assert_response :success
+
+    put url, params: {
+          test_plan: {
+            name: "dummy"
+          }
+        }
+    assert_redirected_to :controller => 'test_plans', :action => 'show', :id => test_plan.id
+  end
+
   test "delete test plan" do
     url = "/projects/#{projects(:projects_001).identifier}/test_plans/#{test_plans(:test_plans_001).id}"
     get url
