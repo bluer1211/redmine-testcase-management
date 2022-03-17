@@ -152,7 +152,7 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_equal test_case.name, h3.text
       end
       assert_select "div#test_plan" do |div|
-        assert_equal test_case.test_plan.name, div.text
+        assert_equal test_case.test_plan.name, div.text.strip
       end
       assert_select "div#user" do |div|
         assert_equal test_case.user.name, div.text
