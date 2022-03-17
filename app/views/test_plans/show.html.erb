@@ -13,25 +13,25 @@
       <div class="splitcontentleft">
         <div class="status attribute">
           <div class="label"><%=l(:field_status)%></div>
-          <div class="value"><%= @test_plan.issue_status.name if @test_plan.issue_status %></div>
+          <div id="status" class="value"><%= @test_plan.issue_status.name if @test_plan.issue_status %></div>
         </div>
         <div class="estimated-bug attribute">
           <div class="label"><%=l(:field_estimated_bug)%></div>
-          <div class="value"><%= @test_plan.estimated_bug %></div>
+          <div id="estimated_bug" class="value"><%= @test_plan.estimated_bug %></div>
         </div>
         <div class="assigned-to attribute">
           <div class="label"><%=l(:field_user)%></div>
-          <div class="value"><%= @test_plan.user.name if @test_plan.user %></div>
+          <div id="user" class="value"><%= @test_plan.user.name if @test_plan.user %></div>
         </div>
       </div>
       <div class="splitcontentleft">
         <div class="start-date attribute">
           <div class="label"><%=l(:field_begin_date)%></div>
-          <div class="value"><%= yyyymmdd_date(@test_plan.begin_date) %></div>
+          <div id="begin_date" class="value"><%= yyyymmdd_date(@test_plan.begin_date) %></div>
         </div>
         <div class="end-date attribute">
           <div class="label"><%=l(:field_end_date)%></div>
-          <div class="value"><%= yyyymmdd_date(@test_plan.end_date) %></div>
+          <div id="end_date" class="value"><%= yyyymmdd_date(@test_plan.end_date) %></div>
         </div>
       </div>
     </div>
