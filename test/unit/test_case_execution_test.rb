@@ -352,4 +352,36 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
                    test_case_execution.attributes_editable?(users(:users_003)), #other
                  ]
   end
+
+  def test_editable_scope_for_member
+    test_case_execution = test_case_executions(:test_case_executions_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case_execution.project_id, :roles => [role])
+
+    assert_not test_case_execution.editable?(user)
+
+    role.add_permission!(:edit_issues)
+    test_case_execution.reload
+    user.reload
+    assert test_case_execution.editable?(user)
+  end
+
+  def test_deletable_scope_for_member
+    test_case_execution = test_case_executions(:test_case_executions_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case_execution.project_id, :roles => [role])
+
+    assert_not test_case_execution.deletable?(user)
+
+    role.add_permission!(:delete_issues)
+    test_case_execution.reload
+    user.reload
+    assert test_case_execution.deletable?(user)
+  end
 end

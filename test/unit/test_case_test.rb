@@ -399,4 +399,44 @@ class TestCaseTest < ActiveSupport::TestCase
                    test_case.attributes_editable?(users(:users_003)), #other
                  ]
   end
+
+  def test_test_case_should_readonly_for_anonymous
+    test_case = TestCase.find(1)
+    assert_equal [true, false, false],
+                 [test_case.visible?(User.anonymous),
+                  test_case.editable?(User.anonymous),
+                  test_case.deletable?(User.anonymous)]
+  end
+
+  def test_editable_scope_for_member
+    test_case = test_cases(:test_cases_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case.project_id, :roles => [role])
+
+    assert_not test_case.editable?(user)
+
+    role.add_permission!(:edit_issues)
+    test_case.reload
+    user.reload
+    assert test_case.editable?(user)
+  end
+
+  def test_deletable_scope_for_member
+    test_case = test_cases(:test_cases_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case.project_id, :roles => [role])
+
+    assert_not test_case.deletable?(user)
+
+    role.add_permission!(:delete_issues)
+    test_case.reload
+    user.reload
+    assert test_case.deletable?(user)
+  end
 end

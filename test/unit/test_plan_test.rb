@@ -389,4 +389,36 @@ class TestPlanTest < ActiveSupport::TestCase
                    test_plan.attributes_editable?(users(:users_003)), #other
                  ]
   end
+
+  def test_editable_scope_for_member
+    test_plan = test_plans(:test_plans_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_plan.project_id, :roles => [role])
+
+    assert_not test_plan.editable?(user)
+
+    role.add_permission!(:edit_issues)
+    test_plan.reload
+    user.reload
+    assert test_plan.editable?(user)
+  end
+
+  def test_deletable_scope_for_member
+    test_plan = test_plans(:test_plans_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_plan.project_id, :roles => [role])
+
+    assert_not test_plan.deletable?(user)
+
+    role.add_permission!(:delete_issues)
+    test_plan.reload
+    user.reload
+    assert test_plan.deletable?(user)
+  end
 end
