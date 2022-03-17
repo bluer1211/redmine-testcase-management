@@ -238,6 +238,74 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     assert_not_nil test_case_executions.detect {|test_case_execution| test_case_execution.project_id == 3}
   end
 
+  def test_visible_scope_should_not_consider_roles_without_view_issues_permission
+    user = User.generate!
+    role1 = Role.generate!
+    role1.remove_permission! :view_issues
+    role1.save!
+    role2 = Role.generate!
+    role2.add_permission! :view_issues
+    role2.save!
+    User.add_to_project(user, Project.find(3), [role1, role2])
+
+    test_case_executions = TestCaseExecution.where(:project_id => 3).visible(user).to_a
+    assert test_case_executions.any?
+  end
+
+  def test_visible_scope_for_admin
+    user = User.find(1)
+    user.members.each(&:destroy)
+    assert user.projects.empty?
+    test_case_executions = TestCaseExecution.visible(user).to_a
+    # Admin should see test_case_executions on private projects that admin does not belong to
+    assert_equal [true, test_case_executions(:test_case_executions_004)],
+                 [test_case_executions.any?,
+                  test_case_executions.detect {|test_case_execution| !test_case_execution.project.is_public?}]
+    assert_visibility_match user, test_case_executions
+  end
+
+  def test_visible_scope_with_project
+    project = Project.find(1)
+    test_case_executions = TestCaseExecution.visible(User.find(2), :project => project).to_a
+    projects = test_case_executions.collect(&:project).uniq
+    assert_equal [1, project],
+                 [projects.size, projects.first]
+  end
+
+  def test_visible_scope_with_project_and_subprojects
+    project = Project.find(1)
+    test_case_executions = TestCaseExecution.visible(User.find(2), :project => project, :with_subprojects => true).to_a
+    projects = test_case_executions.collect(&:project).uniq
+    assert [true, []],
+           [projects.size > 1,
+            projects.select {|p| !p.is_or_is_descendant_of?(project)}]
+  end
+
+  def test_visible_scope_with_unsaved_user_should_not_raise_an_error
+    user = User.new
+    assert_nothing_raised do
+      TestCaseExecution.visible(user).to_a
+    end
+  end
+
+  def test_test_case_execution_should_be_readonly_on_closed_project
+    test_case_execution = TestCaseExecution.find(1)
+    user = User.find(1)
+
+    assert_equal [true, true, true],
+                 [test_case_execution.visible?(user),
+                  test_case_execution.editable?(user),
+                  test_case_execution.deletable?(user)]
+
+    test_case_execution.project.close
+    test_case_execution.reload
+
+    assert_equal [true, false, false],
+                 [test_case_execution.visible?(user),
+                  test_case_execution.editable?(user),
+                  test_case_execution.deletable?(user)]
+  end
+
   def test_test_plan_should_editable_by_author
     Role.all.each do |role|
       role.remove_permission! :edit_issues

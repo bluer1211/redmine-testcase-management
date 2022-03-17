@@ -275,6 +275,74 @@ class TestPlanTest < ActiveSupport::TestCase
     assert_not_nil test_plans.detect {|test_plan| test_plan.project_id == 3}
   end
 
+  def test_visible_scope_should_not_consider_roles_without_view_issues_permission
+    user = User.generate!
+    role1 = Role.generate!
+    role1.remove_permission! :view_issues
+    role1.save!
+    role2 = Role.generate!
+    role2.add_permission! :view_issues
+    role2.save!
+    User.add_to_project(user, Project.find(3), [role1, role2])
+
+    test_plans = TestPlan.where(:project_id => 3).visible(user).to_a
+    assert test_plans.any?
+  end
+
+  def test_visible_scope_for_admin
+    user = User.find(1)
+    user.members.each(&:destroy)
+    assert user.projects.empty?
+    test_plans = TestPlan.visible(user).to_a
+    # Admin should see test_plans on private projects that admin does not belong to
+    assert_equal [true, test_plans(:test_plans_004)],
+                 [test_plans.any?,
+                  test_plans.detect {|test_plan| !test_plan.project.is_public?}]
+    assert_visibility_match user, test_plans
+  end
+
+  def test_visible_scope_with_project
+    project = Project.find(1)
+    test_plans = TestPlan.visible(User.find(2), :project => project).to_a
+    projects = test_plans.collect(&:project).uniq
+    assert_equal [1, project],
+                 [projects.size, projects.first]
+  end
+
+  def test_visible_scope_with_project_and_subprojects
+    project = Project.find(1)
+    test_plans = TestPlan.visible(User.find(2), :project => project, :with_subprojects => true).to_a
+    projects = test_plans.collect(&:project).uniq
+    assert [true, []],
+           [projects.size > 1,
+            projects.select {|p| !p.is_or_is_descendant_of?(project)}]
+  end
+
+  def test_visible_scope_with_unsaved_user_should_not_raise_an_error
+    user = User.new
+    assert_nothing_raised do
+      TestPlan.visible(user).to_a
+    end
+  end
+
+  def test_test_plan_should_be_readonly_on_closed_project
+    test_plan = TestPlan.find(1)
+    user = User.find(1)
+
+    assert_equal [true, true, true],
+                 [test_plan.visible?(user),
+                  test_plan.editable?(user),
+                  test_plan.deletable?(user)]
+
+    test_plan.project.close
+    test_plan.reload
+
+    assert_equal [true, false, false],
+                 [test_plan.visible?(user),
+                  test_plan.editable?(user),
+                  test_plan.deletable?(user)]
+  end
+
   def test_test_plan_should_editable_by_author
     Role.all.each do |role|
       role.remove_permission! :edit_issues
