@@ -26,6 +26,10 @@
 
 sqlite3:
   extends: .template
+  before_script:
+    - apt update -qq && apt install -y firefox-esr
+    - wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz && tar xf geckodriver-v0.30.0-linux64.tar.gz && mv geckodriver /usr/local/bin
+    - command -v geckodriver
   script:
     - dev/ci.sh sqlite3 $TESTS
 
@@ -38,6 +42,8 @@ postgresql:
     POSTGRES_USER: redmine
     POSTGRES_PASSWORD: redmine
   before_script:
-    - apt update -qq && apt install -y libpq-dev
+    - apt update -qq && apt install -y libpq-dev firefox-esr
+    - wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz && tar xf geckodriver-v0.30.0-linux64.tar.gz && mv geckodriver /usr/local/bin
+    - command -v geckodriver
   script:
     - dev/ci.sh postgresql $TESTS
