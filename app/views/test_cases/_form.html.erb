@@ -10,7 +10,7 @@
   </p>
   <p>
     <%= form.label :name %>
-    <%= form.text_field :name, size: 80, required: true %>
+    <%= form.text_field :name, size: 80, required: true, id: "name" %>
   </p>
   <p>
     <%= form.label :user %>
@@ -22,19 +22,19 @@
   </p>
   <p>
     <%= form.label :scheduled_date %>
-    <%= form.date_field :scheduled_date %>
+    <%= form.date_field :scheduled_date, id: "scheduled_date" %>
   </p>
   <p>
     <%= form.label :environment %>
-    <%= form.text_field :environment, size: 80, required: true %>
+    <%= form.text_field :environment, size: 80, required: true, id: "environment" %>
   </p>
   <p>
     <%= form.label :scenario %>
-    <%= form.text_area :scenario, required: true %>
+    <%= form.text_area :scenario, required: true, id: "scenario" %>
   </p>
   <p>
     <%= form.label :expected %>
-    <%= form.text_area :expected, required: true %>
+    <%= form.text_area :expected, required: true, id: "expected" %>
   </p>
 </div>
 
