@@ -30,6 +30,35 @@ class TestCaseTest < ActiveSupport::TestCase
     assert test_case.destroy
   end
 
+  def test_destroy
+    TestCase.find(1).destroy
+    assert_nil TestCase.find_by_id(1)
+  end
+
+  def test_destroying_a_deleted_test_case_should_not_raise_an_error
+    test_case = TestCase.find(1)
+    TestCase.find(1).destroy
+
+    assert_nothing_raised do
+      assert_no_difference 'TestCase.count' do
+        test_case.destroy
+      end
+      assert test_case.destroyed?
+    end
+  end
+
+  def test_destroying_a_stale_test_case_should_not_raise_an_error
+    test_case = TestCase.find(1)
+    TestCase.find(1).update! :name => "Updated"
+
+    assert_nothing_raised do
+      assert_difference 'TestCase.count', -1 do
+        test_case.destroy
+      end
+      assert test_case.destroyed?
+    end
+  end
+
   def test_fixture
     test_case = test_cases(:test_cases_001)
     assert_equal 1, test_case.id

@@ -30,6 +30,35 @@ class TestPlanTest < ActiveSupport::TestCase
     assert test_plan.destroy
   end
 
+  def test_destroy
+    TestPlan.find(1).destroy
+    assert_nil TestPlan.find_by_id(1)
+  end
+
+  def test_destroying_a_deleted_test_plan_should_not_raise_an_error
+    test_plan = TestPlan.find(1)
+    TestPlan.find(1).destroy
+
+    assert_nothing_raised do
+      assert_no_difference 'TestPlan.count' do
+        test_plan.destroy
+      end
+      assert test_plan.destroyed?
+    end
+  end
+
+  def test_destroying_a_stale_test_plan_should_not_raise_an_error
+    test_plan = TestPlan.find(1)
+    TestPlan.find(1).update! :name => "Updated"
+
+    assert_nothing_raised do
+      assert_difference 'TestPlan.count', -1 do
+        test_plan.destroy
+      end
+      assert test_plan.destroyed?
+    end
+  end
+
   def test_fixture
     test_plan = test_plans(:test_plans_001)
     assert_equal 1, test_plan.id
