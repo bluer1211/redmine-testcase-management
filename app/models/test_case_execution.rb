@@ -18,14 +18,14 @@ class TestCaseExecution < ActiveRecord::Base
   end)
 
   def attachments_visible?(user=User.current)
-    true
+    visible?(user)
   end
 
   def attachments_editable?(user=User.current)
-    true
+    editable?(user)
   end
 
   def attachments_deletable?(user=User.current)
-    true
+    deletable?(user)
   end
 end
