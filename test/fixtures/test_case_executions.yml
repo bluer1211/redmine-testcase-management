@@ -16,7 +16,7 @@ test_case_executions_002:
   id: 2
   result: true
   comment: Comment 2
-  user_id: 2
+  user_id: 1
   execution_date: 2022-02-10 00:00:00 +09:00
   # test_plan: test_plans_003
   test_plan_id: 3
@@ -30,7 +30,7 @@ test_case_executions_003:
   comment: Comment 3
   user_id: 2
   issue_id: 1
-  execution_date: 2022-02-10 00:00:00 +09:00
+  execution_date: 2022-02-11 00:00:00 +09:00
   # test_plan: test_plans_003
   test_plan_id: 3
   # test_case: test_cases_003

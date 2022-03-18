@@ -18,6 +18,7 @@ ja:
   error_create_failure: "作成に失敗しました"
   error_update_failure: "更新に失敗しました"
   error_delete_failure: "削除に失敗しました"
+  error_index_failure: "一覧を表示できませんでした"
 
   error_project_not_found: "プロジェクトが存在しません。"
   error_test_plan_not_found: "テスト計画が存在しません。"

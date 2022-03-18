@@ -4,41 +4,17 @@
 
 <h2><%=l(:label_test_case_executions)%></h2>
 
-<div class="autoscroll">
-  <table class="list issues odd-even sort-by-id sort-desc">
-    <thead>
-      <tr>
-        <th><%=l(:label_test_case_executions)%></th>
-        <th><%=l(:field_result)%></th>
-        <th><%=l(:field_user)%></th>
-        <th><%=l(:field_execution_date)%></th>
-        <th><%=l(:field_comment)%></th>
-        <th><%=l(:field_issue)%></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if @test_case_executions %>
-        <% @test_case_executions.each do |test_case_execution| %>
-        <tr>
-          <td><%= link_to test_case_execution.id, project_test_plan_test_case_test_case_execution_path(id: test_case_execution.id) %></td>
-          <td>
-            <% if test_case_execution.result %>
-            <%= l(:label_succeed) %>
-            <% else %>
-            <%= l(:label_failure) %>
-            <% end %>
-          </td>
-          <td><%= test_case_execution.user.name %></td>
-          <td><%= test_case_execution.execution_date %></td>
-          <td><%= test_case_execution.comment %></td>
-          <td>
-            <% if test_case_execution.issue %>
-            <%= link_to test_case_execution.issue, issue_path(id: test_case_execution.issue.id) %>
-            <% end %>
-          </td>
-        </tr>
-        <% end %>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<%= form_tag(project_test_plan_test_case_test_case_executions_path, :method => :get, :id => 'query_form') do %>
+  <%= render :partial => 'queries/query_form' %>
+<% end %>
+
+<% if @query.valid? %>
+  <% if @test_case_executions.empty? %>
+    <p class="nodata"><%= l(:label_no_data) %></p>
+  <% else %>
+    <%= render_query_totals(@query) %>
+    <%= render :partial => 'test_case_executions/list', :locals => {:test_case_executions => @test_case_executions, :query => @query} %>
+    <span class="pagination"><%= pagination_links_full @test_case_execution_pages, @test_case_execution_count %></span>
+  <% end %>
+<% end %>
+

@@ -19,6 +19,7 @@ en:
   error_create_failure: "Failed to create"
   error_update_failure: "Failed to update"
   error_delete_failure: "Failed to delete"
+  error_index_failure: "Failed to show index"
 
   error_project_not_found: "The project was not found."
   error_test_plan_not_found: "The test plan was not found."

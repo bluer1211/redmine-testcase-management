@@ -1,7 +1,8 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class TestCaseExecutionsControllerTest < ActionController::TestCase
-  fixtures :projects, :users, :issues, :issue_statuses
+  fixtures :projects, :users, :issues, :issue_statuses, :roles, :members, :member_roles,
+           :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
   include ApplicationsHelper
@@ -12,11 +13,17 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   NONEXISTENT_TEST_CASE_EXECUTION_ID = 404
 
   class Index < self
+    def setup
+      @project = projects(:projects_003)
+      login_with_permissions(@project, [:view_project, :view_issues])
+    end
+
     def test_index
       get :index, params: {
-            project_id: projects(:projects_003).identifier,
+            project_id: @project.identifier,
             test_plan_id: test_plans(:test_plans_003).id,
-            test_case_id: test_cases(:test_cases_002).id
+            test_case_id: test_cases(:test_cases_002).id,
+            c: ["result", "user", "execution_date", "comment", "issue"]
           }
       assert_response :success
       assert_select "tbody tr", 1
@@ -28,12 +35,12 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       end
       assert_equal [test_case_executions(:test_case_executions_001).id], executions
       columns = []
-      assert_select "thead tr:first-child th" do |ths|
+      assert_select "table#test_case_executions_list thead tr:first-child th" do |ths|
         ths.each do |th|
           columns << th.text
         end
       end
-      assert_equal [I18n.t(:label_test_case_executions),
+      assert_equal ['#',
                     I18n.t(:field_result),
                     I18n.t(:field_user),
                     I18n.t(:field_execution_date),
@@ -78,6 +85,111 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_response :missing
       assert_flash_error I18n.t(:error_test_case_not_found)
       assert_back_to_lists_link(project_test_plan_test_cases_path)
+    end
+
+    class Filter < self
+      def test_index_with_invalid_filter
+        get :index, params: {
+              project_id: @project.identifier,
+              test_plan_id: test_plans(:test_plans_003),
+              test_case_id: test_cases(:test_cases_001),
+              set_filter: 1,
+              f: ['user_id'],
+              op: {
+                'user_id' => "=",
+              },
+              v: {
+              },
+            }
+        assert_flash_error I18n.t(:error_index_failure)
+        assert_response :unprocessable_entity
+      end
+
+      def test_index_with_result_filter
+        get :index, params: {
+              project_id: @project.identifier,
+              test_plan_id: test_plans(:test_plans_003),
+              test_case_id: test_cases(:test_cases_003),
+              set_filter: 1,
+              f: ['result'],
+              op: {
+                'result' => '='
+              },
+              v: {
+                'result': ['1'] # Works for SQLite3
+              },
+              c: ["result", "user", "execution_date", "comment", "issue"]
+            }
+        assert_response :success
+        # test_case_executions_003(result=false) must be ignored
+        assert_equal [test_case_executions(:test_case_executions_002).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_user_filter
+        get :index, params: {
+              project_id: @project.identifier,
+              test_plan_id: test_plans(:test_plans_003),
+              test_case_id: test_cases(:test_cases_003),
+              set_filter: 1,
+              f: ['user_id'],
+              op: {
+                'user_id' => '='
+              },
+              v: {
+                'user_id': [users(:users_001).id]
+              },
+              c: ["result", "user", "execution_date", "comment", "issue"]
+            }
+        assert_response :success
+        # test_case_executions_003 (users_002(id=2)) must be ignored
+        assert_equal [test_case_executions(:test_case_executions_002).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_issue_filter
+        get :index, params: {
+              project_id: @project.identifier,
+              test_plan_id: test_plans(:test_plans_003),
+              test_case_id: test_cases(:test_cases_003),
+              set_filter: 1,
+              f: ['issue_id'],
+              op: {
+                'issue_id' => '='
+              },
+              v: {
+                'issue_id': [issues(:issues_001).id]
+              },
+              c: ["result", "user", "execution_date", "comment", "issue"]
+            }
+        assert_response :success
+        # test_case_executions_002 (empty issue) must be ignored
+        assert_equal [test_case_executions(:test_case_executions_003).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_execution_date_filter
+        ActiveRecord::Base.default_timezone = :utc
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        get :index, params: {
+              project_id: @project.identifier,
+              test_plan_id: test_plans(:test_plans_003),
+              test_case_id: test_cases(:test_cases_003),
+              set_filter: 1,
+              f: ['execution_date'],
+              op: {
+                'execution_date' => '='
+              },
+              v: {
+                'execution_date': [test_case_execution.execution_date.strftime("%F")]
+              },
+              c: ["result", "user", "execution_date", "comment", "issue"]
+            }
+        assert_response :success
+        # test_case_executions_002 must be ignored
+        assert_equal [test_case_execution.id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
     end
   end
 
@@ -227,7 +339,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_equal I18n.t(:label_succeed), div.text.strip
       end
       assert_select "div#issue_id" do |div|
-        assert_equal @test_case_execution.issue.to_s, " #{div.text.strip}"
+        assert_equal @test_case_execution.issue.to_s, div.text.strip
       end
 
       assert_select "div#comment div.wiki" do |div|
