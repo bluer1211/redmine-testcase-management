@@ -17,23 +17,15 @@ class TestCaseExecution < ActiveRecord::Base
     where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
   end)
 
-  def editable?
-    true
-  end
-
-  def deletable?
-    true
-  end
-
   def attachments_visible?(user=User.current)
-    true
+    visible?(user)
   end
 
   def attachments_editable?(user=User.current)
-    true
+    editable?(user)
   end
 
   def attachments_deletable?(user=User.current)
-    true
+    deletable?(user)
   end
 end

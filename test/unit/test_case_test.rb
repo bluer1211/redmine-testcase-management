@@ -30,6 +30,35 @@ class TestCaseTest < ActiveSupport::TestCase
     assert test_case.destroy
   end
 
+  def test_destroy
+    TestCase.find(1).destroy
+    assert_nil TestCase.find_by_id(1)
+  end
+
+  def test_destroying_a_deleted_test_case_should_not_raise_an_error
+    test_case = TestCase.find(1)
+    TestCase.find(1).destroy
+
+    assert_nothing_raised do
+      assert_no_difference 'TestCase.count' do
+        test_case.destroy
+      end
+      assert test_case.destroyed?
+    end
+  end
+
+  def test_destroying_a_stale_test_case_should_not_raise_an_error
+    test_case = TestCase.find(1)
+    TestCase.find(1).update! :name => "Updated"
+
+    assert_nothing_raised do
+      assert_difference 'TestCase.count', -1 do
+        test_case.destroy
+      end
+      assert test_case.destroyed?
+    end
+  end
+
   def test_fixture
     test_case = test_cases(:test_cases_001)
     assert_equal 1, test_case.id
@@ -285,6 +314,74 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_not_nil test_cases.detect {|test_case| test_case.project_id == 3}
   end
 
+  def test_visible_scope_should_not_consider_roles_without_view_issues_permission
+    user = User.generate!
+    role1 = Role.generate!
+    role1.remove_permission! :view_issues
+    role1.save!
+    role2 = Role.generate!
+    role2.add_permission! :view_issues
+    role2.save!
+    User.add_to_project(user, Project.find(3), [role1, role2])
+
+    test_cases = TestCase.where(:project_id => 3).visible(user).to_a
+    assert test_cases.any?
+  end
+
+  def test_visible_scope_for_admin
+    user = User.find(1)
+    user.members.each(&:destroy)
+    assert user.projects.empty?
+    test_cases = TestCase.visible(user).to_a
+    # Admin should see test_cases on private projects that admin does not belong to
+    assert_equal [true, test_cases(:test_cases_004)],
+                 [test_cases.any?,
+                  test_cases.detect {|test_case| !test_case.project.is_public?}]
+    assert_visibility_match user, test_cases
+  end
+
+  def test_visible_scope_with_project
+    project = Project.find(1)
+    test_cases = TestCase.visible(User.find(2), :project => project).to_a
+    projects = test_cases.collect(&:project).uniq
+    assert_equal [1, project],
+                 [projects.size, projects.first]
+  end
+
+  def test_visible_scope_with_project_and_subprojects
+    project = Project.find(1)
+    test_cases = TestCase.visible(User.find(2), :project => project, :with_subprojects => true).to_a
+    projects = test_cases.collect(&:project).uniq
+    assert [true, []],
+           [projects.size > 1,
+            projects.select {|p| !p.is_or_is_descendant_of?(project)}]
+  end
+
+  def test_visible_scope_with_unsaved_user_should_not_raise_an_error
+    user = User.new
+    assert_nothing_raised do
+      TestCase.visible(user).to_a
+    end
+  end
+
+  def test_test_case_should_be_readonly_on_closed_project
+    test_case = TestCase.find(1)
+    user = User.find(1)
+
+    assert_equal [true, true, true],
+                 [test_case.visible?(user),
+                  test_case.editable?(user),
+                  test_case.deletable?(user)]
+
+    test_case.project.close
+    test_case.reload
+
+    assert_equal [true, false, false],
+                 [test_case.visible?(user),
+                  test_case.editable?(user),
+                  test_case.deletable?(user)]
+  end
+
   def test_test_case_should_editable_by_author
     Role.all.each do |role|
       role.remove_permission! :edit_issues
@@ -301,5 +398,45 @@ class TestCaseTest < ActiveSupport::TestCase
                    test_case.attributes_editable?(users(:users_001)), #admin
                    test_case.attributes_editable?(users(:users_003)), #other
                  ]
+  end
+
+  def test_test_case_should_readonly_for_anonymous
+    test_case = TestCase.find(1)
+    assert_equal [true, false, false],
+                 [test_case.visible?(User.anonymous),
+                  test_case.editable?(User.anonymous),
+                  test_case.deletable?(User.anonymous)]
+  end
+
+  def test_editable_scope_for_member
+    test_case = test_cases(:test_cases_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case.project_id, :roles => [role])
+
+    assert_not test_case.editable?(user)
+
+    role.add_permission!(:edit_issues)
+    test_case.reload
+    user.reload
+    assert test_case.editable?(user)
+  end
+
+  def test_deletable_scope_for_member
+    test_case = test_cases(:test_cases_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case.project_id, :roles => [role])
+
+    assert_not test_case.deletable?(user)
+
+    role.add_permission!(:delete_issues)
+    test_case.reload
+    user.reload
+    assert test_case.deletable?(user)
   end
 end
