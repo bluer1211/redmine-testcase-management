@@ -310,9 +310,16 @@ class TestPlanTest < ActiveSupport::TestCase
     role1.remove_permission! :view_issues
     role1.save!
     role2 = Role.generate!
-    role2.add_permission! :view_issues
+    role2.remove_permission! :view_issues
     role2.save!
     User.add_to_project(user, Project.find(3), [role1, role2])
+
+    test_plans = TestPlan.where(:project_id => 3).visible(user).to_a
+    assert_not test_plans.any?
+
+    role2.add_permission! :view_issues
+    role2.save!
+    user.reload
 
     test_plans = TestPlan.where(:project_id => 3).visible(user).to_a
     assert test_plans.any?

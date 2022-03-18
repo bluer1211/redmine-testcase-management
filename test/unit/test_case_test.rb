@@ -320,9 +320,16 @@ class TestCaseTest < ActiveSupport::TestCase
     role1.remove_permission! :view_issues
     role1.save!
     role2 = Role.generate!
-    role2.add_permission! :view_issues
+    role2.remove_permission! :view_issues
     role2.save!
     User.add_to_project(user, Project.find(3), [role1, role2])
+
+    test_cases = TestCase.where(:project_id => 3).visible(user).to_a
+    assert_not test_cases.any?
+
+    role2.add_permission! :view_issues
+    role2.save!
+    user.reload
 
     test_cases = TestCase.where(:project_id => 3).visible(user).to_a
     assert test_cases.any?
@@ -438,5 +445,53 @@ class TestCaseTest < ActiveSupport::TestCase
     test_case.reload
     user.reload
     assert test_case.deletable?(user)
+  end
+
+  def test_attachments_visible_scope_for_member
+    test_case = test_cases(:test_cases_001)
+
+    role = Role.generate!
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case.project_id, :roles => [role])
+
+    assert_not test_case.attachments_visible?(user)
+
+    role.add_permission!(:view_issues)
+    test_case.reload
+    user.reload
+    assert test_case.attachments_visible?(user)
+  end
+
+  def test_attachments_editable_scope_for_member
+    test_case = test_cases(:test_cases_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case.project_id, :roles => [role])
+
+    assert_not test_case.attachments_editable?(user)
+
+    role.add_permission!(:edit_issues)
+    test_case.reload
+    user.reload
+    assert test_case.attachments_editable?(user)
+  end
+
+  def test_attachments_deletable_scope_for_member
+    test_case = test_cases(:test_cases_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case.project_id, :roles => [role])
+
+    assert_not test_case.attachments_deletable?(user)
+
+    role.add_permission!(:delete_issues)
+    test_case.reload
+    user.reload
+    assert test_case.attachments_deletable?(user)
   end
 end
