@@ -273,9 +273,16 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     role1.remove_permission! :view_issues
     role1.save!
     role2 = Role.generate!
-    role2.add_permission! :view_issues
+    role2.remove_permission! :view_issues
     role2.save!
     User.add_to_project(user, Project.find(3), [role1, role2])
+
+    test_case_executions = TestCaseExecution.where(:project_id => 3).visible(user).to_a
+    assert_not test_case_executions.any?
+
+    role2.add_permission! :view_issues
+    role2.save!
+    user.reload
 
     test_case_executions = TestCaseExecution.where(:project_id => 3).visible(user).to_a
     assert test_case_executions.any?
