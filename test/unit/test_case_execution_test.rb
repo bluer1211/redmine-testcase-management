@@ -4,7 +4,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :member_roles, :roles, :issues, :issue_statuses,
            :groups_users, :trackers, :projects_trackers, :enabled_modules
-  fixtures :test_plans, :test_cases, :test_case_executions
+  fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
   def test_initialize
     test_case_execution = TestCaseExecution.new

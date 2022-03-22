@@ -4,7 +4,7 @@ class TestPlanTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :member_roles, :roles, :issue_statuses,
            :groups_users, :trackers, :projects_trackers, :enabled_modules
-  fixtures :test_plans, :test_cases
+  fixtures :test_plans, :test_cases, :test_case_test_plans
 
   def test_initialize
     test_plan = TestPlan.new
@@ -123,12 +123,12 @@ class TestPlanTest < ActiveSupport::TestCase
 
   def test_no_test_case
     test_plan = test_plans(:test_plans_001)
-    assert 0, test_plan.test_cases.size
+    assert_not test_plan.test_cases.any?
   end
 
   def test_one_test_case
     test_plan = test_plans(:test_plans_002)
-    assert 1, test_plan.test_cases.size
+    assert test_plan.test_cases.any?
     assert "Test Case 1 (No test case execution)", test_plan.test_cases.pluck(:name)
   end
 
@@ -141,41 +141,28 @@ class TestPlanTest < ActiveSupport::TestCase
 
   def test_incomplete_test_case
     test_plan = test_plans(:test_plans_001)
-    test_case = test_plan.test_cases.new(:name => "dummy")
+    test_case = TestCase.create(:name => "dummy")
     assert_equal true, test_case.invalid? # no test case name
-    assert_equal false, test_plan.save
+    assert_raises ActiveRecord::RecordInvalid do
+      test_plan.test_cases << test_case
+    end
   end
 
   def test_save_test_case
     test_plan = test_plans(:test_plans_001)
-    test_case = test_plan.test_cases.new(:name => "dummy",
-                                         :scenario => "test scenario",
-                                         :expected => "expected situation",
-                                         :environment => "Debian GNU/Linux",
-                                         :test_plan => test_plan,
-                                         :project => projects(:projects_001),
-                                         :user => users(:users_001))
+    test_case = TestCase.create(:name => "dummy",
+                                :scenario => "test scenario",
+                                :expected => "expected situation",
+                                :environment => "Debian GNU/Linux",
+                                :project => projects(:projects_001),
+                                :user => users(:users_001))
     assert_save test_plan
-    assert_equal 1, test_plan.test_cases.size
-    assert_equal test_plan, test_plan.test_cases.first.test_plan
-    test_case.destroy
-  end
-
-  def test_destroy_dependent_test_case
-    test_plan = test_plans(:test_plans_001)
-    test_case = test_plan.test_cases.new(:name => "dummy",
-                                         :scenario => "test scenario",
-                                         :expected => "expected situation",
-                                         :environment => "Debian GNU/Linux",
-                                         :test_plan => test_plan,
-                                         :project => projects(:projects_001),
-                                         :user => users(:users_001))
-    assert_save test_plan
-    assert_difference("TestPlan.count", -1) do
-      assert_difference("TestCase.count", -1) do
-        test_plan.destroy
-      end
-    end
+    test_case.test_plans << test_plan
+    test_plan.reload
+    assert_equal [1, 1],
+                 [test_plan.test_cases.size, test_case.test_plans.size]
+    assert_equal [test_plan, test_case],
+                 [test_case.test_plans.first, test_plan.test_cases.first]
   end
 
   # permissions
