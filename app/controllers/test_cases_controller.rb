@@ -33,7 +33,8 @@ class TestCasesController < ApplicationController
   def create
     begin
       find_project(params.permit(:project_id)[:project_id])
-      @test_case = TestCase.new(:name => test_case_params[:name],
+      @test_case = TestCase.new(:project_id => @project.id,
+                                :name => test_case_params[:name],
                                 :scheduled_date => test_case_params[:scheduled_date],
                                 :user => User.find(test_case_params[:user]),
                                 :environment => test_case_params[:environment],
