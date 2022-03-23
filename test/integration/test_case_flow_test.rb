@@ -2,7 +2,7 @@ require 'test_helper'
 
 class TestCaseFlowTest < ActionDispatch::IntegrationTest
   fixtures :projects, :users, :issues, :issue_statuses
-  fixtures :test_plans, :test_cases
+  fixtures :test_plans, :test_cases, :test_case_test_plans
 
   def setup
     @project = projects(:projects_003)
