@@ -4,7 +4,6 @@ test_cases_001:
   # project: projects_003
   project_id: 3
   # test_plan: test_plans_002
-  test_plan_id: 2
   name: Test Case 1 (No test case execution)
   scenario: Scenario 1
   expected: Expected 1
@@ -17,7 +16,6 @@ test_cases_002:
   # project: projects_003
   project_id: 3
   # test_plan: test_plans_003
-  test_plan_id: 3
   name: Test Case 2 (1 test case execution)
   scenario: Scenario 2
   expected: Expected 2
@@ -31,7 +29,6 @@ test_cases_003:
   # project: projects_003
   project_id: 3
   # test_plan: test_plans_003
-  test_plan_id: 3
   name: Test Case 3 (2 test case execution)
   scenario: Scenario 3
   expected: Expected 3
@@ -45,7 +42,6 @@ test_cases_004:
   # project: projects_005
   project_id: 5
   # test_plan: test_plans_004
-  test_plan_id: 4
   name: Test Case 4
   scenario: Scenario 4
   expected: Expected 4
@@ -59,7 +55,6 @@ test_cases_005:
   # project: projects_001
   project_id: 1
   # test_plan: test_plans_005
-  test_plan_id: 5
   name: Test Case 1 (No test case execution)
   scenario: Scenario 1
   expected: Expected 1
@@ -71,7 +66,6 @@ test_cases_006:
   # project: projects_001
   project_id: 1
   # test_plan: test_plans_005
-  test_plan_id: 5
   name: Test Case 2 (1 test case execution)
   scenario: Scenario 2
   expected: Expected 2
@@ -84,7 +78,6 @@ test_cases_007:
   # project: projects_001
   project_id: 1
   # test_plan: test_plans_005
-  test_plan_id: 5
   name: Test Case 3 (2 test case execution)
   scenario: Scenario 3
   expected: Expected 3

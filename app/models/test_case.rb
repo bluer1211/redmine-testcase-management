@@ -3,7 +3,8 @@ class TestCase < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :project
-  belongs_to :test_plan
+  has_many :test_case_test_plans, dependent: :destroy
+  has_many :test_plans, through: :test_case_test_plans
   has_many :test_case_executions, dependent: :destroy
   acts_as_attachable
 

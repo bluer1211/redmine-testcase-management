@@ -4,7 +4,7 @@ class TestCaseTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :member_roles, :roles, :issue_statuses,
            :groups_users, :trackers, :projects_trackers, :enabled_modules
-  fixtures :test_plans, :test_cases, :test_case_executions
+  fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
   def test_initialize
     test_case = TestCase.new
@@ -147,7 +147,7 @@ class TestCaseTest < ActiveSupport::TestCase
     test_case = TestCase.new
     assert_nil test_case.user
     assert_nil test_case.project
-    assert_nil test_case.test_plan
+    assert_not test_case.test_plans.any?
   end
 
   def test_no_test_case_execution
@@ -237,7 +237,7 @@ class TestCaseTest < ActiveSupport::TestCase
   def test_visible_scope_for_non_member_with_own_test_case_visibility
     Role.non_member.update! :issues_visibility => "own"
     user = User.find(9)
-    TestCase.create!(project_id: 3, test_plan_id: 1, name: "test case by non member", environment: "Debian GNU/Linux",
+    TestCase.create!(project_id: 3, name: "test case by non member", environment: "Debian GNU/Linux",
                      scenario: "scenario", expected: "expected",
                      user_id: user.id, scheduled_date: DateTime.new)
 

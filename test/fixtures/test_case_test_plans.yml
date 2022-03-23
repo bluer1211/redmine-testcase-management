@@ -1,0 +1,22 @@
+--- 
+test_case_test_plans_001:
+  test_case_id: 1
+  test_plan_id: 2
+test_case_test_plans_002:
+  test_case_id: 2
+  test_plan_id: 3
+test_case_test_plans_003:
+  test_case_id: 3
+  test_plan_id: 3
+test_case_test_plans_004:
+  test_case_id: 4
+  test_plan_id: 4
+test_case_test_plans_005:
+  test_case_id: 5
+  test_plan_id: 5
+test_case_test_plans_006:
+  test_case_id: 6
+  test_plan_id: 5
+test_case_test_plans_007:
+  test_case_id: 7
+  test_plan_id: 5
