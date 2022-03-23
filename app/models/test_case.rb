@@ -32,4 +32,10 @@ class TestCase < ActiveRecord::Base
   def attachments_deletable?(user=User.current)
     deletable?(user)
   end
+
+  # Workaround for functional tests.
+  # This should be removed after we completely migrate to test_plan-independent design.
+  def test_plan
+    test_plans.first
+  end
 end
