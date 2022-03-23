@@ -16,8 +16,7 @@ class TestCasesController < ApplicationController
 
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases
   def index
-    @test_cases = TestCase.joins(:test_plan).where(project_id: @project.id,
-                                                   test_plan_id: @test_plan.id)
+    @test_cases = @test_plan.test_cases
   end
 
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/new
@@ -37,10 +36,12 @@ class TestCasesController < ApplicationController
       @test_case = TestCase.new(:name => test_case_params[:name],
                                 :scheduled_date => test_case_params[:scheduled_date],
                                 :user => User.find(test_case_params[:user]),
-                                :test_plan => TestPlan.find(params[:test_plan_id]),
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected])
+      if params[:test_plan_id].present?
+        @test_case.test_plans << TestPlan.find(params[:test_plan_id])
+      end
       if params[:attachments].present?
         @test_case.save_attachments params.require(:attachments).permit!
       end
@@ -64,7 +65,7 @@ class TestCasesController < ApplicationController
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id/edit
   def edit
     @test_case = TestCase.find(params.permit(:id)[:id])
-    @test_plan = @test_case.test_plan
+    @test_plan = @test_case.test_plans.first
   end
 
   # PUT /projects/:project_id/test_plans/:test_plan_id/test_cases/:id

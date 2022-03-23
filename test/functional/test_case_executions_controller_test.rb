@@ -2,7 +2,7 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class TestCaseExecutionsControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issues, :issue_statuses
-  fixtures :test_plans, :test_cases, :test_case_executions
+  fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
   include ApplicationsHelper
 

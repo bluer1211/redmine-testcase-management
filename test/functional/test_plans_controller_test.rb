@@ -2,7 +2,7 @@ require File.expand_path('../../test_helper', __FILE__)
 
 class TestPlansControllerTest < ActionController::TestCase
   fixtures :projects, :users, :issue_statuses
-  fixtures :test_plans, :test_cases, :test_case_executions
+  fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
   include ApplicationsHelper
 
@@ -186,24 +186,11 @@ class TestPlansControllerTest < ActionController::TestCase
       end
     end
 
-    def test_destroy_dependent_test_case
-      test_plan = test_plans(:test_plans_002)
-      assert_difference("TestPlan.count", -1) do
-        assert_difference("TestCase.count", -1) do
-          assert_no_difference("TestCaseExecution.count") do
-            delete :destroy, params: { project_id: @project_id, id: test_plan.id }
-          end
-        end
-      end
-    end
-
     def test_destroy_dependent_test_case_executions
       test_plan = test_plans(:test_plans_003)
       assert_difference("TestPlan.count", -1) do
-        assert_difference("TestCase.count", -2) do
-          assert_difference("TestCaseExecution.count", -3) do
-            delete :destroy, params: { project_id: @project_id, id: test_plan.id }
-          end
+        assert_difference("TestCaseExecution.count", -3) do
+          delete :destroy, params: { project_id: @project_id, id: test_plan.id }
         end
       end
     end
