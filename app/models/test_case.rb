@@ -13,6 +13,7 @@ class TestCase < ActiveRecord::Base
   validates :expected, presence: true
   validates :user, presence: true
   validates :environment, presence: true
+  validates :project, presence: true
 
   validates_associated :test_case_executions
 

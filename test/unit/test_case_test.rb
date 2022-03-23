@@ -96,8 +96,19 @@ class TestCaseTest < ActiveSupport::TestCase
     end
   end
 
+  def test_missing_project
+    object = TestCase.new(:name => "name",
+                          :scenario => "dummy",
+                          :expected => "dummy",
+                          :user => users(:users_001),
+                          :environment => "dummy")
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:project]
+  end
+
   def test_missing_name
-    object = TestCase.new(:scenario => "dummy",
+    object = TestCase.new(:project_id => 1,
+                          :scenario => "dummy",
                           :expected => "dummy",
                           :user => users(:users_001),
                           :environment => "dummy")
@@ -106,7 +117,8 @@ class TestCaseTest < ActiveSupport::TestCase
   end
 
   def test_missing_scenario
-    object = TestCase.new(:name => "dummy",
+    object = TestCase.new(:project_id => 1,
+                          :name => "dummy",
                           :expected => "dummy",
                           :user => users(:users_001),
                           :environment => "dummy")
@@ -115,7 +127,8 @@ class TestCaseTest < ActiveSupport::TestCase
   end
 
   def test_missing_expected
-    object = TestCase.new(:name => "dummy",
+    object = TestCase.new(:project_id => 1,
+                          :name => "dummy",
                           :scenario => "dummy",
                           :user => users(:users_001),
                           :environment => "dummy")
@@ -124,7 +137,8 @@ class TestCaseTest < ActiveSupport::TestCase
   end
 
   def test_missing_user
-    object = TestCase.new(:name => "dummy",
+    object = TestCase.new(:project_id => 1,
+                          :name => "dummy",
                           :scenario => "dummy",
                           :expected => "dummy",
                           :environment => "dummy")
@@ -133,7 +147,8 @@ class TestCaseTest < ActiveSupport::TestCase
   end
 
   def test_missing_environment
-    object = TestCase.new(:name => "dummy",
+    object = TestCase.new(:project_id => 1,
+                          :name => "dummy",
                           :scenario => "dummy",
                           :expected => "dummy",
                           :user => users(:users_001))
