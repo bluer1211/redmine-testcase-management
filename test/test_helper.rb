@@ -22,4 +22,12 @@ def assert_back_to_lists_link(path)
   end
 end
 
+def login_with_permissions(project, permissions=[:view_project, :view_issues])
+  @role = Role.generate!(:permissions => permissions)
+  @role.save!
+  @user = User.generate!
+  User.add_to_project(@user, project, @role)
+  @request.session[:user_id] = @user.id
+end
+
 
