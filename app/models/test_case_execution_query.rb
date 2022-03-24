@@ -68,7 +68,7 @@ class TestCaseExecutionQuery < Query
       .where(getTestCaseExecutionConditions)
   end
 
-  def default_columsn_names
+  def default_columns_names
     [:id, :result, :comment, :user, :issue]
   end
 
