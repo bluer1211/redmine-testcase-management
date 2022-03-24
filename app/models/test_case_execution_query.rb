@@ -74,6 +74,7 @@ class TestCaseExecutionQuery < Query
   end
 
   def default_sort_criteria
+    # Newer test case execution should be listed on top
     [['id', 'desc']]
   end
 
