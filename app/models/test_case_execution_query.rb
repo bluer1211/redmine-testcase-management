@@ -68,6 +68,7 @@ class TestCaseExecutionQuery < Query
       .where(getTestCaseExecutionConditions)
   end
 
+  # Specify selected columns by default
   def default_columns_names
     [:id, :result, :user, :execution_date, :comment, :issue]
   end
