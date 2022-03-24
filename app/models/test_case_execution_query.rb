@@ -80,12 +80,14 @@ class TestCaseExecutionQuery < Query
   # Valid options:
   #   :test_plan_id :test_case_id :limit :offset
   def test_case_executions(options={})
+    order_option = [sort_clause]
     conditions = [
       sql_for_field("id", "=", [options[:test_plan_id]], TestPlan.table_name, 'id'),
       sql_for_field("id", "=", [options[:test_case_id]], TestCase.table_name, 'id')
     ]
     base_scope
       .where(conditions.join(" AND "))
+      .order(order_option)
       .limit(options[:limit])
       .offset(options[:offset])
   end
