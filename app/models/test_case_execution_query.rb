@@ -69,7 +69,7 @@ class TestCaseExecutionQuery < Query
   end
 
   def default_columns_names
-    [:id, :result, :comment, :user, :issue]
+    [:id, :result, :user, :execution_date, :comment, :issue]
   end
 
   def default_sort_criteria
