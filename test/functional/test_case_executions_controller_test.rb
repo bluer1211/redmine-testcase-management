@@ -191,6 +191,138 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                      css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
       end
     end
+
+    class Order < self
+      def setup
+        @project = projects(:projects_003)
+        login_with_permissions(@project, [:view_project, :view_issues])
+        @order_params = {
+          project_id: @project.identifier,
+          test_plan_id: test_plans(:test_plans_003),
+          test_case_id: test_cases(:test_cases_003),
+        }
+      end
+
+      def test_id_order_by_desc
+        ids = test_case_executions(:test_case_executions_003, :test_case_executions_002).pluck(:id)
+        get :index, params: @order_params
+        assert_response :success
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_id_order_by_asc
+        ids = test_case_executions(:test_case_executions_002, :test_case_executions_003).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "id:asc" })
+        assert_response :success
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_result_order_by_desc
+        ids = test_case_executions(:test_case_executions_002, :test_case_executions_003).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "result:desc" })
+        assert_response :success
+        # should be listed in true, false order
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_result_order_by_asc
+        ids = test_case_executions(:test_case_executions_003, :test_case_executions_002).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "result:asc" })
+        assert_response :success
+        # should be listed in false, true order
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_user_order_by_desc
+        ids = test_case_executions(:test_case_executions_003, :test_case_executions_002).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "user:desc" })
+        assert_response :success
+        # should be listed in jsmith, admin
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_user_order_by_asc
+        ids = test_case_executions(:test_case_executions_002, :test_case_executions_003).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "user:asc" })
+        assert_response :success
+        # should be listed in admin, jsmith
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_execution_date_order_by_desc
+        ids = test_case_executions(:test_case_executions_003, :test_case_executions_002).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "execution_date:desc" })
+        assert_response :success
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_execution_date_order_by_asc
+        ids = test_case_executions(:test_case_executions_002, :test_case_executions_003).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "execution_date:asc" })
+        assert_response :success
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_comment_order_by_desc
+        ids = test_case_executions(:test_case_executions_003, :test_case_executions_002).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "comment:desc" })
+        assert_response :success
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_comment_order_by_asc
+        ids = test_case_executions(:test_case_executions_002, :test_case_executions_003).pluck(:id)
+        get :index, params: @order_params.merge({ sort: "comment:asc" })
+        assert_response :success
+        assert_equal ids,
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_issue_order_by_desc
+        skip unless postgresql? # sort by issue_id=nil behavior seems different among DB
+        test_case_execution = TestCaseExecution.create(project: projects(:projects_003),
+                                                       test_plan: test_plans(:test_plans_003),
+                                                       test_case: test_cases(:test_cases_003),
+                                                       user: users(:users_002),
+                                                       issue: issues(:issues_002),
+                                                       result: true,
+                                                       comment: "dummy")
+        get :index, params: @order_params.merge({ sort: "issue:desc" })
+        assert_response :success
+        # test case execution without assigned issue is listed on top
+        assert_equal [test_case_executions(:test_case_executions_002).id,
+                      test_case_execution.id,
+                      test_case_executions(:test_case_executions_003).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_issue_order_by_asc
+        skip unless postgresql? # sort by issue_id=nil behavior seems different among DB
+        test_case_execution = TestCaseExecution.create(project: projects(:projects_003),
+                                                       test_plan: test_plans(:test_plans_003),
+                                                       test_case: test_cases(:test_cases_003),
+                                                       user: users(:users_002),
+                                                       issue: issues(:issues_002),
+                                                       result: true,
+                                                       comment: "dummy")
+        get :index, params: @order_params.merge({ sort: "issue:asc" })
+        assert_response :success
+        # test case execution without assigned issue is listed on bottom
+        assert_equal [test_case_executions(:test_case_executions_003).id,
+                      test_case_execution.id,
+                      test_case_executions(:test_case_executions_002).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+    end
   end
 
   class New < self
