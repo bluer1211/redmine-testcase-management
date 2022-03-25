@@ -36,41 +36,41 @@
       </div>
     </div>
   </div>
-  <hr>
-  <div id="test_case_tree">
-    <div class="contextual">
-      <%= link_to l(:label_added), new_project_test_plan_test_case_path(test_plan_id: @test_plan.id) %>
-    </div>
-    <% if @test_plan.test_cases.any? %>
-      <p><%=l(:label_test_cases)%></p>
-      <table class="list issues odd-even">
-        <thead>
-          <tr>
-            <th><%=l(:field_name)%></th>
-            <th><%=l(:field_status)%></th>
-            <th><%=l(:field_user)%></th>
-            <th><%=l(:field_scheduled_date)%></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @test_plan.test_cases.each do |test_case| %>
-          <tr class="list issue">
-            <td><%= link_to test_case.name, project_test_plan_test_case_url(test_plan_id: @test_plan.id, id: test_case.id) %></td>
-            <td>
-              <% if test_case.test_case_executions.any? %>
-                <% if test_case.test_case_executions.all? { |tce| tce.result } %>
-                  <%=l(:label_succeed) %>
-                <% else %>
-                  <%=l(:label_failure) %>
-                <% end %>
-              <% end %>
-            </td>
-            <td><%= test_case.user.name %></td>
-            <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
-          </tr>
-          <% end %>
-        </tbody>
-      </table>
-    <% end %>
+</div>
+
+<div id="test_case_tree">
+  <div class="contextual">
+    <%= link_to l(:label_added), new_project_test_plan_test_case_path(test_plan_id: @test_plan.id) %>
   </div>
+  <% if @test_plan.test_cases.any? %>
+  <p><%=l(:label_test_cases)%></p>
+  <table class="list issues odd-even">
+    <thead>
+      <tr>
+        <th><%=l(:field_name)%></th>
+        <th><%=l(:field_status)%></th>
+        <th><%=l(:field_user)%></th>
+        <th><%=l(:field_scheduled_date)%></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @test_plan.test_cases.each do |test_case| %>
+      <tr class="list issue">
+        <td><%= link_to test_case.name, project_test_plan_test_case_url(test_plan_id: @test_plan.id, id: test_case.id) %></td>
+        <td>
+          <% if test_case.test_case_executions.any? %>
+          <% if test_case.test_case_executions.all? { |tce| tce.result } %>
+          <%=l(:label_succeed) %>
+          <% else %>
+          <%=l(:label_failure) %>
+          <% end %>
+          <% end %>
+        </td>
+        <td><%= test_case.user.name %></td>
+        <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% end %>
 </div>
