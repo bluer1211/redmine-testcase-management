@@ -1,4 +1,7 @@
 <div class="contextual">
+  <%= link_to l(:button_list),
+      project_test_plan_test_cases_path,
+      class: 'icon icon-list' %>
 <%= link_to l(:button_edit), edit_project_test_plan_test_case_path,
             :onclick => 'showAndScrollTo("update", "issue_notes"); return false;',
             :class => 'icon icon-edit', :accesskey => accesskey(:edit) if @test_case.editable? %>
