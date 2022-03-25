@@ -32,20 +32,22 @@
       </div>
     </div>
   </div>
-  <div id="scenario">
-    <p><%=l(:field_scenario)%></p>
-    <div class="wiki">
-      <%= @test_case.scenario %>
+  <div class="attributes">
+    <div id="scenario" class="attribute">
+      <div class="label"><%=l(:field_scenario)%></div>
+      <div class="wiki">
+        <%= @test_case.scenario %>
+      </div>
     </div>
   </div>
-  <hr/>
-  <div id="expected">
-    <p><%=l(:field_expected)%></p>
-    <div class="wiki">
-      <%= @test_case.expected %>
+  <div class="attributes">
+    <div id="expected" class="attribute">
+      <div class="label"><%=l(:field_expected)%></div>
+      <div class="wiki">
+        <%= @test_case.expected %>
+      </div>
     </div>
   </div>
-  <hr/>
   <% if @test_case.attachments.any? %>
     <p><strong><%=l(:label_attachment_plural)%></strong></p>
     <%= link_to_attachments @test_case, :thumbnails => true %>
