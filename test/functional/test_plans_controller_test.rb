@@ -73,7 +73,7 @@ class TestPlansControllerTest < ActionController::TestCase
       assert_select "div.subject div h3" do |h3|
         assert_equal test_plan.name, h3.text
       end
-      assert_select "div#test_case_tree table tbody tr td:first-child" do |td|
+      assert_select "table#related_test_cases tbody tr td:first-child" do |td|
         assert_equal test_cases(:test_cases_001).name, td.text
       end
       assert_select "div#test_case_tree div.contextual a:first-child" do |a|
@@ -220,6 +220,40 @@ class TestPlansControllerTest < ActionController::TestCase
         post :create, params: { project_id: project_id, test_plan: { name: "t" * 256, user: 2, issue_status: 1 } }
       end
       assert_response :unprocessable_entity
+    end
+  end
+
+  class Assign < self
+    def setup
+      @project = projects(:projects_003)
+      @test_plan = test_plans(:test_plans_002)
+      @test_case = test_cases(:test_cases_001)
+    end
+
+    def test_assign_test_case
+      assert_difference("TestCaseTestPlan.count", 1) do
+        post :assign_test_case, params: {
+               project_id: @project.identifier,
+               test_plan_id: @test_plan.id,
+               test_case_test_plan: {
+                 test_case_id: test_cases(:test_cases_002).id
+               }
+             }
+      end
+      assert_equal I18n.t(:notice_successful_update), flash[:notice]
+      assert_redirected_to project_test_plan_path(:id => @test_plan.id)
+    end
+
+    def test_unassign_test_case
+      assert_difference("TestCaseTestPlan.count", -1) do
+        delete :unassign_test_case, params: {
+                 project_id: @project.identifier,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: @test_case.id
+               }
+      end
+      assert_equal I18n.t(:notice_successful_delete), flash[:notice]
+      assert_redirected_to project_test_plan_path(:id => @test_plan.id)
     end
   end
 end

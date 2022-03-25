@@ -36,6 +36,53 @@
       </div>
     </div>
   </div>
+  <div id="relations">
+    <div class="contextual">
+      <%= toggle_link l(:label_added), 'assign-test-case-form', { focus: 'test_case_id' } %>
+    </div>
+    <p><strong><%=l(:label_test_cases)%></strong></p>
+    <%= form_for @test_case_test_plan, {
+        remote: false,
+        url: "#{project_test_plan_path}/assign_test_case",
+        method: :post,
+        html: {id: 'assign-test-case-form', style: 'display: none;'}
+        } do |f| %>
+      <%= render :partial => 'test_case_assignment', :locals => {:form => f}%>
+    <% end %>
+    <% if @test_plan.test_cases.present? %>
+      <%= form_tag({}) do %>
+      <table id="related_test_cases" class="list issues odd-even">
+        <tbody>
+          <% @test_plan.test_cases.each do |test_case| %>
+            <tr class="issue">
+              <td><%= link_to test_case.name, project_test_plan_test_case_url(test_plan_id: @test_plan.id, id: test_case.id) %></td>
+              <td>
+                <% if test_case.test_case_executions.any? %>
+                  <% if test_case.test_case_executions.all? { |tce| tce.result } %>
+                    <%=l(:label_succeed) %>
+                  <% else %>
+                    <%=l(:label_failure) %>
+                  <% end %>
+                <% else %>
+                  <%=l(:label_failure) %>
+                <% end %>
+              </td>
+              <td><%= link_to test_case.user.name, user_path(test_case.user)  %></td>
+              <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
+              <td>
+                <%= link_to l(:label_relation_delete), "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/assign_test_case/#{test_case.id}",
+                    method: :delete,
+                    data: { confirm: l(:text_are_you_sure) },
+                    title: l(:label_relation_delete),
+                    class: 'icon-only icon-link-break' %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <% end %>
+    <% end %>
+  </div>
 </div>
 
 <div id="test_case_tree">
@@ -43,35 +90,4 @@
     <%= link_to l(:label_test_case_new), new_project_test_plan_test_case_path(test_plan_id: @test_plan.id),
         class: 'icon icon-add' %>
   </div>
-  <% if @test_plan.test_cases.any? %>
-  <p><%=l(:label_test_cases)%></p>
-  <table class="list issues odd-even">
-    <thead>
-      <tr>
-        <th><%=l(:field_name)%></th>
-        <th><%=l(:field_status)%></th>
-        <th><%=l(:field_user)%></th>
-        <th><%=l(:field_scheduled_date)%></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @test_plan.test_cases.each do |test_case| %>
-      <tr class="list issue">
-        <td><%= link_to test_case.name, project_test_plan_test_case_url(test_plan_id: @test_plan.id, id: test_case.id) %></td>
-        <td>
-          <% if test_case.test_case_executions.any? %>
-          <% if test_case.test_case_executions.all? { |tce| tce.result } %>
-          <%=l(:label_succeed) %>
-          <% else %>
-          <%=l(:label_failure) %>
-          <% end %>
-          <% end %>
-        </td>
-        <td><%= test_case.user.name %></td>
-        <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <% end %>
 </div>

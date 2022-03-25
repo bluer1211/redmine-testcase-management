@@ -24,6 +24,7 @@ class TestPlansController < ApplicationController
       find_project(params.permit(:project_id)[:project_id])
       begin
         @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
+        @test_case_test_plan = TestCaseTestPlan.new
       rescue
         flash.now[:error] = l(:error_test_plan_not_found)
         render 'forbidden', status: 404
@@ -117,6 +118,46 @@ class TestPlansController < ApplicationController
       end
     rescue
       flash.now[:error] = l(:error_project_not_found)
+      render 'forbidden', status: 404
+    end
+  end
+
+  # POST /projects/:project_id/test_plans/:test_plan_id/assign_test_case
+  def assign_test_case
+    begin
+      find_project(params.permit(:project_id)[:project_id])
+      @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
+      @test_case = TestCase.find(params.require(:test_case_test_plan).permit(:test_case_id)[:test_case_id])
+      @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
+                                                    test_case: @test_case).first
+      unless @test_case_test_plan
+        @test_case_test_plan = TestCaseTestPlan.new(test_plan: @test_plan,
+                                                    test_case: @test_case)
+        if @test_case_test_plan.save
+          flash[:notice] = l(:notice_successful_update)
+        end
+      end
+      redirect_to project_test_plan_path(id: @test_plan.id)
+    rescue
+      render 'forbidden', status: 404
+    end
+  end
+
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/assign_test_case/:test_case_id
+  def unassign_test_case
+    begin
+      find_project(params.permit(:project_id)[:project_id])
+      @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
+      @test_case = TestCase.find(params.permit(:test_case_id)[:test_case_id])
+      @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
+                                                    test_case: @test_case).first
+      if @test_case_test_plan
+        @test_case_test_plan.destroy
+        # FIXME: unassign without full rendering, use remote XHR
+        flash[:notice] = l(:notice_successful_delete)
+      end
+      redirect_to project_test_plan_path(id: @test_plan.id)
+    rescue
       render 'forbidden', status: 404
     end
   end
