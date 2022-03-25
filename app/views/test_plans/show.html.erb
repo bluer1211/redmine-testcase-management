@@ -40,7 +40,8 @@
 
 <div id="test_case_tree">
   <div class="contextual">
-    <%= link_to l(:label_added), new_project_test_plan_test_case_path(test_plan_id: @test_plan.id) %>
+    <%= link_to l(:label_test_case_new), new_project_test_plan_test_case_path(test_plan_id: @test_plan.id),
+        class: 'icon icon-add' %>
   </div>
   <% if @test_plan.test_cases.any? %>
   <p><%=l(:label_test_cases)%></p>
