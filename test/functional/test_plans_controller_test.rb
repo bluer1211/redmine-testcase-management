@@ -78,7 +78,7 @@ class TestPlansControllerTest < ActionController::TestCase
       end
       assert_select "div#test_case_tree div.contextual a:first-child" do |a|
         assert_equal new_project_test_plan_test_case_path(test_plan_id: test_plan.id), a.first.attributes["href"].text
-        assert_equal I18n.t(:label_test_cases_new), a.text
+        assert_equal I18n.t(:label_test_case_new), a.text
       end
     end
 
