@@ -57,8 +57,8 @@
   <div class="contextual">
     <%= link_to l(:label_test_case_execution_new), new_project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id), class: 'icon icon-add' %> 
   </div>
-  <% if @test_case.test_case_executions.any? %>
   <p><%=l(:label_test_case_executions)%></p>
+  <% if @test_case.test_case_executions.any? %>
   <table class="list issues odd-even">
     <thead>
       <tr>
@@ -91,5 +91,7 @@
       <% end %>
     </tbody>
   </table>
+  <% else %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
   <% end %>
 </div>
