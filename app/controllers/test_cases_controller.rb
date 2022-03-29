@@ -45,8 +45,9 @@ class TestCasesController < ApplicationController
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases
   def create
     begin
-      if params[:test_plan_id].present? and @test_plan.nil?
-        raise ActiveRecord::RecordNotFound.new
+      if params.permit(:test_plan_id)[:test_plan_id]
+        @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
+        raise ActiveRecord::RecordNotFound.new unless @test_plan
       end
       find_project(params.permit(:project_id)[:project_id])
       @test_case = TestCase.new(:project_id => @project.id,
@@ -56,16 +57,14 @@ class TestCasesController < ApplicationController
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected])
-      if params.permit(:project_id)[:test_plan_id]
-        @test_case.test_plans << TestPlan.find(params.permit(:project_id)[:test_plan_id])
-      end
+      @test_case.test_plans << @test_plan if @test_plan
       if params[:attachments].present?
         @test_case.save_attachments params.require(:attachments).permit!
       end
       if @test_case.valid?
         @test_case.save
         flash[:notice] = l(:notice_successful_create)
-        if params.permit(:project_id)[:test_plan_id]
+        if @test_plan
           redirect_to project_test_plan_test_case_path(id: @test_case.id)
         else
           redirect_to project_test_case_path(id: @test_case.id)
