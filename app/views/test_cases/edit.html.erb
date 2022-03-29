@@ -1,6 +1,6 @@
 <h2><%=l(:permission_edit_test_case)%> <%= @test_case.name %></h2>
 
-<%= form_with model: @test_case, url: project_test_plan_test_case_path do |f| %>
+<%= form_with model: @test_case, url: (@test_plan_given ? project_test_plan_test_case_path : project_test_case_path) do |f| %>
   <%= render partial: 'test_cases/form', locals: {form: f} %>
   <%= f.submit l(:button_update) %>
 <% end %>

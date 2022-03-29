@@ -51,6 +51,21 @@ module ApplicationsHelper
     render 'forbidden', status: 404
   end
 
+  def find_test_plan_id_if_given
+    if params[:test_plan_id].present?
+      @test_plan_given = true
+      begin
+        @test_plan = TestPlan.find(params[:test_plan_id])
+      rescue ActiveRecord::RecordNotFound
+        flash.now[:error] = l(:error_test_plan_not_found)
+        render 'forbidden', status: 404
+      end
+    else
+      @test_plan_given = false
+      @test_plan = nil
+    end
+  end
+
   def find_test_case_id
     @test_case = TestCase.find(params[:test_case_id])
   rescue ActiveRecord::RecordNotFound

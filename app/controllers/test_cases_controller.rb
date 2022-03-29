@@ -3,22 +3,34 @@ class TestCasesController < ApplicationController
   include ApplicationsHelper
 
   before_action :find_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
-  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update, :destroy]
+  before_action :find_test_plan_id_if_given, :only => [:new, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
 
   before_action do
     prepare_user_candidates
     prepare_issue_status_candidates
-    prepare_test_plan_candidates
+    if @test_plan
+      prepare_test_plan_candidates
+    end
   end
 
   helper :attachments
 
+  # GET /projects/:project_id/test_cases
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases
   def index
-    @test_cases = @test_plan.test_cases
+    if params[:test_plan_id].present?
+      if @test_plan
+        @test_cases = @test_plan.test_cases
+      else
+        redirect_to project_test_plans_path
+      end
+    else
+      @test_cases = TestCase.where(project_id: @project.id)
+    end
   end
 
+  # GET /projects/:project_id/test_cases/new
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/new
   def new
     @test_case = TestCase.new
@@ -29,10 +41,12 @@ class TestCasesController < ApplicationController
     end
   end
 
+  # POST /projects/:project_id/test_cases
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases
   def create
     begin
-      find_project(params.permit(:project_id)[:project_id])
+      strong_params = params.permit(:project_id, :test_plan_id)
+      find_project(strong_params[:project_id])
       @test_case = TestCase.new(:project_id => @project.id,
                                 :name => test_case_params[:name],
                                 :scheduled_date => test_case_params[:scheduled_date],
@@ -40,8 +54,8 @@ class TestCasesController < ApplicationController
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected])
-      if params[:test_plan_id].present?
-        @test_case.test_plans << TestPlan.find(params[:test_plan_id])
+      if strong_params[:test_plan_id].present?
+        @test_case.test_plans << TestPlan.find(strong_params[:test_plan_id])
       end
       if params[:attachments].present?
         @test_case.save_attachments params.require(:attachments).permit!
@@ -49,7 +63,11 @@ class TestCasesController < ApplicationController
       if @test_case.valid?
         @test_case.save
         flash[:notice] = l(:notice_successful_create)
-        redirect_to project_test_plan_test_case_path(:id => @test_case.id)
+        if params[:test_plan_id].present?
+          redirect_to project_test_plan_test_case_path(test_plan_id: params[:test_plan_id], id: @test_case.id)
+        else
+          redirect_to project_test_case_path(id: @test_case.id)
+        end
       else
         render :new, status: :unprocessable_entity
       end
@@ -58,17 +76,19 @@ class TestCasesController < ApplicationController
     end
   end
 
+  # GET /projects/:project_id/test_cases/:id
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def show
     @test_case = TestCase.find(params.permit(:id)[:id])
   end
 
+  # GET /projects/:project_id/test_cases/:id/edit
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id/edit
   def edit
     @test_case = TestCase.find(params.permit(:id)[:id])
-    @test_plan = @test_case.test_plans.first
   end
 
+  # PUT /projects/:project_id/test_cases/:id
   # PUT /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def update
     @test_case = TestCase.find(params.permit(:id)[:id])
@@ -86,20 +106,29 @@ class TestCasesController < ApplicationController
     end
     if @test_case.update(update_params)
       flash[:notice] = l(:notice_successful_update)
-      redirect_to project_test_plan_test_case_path
+      if params[:test_plan_id].present?
+        redirect_to project_test_plan_test_case_path(test_plan_id: params[:test_plan_id])
+      else
+        redirect_to project_test_case_path
+      end
     else
       flash.now[:error] = l(:error_update_failure)
       render :edit, status: :unprocessable_entity
     end
   end
 
+  # DELETE /projects/:project_id/test_cases/:id
   # DELETE /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def destroy
     begin
       @test_case = TestCase.find(params.permit(:id)[:id])
       if @test_case.destroy
         flash[:notice] = l(:notice_successful_delete)
-        redirect_to project_test_plan_test_cases_path
+        if params[:test_plan_id].present?
+          redirect_to project_test_plan_test_cases_path(test_plan_id: params[:test_plan_id])
+        else
+          redirect_to project_test_cases_path
+        end
       else
         flash.now[:error] = l(:error_delete_failure)
         render :show

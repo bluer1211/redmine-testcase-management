@@ -1,5 +1,13 @@
 <div class="contextual">
-  <%= link_to l(:label_test_case_new), new_project_test_plan_test_case_path, :class => 'icon icon-add new-issue' %>
+  <% if @test_plan_given %>
+    <% if @test_plan %>
+      <%= link_to l(:label_test_case_new), new_project_test_plan_test_case_path, :class => 'icon icon-add new-issue' %>
+    <% else %>
+      <%= link_to l(:label_test_case_new), new_project_test_plans_path, :class => 'icon icon-add new-issue' %>
+    <% end %>
+  <% else %>
+    <%= link_to l(:label_test_case_new), new_project_test_case_path, :class => 'icon icon-add new-issue' %>
+  <% end %>
 </div>
 
 <h2><%=l(:label_test_cases)%></h2>
@@ -20,7 +28,8 @@
     <tbody>
       <% @test_cases.each do |test_case| %>
       <tr>
-        <td><%= link_to test_case.name, project_test_plan_test_case_path(id: test_case.id) %></td>
+        <td><%= link_to test_case.name,
+                        (@test_plan_given ? project_test_plan_test_case_path(id: test_case.id) : project_test_case_path(id: test_case.id)) %></td>
         <td>
           <% if test_case.test_case_executions.any? %>
             <% if test_case.test_case_executions.all? { |tce| tce.result } %>
