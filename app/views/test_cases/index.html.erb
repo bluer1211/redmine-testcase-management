@@ -12,41 +12,25 @@
 
 <h2><%=l(:label_test_cases)%></h2>
 
-<div class="autoscroll">
-  <table class="list issues odd-even sort-by-id sort-desc">
-    <thead>
-      <tr>
-        <th><%=l(:field_name)%></th>
-        <th><%=l(:field_status)%></th>
-        <th><%=l(:field_user)%></th>
-        <th><%=l(:field_environment)%></th>
-        <th><%=l(:field_scenario)%></th>
-        <th><%=l(:field_expected)%></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @test_cases.each do |test_case| %>
-      <tr>
-        <td><%= link_to test_case.name,
-                        (@test_plan_given ? project_test_plan_test_case_path(id: test_case.id) : project_test_case_path(id: test_case.id)) %></td>
-        <td>
-          <% if test_case.test_case_executions.any? %>
-            <% if test_case.test_case_executions.all? { |tce| tce.result } %>
-              <%=l(:label_succeed) %>
-            <% else %>
-              <%=l(:label_failure) %>
-            <% end %>
-          <% end %>
-        </td>
-        <td><%= test_case.user.name %></td>
-        <td><%= test_case.environment %></td>
-        <td><%= test_case.scenario[0..10] %></td>
-        <td><%= test_case.expected[0..10] %></td>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<% if @test_plan_given %>
+  <%= form_tag(project_test_plan_test_cases_path, :method => :get, :id => 'query_form') do %>
+    <%= render :partial => 'queries/query_form' %>
+  <% end %>
+<% else %>
+  <%= form_tag(project_test_cases_path, :method => :get, :id => 'query_form') do %>
+    <%= render :partial => 'queries/query_form' %>
+  <% end %>
+<% end %>
+
+<% if @query.valid? %>
+  <% if @test_cases.empty? %>
+    <p class="nodata"><%= l(:label_no_data) %></p>
+  <% else %>
+    <%= render_query_totals(@query) %>
+    <%= render :partial => "test_cases/list", :locals => {:test_cases => @test_cases, :query => @query} %>
+    <span class="pagination"><%= pagination_links_full @test_case_pages, @test_case_count %></span>
+  <% end %>
+<% end %>
 
 <% content_for :sidebar do %>
   <%= render :partial => 'test_cases/sidebar' %>

@@ -15,18 +15,30 @@ class TestCasesController < ApplicationController
   end
 
   helper :attachments
+  helper :queries
+  include QueriesHelper
+  helper :test_cases_queries
+  include TestCasesQueriesHelper
 
   # GET /projects/:project_id/test_cases
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases
   def index
-    if params[:test_plan_id].present?
-      if @test_plan
-        @test_cases = @test_plan.test_cases
+    retrieve_query(TestCaseQuery, false)
+
+    if @query.valid?
+      @test_case_count = @query.test_case_count
+      @test_case_pages = Paginator.new @test_case_count, per_page_option, params['page']
+      if @test_plan_given
+        @test_cases = @query.test_cases(test_plan_id: params[:test_plan_id],
+                                        offset: @test_case_pages.offset,
+                                        limit: @test_case_pages.per_page)
       else
-        redirect_to project_test_plans_path
+        @test_cases = @query.test_cases(offset: @test_case_pages.offset,
+                                        limit: @test_case_pages.per_page)
       end
     else
-      @test_cases = TestCase.where(project_id: @project.id)
+      flash.now[:error] = l(:error_index_failure)
+      render 'forbidden', status: :unprocessable_entity
     end
   end
 

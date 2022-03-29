@@ -1,7 +1,8 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class TestCasesControllerTest < ActionController::TestCase
-  fixtures :projects, :users, :issue_statuses
+  fixtures :projects, :users, :issues, :issue_statuses, :roles, :members, :member_roles,
+           :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
   include ApplicationsHelper
@@ -19,23 +20,18 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_response :success
         # match all test cases
         assert_select "tbody tr", 3
-        cases = []
-        assert_select "tbody tr td:first-child" do |tds|
-          tds.each do |td|
-            cases << td.text
-          end
-        end
-        assert_equal test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:name), cases
+        assert_equal test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id),
+                     css_select("table#test_cases_list tbody tr td.id").map(&:text).map(&:to_i)
         columns = []
         assert_select "thead tr:first-child th" do |ths|
           ths.each do |th|
             columns << th.text
           end
         end
-        assert_equal [I18n.t(:field_name),
-                      I18n.t(:field_status),
-                      I18n.t(:field_user),
+        assert_equal ['#',
+                      I18n.t(:field_name),
                       I18n.t(:field_environment),
+                      I18n.t(:field_user),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected)
                      ],
@@ -313,24 +309,18 @@ class TestCasesControllerTest < ActionController::TestCase
             }
         assert_response :success
         # match all test cases
-        assert_select "tbody tr", 2
-        cases = []
-        assert_select "tbody tr td:first-child" do |tds|
-          tds.each do |td|
-            cases << td.text
-          end
-        end
-        assert_equal test_cases(:test_cases_002, :test_cases_003).pluck(:name), cases
+        assert_equal test_cases(:test_cases_003, :test_cases_002).pluck(:id),
+                     css_select("table#test_cases_list tbody tr td.id").map(&:text).map(&:to_i)
         columns = []
         assert_select "thead tr:first-child th" do |ths|
           ths.each do |th|
             columns << th.text
           end
         end
-        assert_equal [I18n.t(:field_name),
-                      I18n.t(:field_status),
-                      I18n.t(:field_user),
+        assert_equal ['#',
+                      I18n.t(:field_name),
                       I18n.t(:field_environment),
+                      I18n.t(:field_user),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected)
                      ],
@@ -366,6 +356,180 @@ class TestCasesControllerTest < ActionController::TestCase
           link.each do |a|
             assert_equal project_test_plans_path, a.attributes["href"].text
           end
+        end
+      end
+
+      class Filter < self
+        def setup
+          @project = projects(:projects_003)
+          @test_plan = test_plans(:test_plans_003)
+          login_with_permissions(@project, [:view_project, :view_issues])
+        end
+
+        def test_index_with_invalid_filter
+          get :index, params: filter_params("user_id", "=", {})
+          assert_flash_error I18n.t(:error_index_failure)
+          assert_response :unprocessable_entity
+        end
+
+        def test_index_with_name_filter
+          get :index, params: filter_params("name", "~",
+                                            { "name": [test_cases(:test_cases_002).name] })
+          assert_response :success
+          # test_cases_003 must be ignored
+          assert_equal [test_cases(:test_cases_002).id],
+                       css_select("table#test_cases_list tbody tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_user_filter
+          test_cases(:test_cases_002).update(user: users(:users_001))
+          get :index, params: filter_params("user_id", "=", { "user_id": [users(:users_001).id] })
+          assert_response :success
+          # test_cases_003 (users_002) must be ignored
+          assert_equal [test_cases(:test_cases_002).id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_environment_filter
+          test_cases(:test_cases_002).update(environment: "dummy")
+          get :index, params: filter_params("environment", "~",
+                                            { "environment": [test_cases(:test_cases_002).environment] })
+          assert_response :success
+          # test_cases_003 must be ignored
+          assert_equal [test_cases(:test_cases_002).id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_scenario_filter
+          test_cases(:test_cases_002).update(scenario: "dummy")
+          get :index, params: filter_params("scenario", "~",
+                                            { "scenario": [test_cases(:test_cases_002).scenario] })
+          assert_response :success
+          # test_cases_003 must be ignored
+          assert_equal [test_cases(:test_cases_002).id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_expected_filter
+          test_cases(:test_cases_002).update(expected: "dummy")
+          get :index, params: filter_params("expected", "~",
+                                            { "expected": [test_cases(:test_cases_002).expected] })
+          assert_response :success
+          # test_cases_003 must be ignored
+          assert_equal [test_cases(:test_cases_002).id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        private
+
+        def filter_params(field, operation, values)
+          filters = {
+            project_id: @project.identifier,
+            test_plan_id: @test_plan.id,
+            set_filter: 1,
+            f: [field],
+            op: {
+              "#{field}" => operation
+            },
+            v: values,
+            c: ["name", "environment", "user", "scheduled_date", "scenario", "expected"]
+          }
+          filters
+        end
+      end
+
+      class Order < self
+        def setup
+          @project = projects(:projects_003)
+          login_with_permissions(@project, [:view_project, :view_issues])
+          @order_params = {
+            project_id: @project.identifier,
+            test_plan_id: test_plans(:test_plans_003),
+          }
+        end
+
+        def test_id_order_by_desc
+          ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+          get :index, params: @order_params
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_id_order_by_asc
+          ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "id:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_name_order_by_desc
+          ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "name:desc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_name_order_by_asc
+          ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "name:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_user_order_by_desc
+          test_cases(:test_cases_002).update(user: users(:users_001))
+          ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "user:desc" })
+          assert_response :success
+          # should be listed in admin, jsmith
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_user_order_by_asc
+          test_cases(:test_cases_002).update(user: users(:users_001))
+          ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "user:asc" })
+          assert_response :success
+          # should be listed in jsmith, admin
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_scenario_order_by_desc
+          ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "scenario:desc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_scenario_order_by_asc
+          ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "scenario:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_expected_order_by_desc
+          ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "expected:desc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_expected_order_by_asc
+          ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "expected:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
         end
       end
     end
