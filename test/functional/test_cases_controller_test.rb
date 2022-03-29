@@ -13,6 +13,10 @@ class TestCasesControllerTest < ActionController::TestCase
 
   class Independent < self
     class Index < self
+      def setup
+        login_with_permissions([projects(:projects_003)], [:view_project, :view_issues])
+      end
+
       def test_index
         get :index, params: {
               project_id: projects(:projects_003).identifier,
@@ -57,6 +61,10 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Create < self
+      def setup
+        login_with_permissions([projects(:projects_001)], [:view_project, :view_issues, :add_issues])
+      end
+
       def test_create
         assert_difference("TestCase.count") do
           post :create, params: {
@@ -99,6 +107,10 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Show < self
+      def setup
+        login_with_permissions([projects(:projects_002)], [:view_project, :view_issues])
+      end
+
       def test_show
         test_case = test_cases(:test_cases_002)
         get :show, params: {
@@ -150,6 +162,9 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Edit < self
+      def setup
+        login_with_permissions([projects(:projects_002)], [:view_project, :view_issues, :edit_issues])
+      end
 
       def test_edit
         test_case = test_cases(:test_cases_001)
@@ -200,6 +215,10 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Update < self
+      def setup
+        login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
+      end
+
       def test_update
         test_case = test_cases(:test_cases_001)
         assert_no_difference("TestCase.count") do
@@ -252,6 +271,10 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Destroy < self
+      def setup
+        login_with_permissions([projects(:projects_002)], [:view_project, :view_issues, :delete_issues])
+      end
+
       def test_destroy
         assert_difference("TestCase.count", -1) do
           delete :destroy, params: {
@@ -302,6 +325,10 @@ class TestCasesControllerTest < ActionController::TestCase
 
   class AssociatedWithTestPlan < self
     class Index < self
+      def setup
+        login_with_permissions([projects(:projects_003)], [:view_project, :view_issues])
+      end
+
       def test_index
         get :index, params: {
               project_id: projects(:projects_003).identifier,
@@ -535,6 +562,10 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Create < self
+      def setup
+        login_with_permissions([projects(:projects_001)], [:view_project, :view_issues, :add_issues])
+      end
+
       def test_create
         assert_difference("TestCase.count") do
           post :create, params: {
@@ -594,6 +625,10 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Show < self
+      def setup
+        login_with_permissions([projects(:projects_002)], [:view_project, :view_issues])
+      end
+
       def test_show
         test_case = test_cases(:test_cases_002)
         test_plan = test_plans(:test_plans_003)
@@ -664,6 +699,9 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Edit < self
+      def setup
+        login_with_permissions([projects(:projects_002)], [:view_project, :view_issues, :edit_issues])
+      end
 
       def test_edit
         test_plan = test_plans(:test_plans_002)
@@ -728,6 +766,10 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Update < self
+      def setup
+        login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
+      end
+
       def test_update
         test_case = test_cases(:test_cases_001)
         test_plan = test_plans(:test_plans_002)
@@ -798,6 +840,10 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class Destroy < self
+      def setup
+        login_with_permissions([projects(:projects_002)], [:view_project, :view_issues, :delete_issues])
+      end
+
       def test_destroy
         assert_difference("TestCase.count", -1) do
           delete :destroy, params: {

@@ -5,6 +5,7 @@ class TestCasesController < ApplicationController
   before_action :find_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
   before_action :find_test_plan_id_if_given, :only => [:new, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
+  before_action :authorize, :except => [:index, :new, :create]
 
   before_action do
     prepare_user_candidates
@@ -31,10 +32,10 @@ class TestCasesController < ApplicationController
       if @test_plan_given
         @test_cases = @query.test_cases(test_plan_id: params[:test_plan_id],
                                         offset: @test_case_pages.offset,
-                                        limit: @test_case_pages.per_page)
+                                        limit: @test_case_pages.per_page).visible
       else
         @test_cases = @query.test_cases(offset: @test_case_pages.offset,
-                                        limit: @test_case_pages.per_page)
+                                        limit: @test_case_pages.per_page).visible
       end
     else
       flash.now[:error] = l(:error_index_failure)
@@ -56,6 +57,9 @@ class TestCasesController < ApplicationController
   # POST /projects/:project_id/test_cases
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases
   def create
+    unless User.current.allowed_to?(:add_issues, @project, :global => true)
+      raise ::Unauthorized
+    end
     begin
       if params.permit(:test_plan_id)[:test_plan_id]
         @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
@@ -104,6 +108,7 @@ class TestCasesController < ApplicationController
   # PUT /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def update
     @test_case = TestCase.find(params.permit(:id)[:id])
+    raise ::Unauthorized unless @test_case.editable?
     update_params = {
       name: test_case_params[:name],
       scenario: test_case_params[:scenario],
@@ -136,6 +141,8 @@ class TestCasesController < ApplicationController
         raise ActiveRecord::RecordNotFound.new
       end
       @test_case = TestCase.find(params.permit(:id)[:id])
+      raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
+      raise ::Unauthorized unless @test_case.deletable?
       if @test_case.destroy
         flash[:notice] = l(:notice_successful_delete)
         if params[:test_plan_id].present?
