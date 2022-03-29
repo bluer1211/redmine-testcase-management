@@ -45,8 +45,10 @@ class TestCasesController < ApplicationController
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases
   def create
     begin
-      strong_params = params.permit(:project_id, :test_plan_id)
-      find_project(strong_params[:project_id])
+      if params[:test_plan_id].present? and @test_plan.nil?
+        raise ActiveRecord::RecordNotFound.new
+      end
+      find_project(params.permit(:project_id)[:project_id])
       @test_case = TestCase.new(:project_id => @project.id,
                                 :name => test_case_params[:name],
                                 :scheduled_date => test_case_params[:scheduled_date],
@@ -54,8 +56,8 @@ class TestCasesController < ApplicationController
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected])
-      if strong_params[:test_plan_id].present?
-        @test_case.test_plans << TestPlan.find(strong_params[:test_plan_id])
+      if params.permit(:project_id)[:test_plan_id]
+        @test_case.test_plans << TestPlan.find(params.permit(:project_id)[:test_plan_id])
       end
       if params[:attachments].present?
         @test_case.save_attachments params.require(:attachments).permit!
@@ -63,8 +65,8 @@ class TestCasesController < ApplicationController
       if @test_case.valid?
         @test_case.save
         flash[:notice] = l(:notice_successful_create)
-        if params[:test_plan_id].present?
-          redirect_to project_test_plan_test_case_path(test_plan_id: params[:test_plan_id], id: @test_case.id)
+        if params.permit(:project_id)[:test_plan_id]
+          redirect_to project_test_plan_test_case_path(id: @test_case.id)
         else
           redirect_to project_test_case_path(id: @test_case.id)
         end
@@ -121,6 +123,9 @@ class TestCasesController < ApplicationController
   # DELETE /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def destroy
     begin
+      if params[:test_plan_id].present? and @test_plan.nil?
+        raise ActiveRecord::RecordNotFound.new
+      end
       @test_case = TestCase.find(params.permit(:id)[:id])
       if @test_case.destroy
         flash[:notice] = l(:notice_successful_delete)
