@@ -11,11 +11,16 @@ Redmine::Plugin.register :testcase_management do
   author_url 'https://www.clear-code.com'
 
   project_module :testcase_management do
+    permission :test_cases, {:test_cases => :index}
     permission :view_test_plans, {:test_plans => :index}
   end
 
+  permission :test_cases, {:test_cases => [:index]}, :public => true
   permission :test_plans, {:test_plans => [:index]}, :public => true
-  menu :project_menu, :testcase_management, {:controller => 'test_plans', :action => 'index', :caption => 'Test Plans'}, :param => :project_id
+  menu :project_menu,
+       :testcase_management,
+       {:controller => 'test_cases', :action => 'index', :caption => 'Test Cases'},
+       :param => :project_id
 end
 
 Rails.configuration.to_prepare do
