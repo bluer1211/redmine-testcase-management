@@ -66,7 +66,6 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_equal "Scenario 1", test_case.scenario
     assert_equal "Expected 1", test_case.expected
     assert_equal "Debian GNU/Linux", test_case.environment
-    assert_equal "2022-02-08 15:00:00 UTC", test_case.scheduled_date.to_s
     assert_equal users(:users_002), test_case.user
     assert_equal projects(:projects_003), test_case.project
   end
@@ -254,7 +253,7 @@ class TestCaseTest < ActiveSupport::TestCase
     user = User.find(9)
     TestCase.create!(project_id: 3, name: "test case by non member", environment: "Debian GNU/Linux",
                      scenario: "scenario", expected: "expected",
-                     user_id: user.id, scheduled_date: DateTime.new)
+                     user_id: user.id)
 
     test_cases = TestCase.visible(user).to_a
     assert_equal [true, nil],

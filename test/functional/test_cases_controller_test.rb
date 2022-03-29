@@ -35,7 +35,6 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_equal [I18n.t(:field_name),
                       I18n.t(:field_status),
                       I18n.t(:field_user),
-                      I18n.t(:field_scheduled_date),
                       I18n.t(:field_environment),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected)
@@ -121,9 +120,6 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_select "div#user" do |div|
           assert_equal test_case.user.name, div.text
         end
-        assert_select "div#scheduled_date" do |div|
-          assert_equal yyyymmdd_date(test_case.scheduled_date), div.text
-        end
         assert_select "div#environment" do |div|
           assert_equal test_case.environment, div.text
         end
@@ -176,9 +172,6 @@ class TestCasesControllerTest < ActionController::TestCase
           select.first.children.each do |option|
             assert_equal test_case.user.name, option.text if option.attributes["selected"]
           end
-        end
-        assert_select "input[name='test_case[scheduled_date]']" do |input|
-          assert_equal yyyymmdd_date(test_case.scheduled_date, "-"), input.first.attributes["value"].value
         end
         assert_select "input[name='test_case[environment]']" do |input|
           assert_equal test_case.environment, input.first.attributes["value"].value
@@ -337,7 +330,6 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_equal [I18n.t(:field_name),
                       I18n.t(:field_status),
                       I18n.t(:field_user),
-                      I18n.t(:field_scheduled_date),
                       I18n.t(:field_environment),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected)
@@ -459,9 +451,6 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_select "div#user" do |div|
           assert_equal test_case.user.name, div.text
         end
-        assert_select "div#scheduled_date" do |div|
-          assert_equal yyyymmdd_date(test_case.scheduled_date), div.text
-        end
         assert_select "div#environment" do |div|
           assert_equal test_case.environment, div.text
         end
@@ -531,9 +520,6 @@ class TestCasesControllerTest < ActionController::TestCase
           select.first.children.each do |option|
             assert_equal test_case.user.name, option.text if option.attributes["selected"]
           end
-        end
-        assert_select "input[name='test_case[scheduled_date]']" do |input|
-          assert_equal yyyymmdd_date(test_case.scheduled_date, "-"), input.first.attributes["value"].value
         end
         assert_select "input[name='test_case[environment]']" do |input|
           assert_equal test_case.environment, input.first.attributes["value"].value

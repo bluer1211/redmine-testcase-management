@@ -30,7 +30,6 @@ en:
   field_estimated_bug: "Estimated Bugs"
   field_begin_date: "Begin Date"
   field_end_date: "End Date"
-  field_scheduled_date: "Scheduled Date"
 
   # TestCase
   field_test_plan: "Test Plan"

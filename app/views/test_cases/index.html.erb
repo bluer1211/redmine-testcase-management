@@ -19,7 +19,6 @@
         <th><%=l(:field_name)%></th>
         <th><%=l(:field_status)%></th>
         <th><%=l(:field_user)%></th>
-        <th><%=l(:field_scheduled_date)%></th>
         <th><%=l(:field_environment)%></th>
         <th><%=l(:field_scenario)%></th>
         <th><%=l(:field_expected)%></th>
@@ -40,7 +39,6 @@
           <% end %>
         </td>
         <td><%= test_case.user.name %></td>
-        <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
         <td><%= test_case.environment %></td>
         <td><%= test_case.scenario[0..10] %></td>
         <td><%= test_case.expected[0..10] %></td>

@@ -40,7 +40,6 @@ class TestCasesTest < ApplicationSystemTestCase
     select users(:users_001).name, from: 'test_case[user]'
     fill_in 'scenario', with: "scenario"
     fill_in 'expected', with: "expected"
-    fill_in 'scheduled_date', with: "2022-03-03"
     fill_in 'environment', with: "environment"
 
     click_button I18n.t(:button_create)
@@ -56,7 +55,6 @@ class TestCasesTest < ApplicationSystemTestCase
     assert_selector "#expected", text: @test_case.expected
     assert_selector "#user", text: @test_plan.user.name
     assert_selector "#environment", text: @test_case.environment
-    assert_selector "#scheduled_date", text: yyyymmdd_date(@test_case.scheduled_date)
   end
 
   test "update test case" do
@@ -66,7 +64,6 @@ class TestCasesTest < ApplicationSystemTestCase
     select users(:users_001).name, from: 'test_case[user]'
     fill_in 'scenario', with: "scenario"
     fill_in 'expected', with: "expected"
-    fill_in 'scheduled_date', with: "2022-03-03"
     fill_in 'environment', with: "environment"
 
     click_button I18n.t(:button_update)

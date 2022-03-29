@@ -52,7 +52,6 @@ class TestCasesController < ApplicationController
       find_project(params.permit(:project_id)[:project_id])
       @test_case = TestCase.new(:project_id => @project.id,
                                 :name => test_case_params[:name],
-                                :scheduled_date => test_case_params[:scheduled_date],
                                 :user => User.find(test_case_params[:user]),
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
@@ -95,7 +94,6 @@ class TestCasesController < ApplicationController
     @test_case = TestCase.find(params.permit(:id)[:id])
     update_params = {
       name: test_case_params[:name],
-      scheduled_date: test_case_params[:scheduled_date],
       scenario: test_case_params[:scenario],
       expected: test_case_params[:expected],
       environment: test_case_params[:environment]
@@ -150,7 +148,6 @@ class TestCasesController < ApplicationController
                                       :test_plan_id,
                                       :name,
                                       :user,
-                                      :scheduled_date,
                                       :environment,
                                       :scenario,
                                       :expected)

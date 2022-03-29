@@ -10,7 +10,6 @@ test_cases_001:
   environment: Debian GNU/Linux
   user_id: 2
   issue_status_id: 1
-  scheduled_date: 2022-02-09 00:00:00 +09:00
 test_cases_002:
   id: 2
   # project: projects_003
@@ -22,7 +21,6 @@ test_cases_002:
   environment: Debian GNU/Linux
   user_id: 2
   issue_status_id: 1
-  scheduled_date: 2022-02-09 00:00:00 +09:00
   #test_case_executions: test_case_executions_001
 test_cases_003:
   id: 3
@@ -35,7 +33,6 @@ test_cases_003:
   environment: Debian GNU/Linux
   user_id: 2
   issue_status_id: 1
-  scheduled_date: 2022-02-09 00:00:00 +09:00
   #test_case_executions: test_case_executions_002, test_case_executions_003
 test_cases_004:
   id: 4
@@ -48,7 +45,6 @@ test_cases_004:
   environment: Debian GNU/Linux
   user_id: 3
   issue_status_id: 1
-  scheduled_date: 2022-02-09 00:00:00 +09:00
   #test_case_executions: test_case_executions_004
 test_cases_005: 
   id: 5
@@ -72,7 +68,6 @@ test_cases_006:
   environment: Debian GNU/Linux
   user_id: 2
   issue_status_id: 1
-  scheduled_date: 2022-02-09 00:00:00 +09:00
 test_cases_007:
   id: 7
   # project: projects_001
@@ -84,4 +79,3 @@ test_cases_007:
   environment: Debian GNU/Linux
   user_id: 2
   issue_status_id: 1
-  scheduled_date: 2022-02-09 00:00:00 +09:00

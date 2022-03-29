@@ -28,7 +28,6 @@ ja:
   field_estimated_bug: "想定バグ数"
   field_begin_date: "開始日"
   field_end_date: "終了日"
-  field_scheduled_date: "予定日"
 
   # TestCase
   field_test_plan: "テスト計画"

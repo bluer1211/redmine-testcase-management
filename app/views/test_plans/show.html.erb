@@ -68,7 +68,6 @@
                 <% end %>
               </td>
               <td><%= link_to test_case.user.name, user_path(test_case.user)  %></td>
-              <td><%= yyyymmdd_date(test_case.scheduled_date) %></td>
               <td>
                 <%= link_to l(:label_relation_delete), "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/assign_test_case/#{test_case.id}",
                     method: :delete,
