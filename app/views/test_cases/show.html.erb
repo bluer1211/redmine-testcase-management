@@ -112,3 +112,7 @@
   <p class="nodata"><%= l(:label_no_data) %></p>
   <% end %>
 </div>
+
+<% content_for :sidebar do %>
+  <%= render :partial => 'test_cases/sidebar' %>
+<% end %>

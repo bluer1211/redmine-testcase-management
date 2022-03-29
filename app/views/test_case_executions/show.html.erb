@@ -62,3 +62,7 @@
     <%= link_to_attachments @test_case_execution, :thumbnails => true %>
   <% end %>
 </div>
+
+<% content_for :sidebar do %>
+  <%= render :partial => 'test_case_executions/sidebar' %>
+<% end %>

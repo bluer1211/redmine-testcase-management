@@ -4,3 +4,7 @@
   <%= render partial: 'test_cases/form', locals: {form: f} %>
   <%= f.submit l(:button_update) %>
 <% end %>
+
+<% content_for :sidebar do %>
+  <%= render :partial => 'test_cases/sidebar' %>
+<% end %>
