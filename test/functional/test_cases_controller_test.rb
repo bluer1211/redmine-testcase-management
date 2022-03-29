@@ -10,6 +10,7 @@ class TestCasesControllerTest < ActionController::TestCase
   NONEXISTENT_TEST_PLAN_ID = 404
   NONEXISTENT_TEST_CASE_ID = 404
 
+  class TestPlan < self
   class Index < self
     def test_index
       get :index, params: {
@@ -407,5 +408,6 @@ class TestCasesControllerTest < ActionController::TestCase
       assert_equal I18n.t(:notice_successful_delete), flash[:notice]
       assert_redirected_to project_test_plan_test_cases_path
     end
+  end
   end
 end
