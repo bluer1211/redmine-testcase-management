@@ -30,4 +30,9 @@ def login_with_permissions(project, permissions=[:view_project, :view_issues])
   @request.session[:user_id] = @user.id
 end
 
+def assert_not_select(selector, options = {})
+  assert_select selector,
+                options.merge({ count: 0 }),
+                "unexpectedly exist something matching to the selector: ${selector}"
+end
 

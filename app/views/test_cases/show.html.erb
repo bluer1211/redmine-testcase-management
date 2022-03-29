@@ -11,14 +11,17 @@
   <div class="attributes">
     <div class="splitcontent">
       <div class="splitcontentleft">
-        <div class="status attribute">
-          <div class="label"><%=l(:field_test_plan)%></div>
-          <div id="test_plan" class="value">
-            <% if @test_case.test_plan %>
-              <%= link_to @test_case.test_plan.name, project_test_plan_path(:project_id => @project.name, :id => @test_case.test_plan.id) %>
-            <% end %>
+        <% if @test_plan_given %>
+          <div class="status attribute">
+            <div class="label"><%=l(:field_test_plan)%></div>
+            <div id="test_plan" class="value">
+              <% if @test_case.test_plan %>
+                <%= link_to @test_case.test_plan.name,
+                            project_test_plan_path(:project_id => @project.name, :id => @test_case.test_plan.id) %>
+              <% end %>
+            </div>
           </div>
-        </div>
+        <% end %>
         <div class="assigned-to attribute">
           <div class="label"><%=l(:field_user)%></div>
           <div id="user" class="value"><%= @test_case.user.name if @test_case.user %></div>
@@ -60,9 +63,13 @@
 </div>
 
 <div id="test_case_execution_tree">
-  <div class="contextual">
-    <%= link_to l(:label_test_case_execution_new), new_project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id), class: 'icon icon-add' %> 
-  </div>
+  <% if @test_plan_given %>
+    <div class="contextual">
+      <%= link_to l(:label_test_case_execution_new),
+                  new_project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id),
+                  class: 'icon icon-add' %> 
+    </div>
+  <% end %>
   <p><%=l(:label_test_case_executions)%></p>
   <% if @test_case.test_case_executions.any? %>
   <table class="list issues odd-even">
@@ -78,7 +85,11 @@
     <tbody>
       <% @test_case.test_case_executions.each do |test_case_execution| %>
       <tr class="list issue">
-        <td><%= link_to test_case_execution.id, project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id, id: test_case_execution.id) %></td>
+        <td><%= link_to test_case_execution.id,
+                        project_test_plan_test_case_test_case_execution_path(
+                          test_case_id: @test_case.id,
+                          test_plan_id: test_case_execution.test_plan.id,
+                          id: test_case_execution.id) %></td>
         <td>
           <% if test_case_execution.result %>
           <%= l(:label_succeed) %>
