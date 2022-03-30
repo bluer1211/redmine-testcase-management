@@ -390,7 +390,7 @@ class TestCasesControllerTest < ActionController::TestCase
         def setup
           @project = projects(:projects_003)
           @test_plan = test_plans(:test_plans_003)
-          login_with_permissions(@project, [:view_project, :view_issues])
+          login_with_permissions([@project], [:view_project, :view_issues])
         end
 
         def test_index_with_invalid_filter
@@ -468,7 +468,7 @@ class TestCasesControllerTest < ActionController::TestCase
       class Order < self
         def setup
           @project = projects(:projects_003)
-          login_with_permissions(@project, [:view_project, :view_issues])
+          login_with_permissions([@project], [:view_project, :view_issues])
           @order_params = {
             project_id: @project.identifier,
             test_plan_id: test_plans(:test_plans_003),
