@@ -272,13 +272,13 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Destroy < self
       def setup
-        login_with_permissions([projects(:projects_002)], [:view_project, :view_issues, :delete_issues])
+        login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues])
       end
 
       def test_destroy
         assert_difference("TestCase.count", -1) do
           delete :destroy, params: {
-                   project_id: projects(:projects_002).identifier,
+                   project_id: projects(:projects_003).identifier,
                    id: test_cases(:test_cases_001).id
                  }
         end
@@ -300,7 +300,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_destroy_with_nonexistent_test_case
         assert_no_difference("TestCase.count") do
           delete :destroy, params: {
-                   project_id: projects(:projects_002).identifier,
+                   project_id: projects(:projects_003).identifier,
                    id: NONEXISTENT_TEST_CASE_ID
                  }
         end
@@ -312,7 +312,7 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_difference("TestCaseExecution.count", -1) do
           assert_difference("TestCase.count", -1) do
             delete :destroy, params: {
-                     project_id: projects(:projects_002).identifier,
+                     project_id: projects(:projects_003).identifier,
                      id: test_cases(:test_cases_002).id
                    }
           end
@@ -841,13 +841,13 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Destroy < self
       def setup
-        login_with_permissions([projects(:projects_002)], [:view_project, :view_issues, :delete_issues])
+        login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues])
       end
 
       def test_destroy
         assert_difference("TestCase.count", -1) do
           delete :destroy, params: {
-                   project_id: projects(:projects_002).identifier,
+                   project_id: projects(:projects_003).identifier,
                    test_plan_id: test_plans(:test_plans_002).id,
                    id: test_cases(:test_cases_001).id
                  }
@@ -871,7 +871,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_destroy_with_nonexistent_test_plan
         assert_no_difference("TestCase.count") do
           delete :destroy, params: {
-                   project_id: projects(:projects_002).identifier,
+                   project_id: projects(:projects_003).identifier,
                    test_plan_id: NONEXISTENT_TEST_PLAN_ID,
                    id: test_cases(:test_cases_001).id
                  }
@@ -883,7 +883,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_destroy_with_nonexistent_test_case
         assert_no_difference("TestCase.count") do
           delete :destroy, params: {
-                   project_id: projects(:projects_002).identifier,
+                   project_id: projects(:projects_003).identifier,
                    test_plan_id: test_plans(:test_plans_002).id,
                    id: NONEXISTENT_TEST_CASE_ID
                  }
@@ -896,7 +896,7 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_difference("TestCaseExecution.count", -1) do
           assert_difference("TestCase.count", -1) do
             delete :destroy, params: {
-                     project_id: projects(:projects_002).identifier,
+                     project_id: projects(:projects_003).identifier,
                      test_plan_id: test_plans(:test_plans_003).id,
                      id: test_cases(:test_cases_002).id
                    }

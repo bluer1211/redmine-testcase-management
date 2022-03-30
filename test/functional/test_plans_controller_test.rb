@@ -19,14 +19,14 @@ class TestPlansControllerTest < ActionController::TestCase
 
       assert_response :success
       # show all test plans
-      assert_select "tbody tr", 5
+      assert_select "tbody tr", 2
       plans = []
       assert_select "tbody tr td:first-child" do |tds|
         tds.each do |td|
           plans << td.text
         end
       end
-      assert_equal test_plans.pluck(:name), plans
+      assert_equal test_plans(:test_plans_001, :test_plans_005).pluck(:name), plans
       # verify columns
       columns = []
       assert_select "thead tr:first-child th" do |ths|
