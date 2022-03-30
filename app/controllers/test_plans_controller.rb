@@ -6,6 +6,7 @@ class TestPlansController < ApplicationController
   before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
   before_action :find_test_case_id, :only => [:unassign_test_case]
+  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case]
 
   before_action do
     prepare_issue_status_candidates
@@ -110,6 +111,7 @@ class TestPlansController < ApplicationController
 
   # POST /projects/:project_id/test_plans/:test_plan_id/assign_test_case
   def assign_test_case
+    authorize_with_issues_permission(params[:controller], :create)
     begin
       @test_case = TestCase.find(params.require(:test_case_test_plan).permit(:test_case_id)[:test_case_id])
       @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
@@ -129,6 +131,7 @@ class TestPlansController < ApplicationController
 
   # DELETE /projects/:project_id/test_plans/:test_plan_id/assign_test_case/:test_case_id
   def unassign_test_case
+    authorize_with_issues_permission(params[:controller], :destroy)
     begin
       @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
                                                     test_case: @test_case).first

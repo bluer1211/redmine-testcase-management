@@ -330,6 +330,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @project = projects(:projects_002)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
+      login_with_permissions(@project, [:view_project, :view_issues, :add_issues])
     end
 
     def test_new
@@ -354,6 +355,10 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   end
 
   class Create < self
+    def setup
+      login_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :add_issues])
+    end
+
     def test_create
       assert_difference("TestCaseExecution.count") do
         post :create, params: {
@@ -439,6 +444,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
+      login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues])
     end
 
     def test_show
@@ -534,6 +540,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
+      login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
     end
 
     def test_edit
@@ -623,6 +630,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
+      login_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :edit_issues])
     end
 
     def test_update
@@ -713,7 +721,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
+      login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :delete_issues])
     end
+
 
     def test_destroy
       assert_difference("TestCaseExecution.count", -1) do

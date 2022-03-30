@@ -14,6 +14,11 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Index < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_001), [:view_project, :view_issues])
+    end
+
     def test_index
       get :index, params: { project_id: projects(:projects_001).identifier }
 
@@ -61,6 +66,11 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Show < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002), [:view_project, :view_issues])
+    end
+
     def test_show
       test_plan = test_plans(:test_plans_002)
       get :show, params: { project_id: @project_id, id: test_plan.id }
@@ -107,6 +117,11 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Edit < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
+    end
+
     def test_edit
       test_plan = test_plans(:test_plans_002)
       get :edit, params: { project_id: test_plan.project.id, id: test_plan.id }
@@ -202,6 +217,11 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Create < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :add_issues])
+    end
+
     def test_create_test_plan
       assert_difference("TestPlan.count") do
         project_id = projects(:projects_002).id
@@ -230,6 +250,7 @@ class TestPlansControllerTest < ActionController::TestCase
 
   class Assign < self
     def setup
+      super
       @project = projects(:projects_003)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
