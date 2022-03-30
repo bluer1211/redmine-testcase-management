@@ -46,7 +46,7 @@ module ApplicationsHelper
 
   def find_test_plan_id
     @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
-    raise ActiveRecord::RecordNotFound.new unless @test_plan.visible?
+    raise ActiveRecord::RecordNotFound unless @test_plan.visible?
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_plan_not_found)
     render 'forbidden', status: 404
@@ -64,7 +64,7 @@ module ApplicationsHelper
 
   def find_test_plan
     @test_plan = TestPlan.find(params.permit(:id)[:id])
-    raise ActiveRecord::RecordNotFound.new unless @test_plan.visible?
+    raise ActiveRecord::RecordNotFound unless @test_plan.visible?
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_plan_not_found)
     render 'forbidden', status: 404
@@ -72,7 +72,7 @@ module ApplicationsHelper
 
   def find_test_case_id
     @test_case = TestCase.find(params.permit(:test_case_id)[:test_case_id])
-    raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
+    raise ActiveRecord::RecordNotFound unless @test_case.visible?
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_case_not_found)
     render 'forbidden', status: 404
@@ -80,7 +80,7 @@ module ApplicationsHelper
 
   def find_test_case
     @test_case = TestCase.find(params.permit(:id)[:id])
-    raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
+    raise ActiveRecord::RecordNotFound unless @test_case.visible?
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_case_not_found)
     render 'forbidden', status: 404

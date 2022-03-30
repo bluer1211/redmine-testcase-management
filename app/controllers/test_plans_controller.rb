@@ -80,7 +80,7 @@ class TestPlansController < ApplicationController
 
   # DELETE /projects/:project_id/test_plans/:id
   def destroy
-    raise ActiveRecord::RecordNotFound.new unless @test_plan.visible?
+    raise ActiveRecord::RecordNotFound unless @test_plan.visible?
     raise ::Unauthorized unless @test_plan.deletable?
     begin
       if @test_plan.destroy
@@ -101,8 +101,8 @@ class TestPlansController < ApplicationController
     return unless authorize_with_issues_permission(params[:controller], :create)
     begin
       @test_case = TestCase.find(params.require(:test_case_test_plan).permit(:test_case_id)[:test_case_id])
-      raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
-      raise ActiveRecord::RecordNotFound.new unless @test_plan.visible?
+      raise ActiveRecord::RecordNotFound unless @test_case.visible?
+      raise ActiveRecord::RecordNotFound unless @test_plan.visible?
       @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
                                                     test_case: @test_case).first
       unless @test_case_test_plan
@@ -122,8 +122,8 @@ class TestPlansController < ApplicationController
   def unassign_test_case
     return unless authorize_with_issues_permission(params[:controller], :destroy)
     begin
-      raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
-      raise ActiveRecord::RecordNotFound.new unless @test_plan.visible?
+      raise ActiveRecord::RecordNotFound unless @test_case.visible?
+      raise ActiveRecord::RecordNotFound unless @test_plan.visible?
       @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
                                                     test_case: @test_case).first
       if @test_case_test_plan

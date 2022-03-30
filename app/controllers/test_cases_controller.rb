@@ -128,7 +128,7 @@ class TestCasesController < ApplicationController
   # DELETE /projects/:project_id/test_cases/:id
   # DELETE /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def destroy
-    raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
+    raise ActiveRecord::RecordNotFound unless @test_case.visible?
     raise ::Unauthorized unless @test_case.deletable?
     begin
       if @test_case.destroy
