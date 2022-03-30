@@ -83,4 +83,22 @@ module ApplicationsHelper
     flash.now[:error] = l(:error_test_case_not_found)
     render 'forbidden', status: 404
   end
+
+  # mainly copied from Rails's ApplicationController#authorize
+  def authorize_with_issues_permission(controller = params[:controller], action = params[:action], global = false)
+    allowed = User.current.allowed_to?({controller: "issues", action: action}, @project || @projects, :global => global)
+    if allowed
+      true
+    else
+      if @project && @project.archived?
+        @archived_project = @project
+        render_403 :message => :notice_not_authorized_archived_project
+      elsif @project && !@project.allows_to?(:controller => ctrl, :action => action)
+        # Project module is disabled
+        render_403
+      else
+        deny_access
+      end
+    end
+  end
 end
