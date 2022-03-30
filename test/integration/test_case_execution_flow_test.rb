@@ -1,8 +1,9 @@
 require 'test_helper'
 require File.expand_path('../../test_helper', __FILE__)
 
-class TestCaseExecutionFlowTest < ActionDispatch::IntegrationTest
-  fixtures :projects, :users, :issues, :issue_statuses
+class TestCaseExecutionFlowTest < Redmine::IntegrationTest
+  fixtures :projects, :users, :issues, :members, :member_roles, :roles, :issue_statuses,
+           :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions
 
   def setup
@@ -10,7 +11,7 @@ class TestCaseExecutionFlowTest < ActionDispatch::IntegrationTest
     @test_plan = test_plans(:test_plans_003)
     @test_case = test_cases(:test_cases_002)
     generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
-    login_as(@user, :scope => :user)
+    log_user(@user.login, "password")
   end
 
   test "add new test case execution" do
