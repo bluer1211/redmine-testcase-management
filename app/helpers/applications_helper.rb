@@ -39,17 +39,21 @@ module ApplicationsHelper
   def find_project_id
     @project = find_project(params.permit(:project_id)[:project_id])
     raise ActiveRecord::RecordNotFound unless @project
+    true
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_project_not_found)
     render 'forbidden', status: 404
+    false
   end
 
   def find_test_plan_id
     @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
     raise ActiveRecord::RecordNotFound unless @test_plan.visible?
+    true
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_plan_not_found)
     render 'forbidden', status: 404
+    false
   end
 
   def find_test_plan_id_if_given
@@ -59,31 +63,38 @@ module ApplicationsHelper
     else
       @test_plan_given = false
       @test_plan = nil
+      true
     end
   end
 
   def find_test_plan
     @test_plan = TestPlan.find(params.permit(:id)[:id])
     raise ActiveRecord::RecordNotFound unless @test_plan.visible?
+    true
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_plan_not_found)
     render 'forbidden', status: 404
+    false
   end
 
   def find_test_case_id
     @test_case = TestCase.find(params.permit(:test_case_id)[:test_case_id])
     raise ActiveRecord::RecordNotFound unless @test_case.visible?
+    true
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_case_not_found)
     render 'forbidden', status: 404
+    false
   end
 
   def find_test_case
     @test_case = TestCase.find(params.permit(:id)[:id])
     raise ActiveRecord::RecordNotFound unless @test_case.visible?
+    true
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_case_not_found)
     render 'forbidden', status: 404
+    false
   end
 
   # mainly copied from Rails's ApplicationController#authorize
@@ -101,6 +112,7 @@ module ApplicationsHelper
       else
         deny_access
       end
+      false
     end
   end
 end
