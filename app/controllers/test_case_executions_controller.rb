@@ -2,9 +2,10 @@ class TestCaseExecutionsController < ApplicationController
 
   include ApplicationsHelper
 
-  before_action :find_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
-  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update, :destroy]
-  before_action :find_test_case_id, :only => [:show, :edit, :index, :update, :destroy]
+  before_action :find_project_id
+  before_action :find_test_plan_id
+  before_action :find_test_case_id, :only => [:show, :new, :create, :edit, :index, :update, :destroy]
+  before_action :authorize_with_issues_permission, :except => [:index, :new, :create]
 
   before_action do
     prepare_user_candidates
@@ -35,21 +36,18 @@ class TestCaseExecutionsController < ApplicationController
 
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/new
   def new
-    find_project(params.permit(:project_id)[:project_id])
     @test_case_execution = TestCaseExecution.new
     # FIXME:
     # @test_plan = @test_case_execution.test_plan
     # @test_case = @test_case_execution.test_case
-    @test_plan = TestPlan.find(permit_param(:test_plan_id))
-    @test_case = TestCase.find(permit_param(:test_case_id))
   end
 
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions
   def create
+    unless User.current.allowed_to?(:add_issues, @project, :global => true)
+      raise ::Unauthorized
+    end
     begin
-      find_project(params.permit(:project_id)[:project_id])
-      @test_plan = TestPlan.find(permit_param(:test_plan_id))
-      @test_case = TestCase.find(permit_param(:test_case_id))
       create_params = {
         result: test_case_execution_params[:result],
         user: User.find(test_case_execution_params[:user]),
@@ -114,10 +112,8 @@ class TestCaseExecutionsController < ApplicationController
                                                                        test_plan_id: @test_plan.id,
                                                                        test_case_id: @test_case.id,
                                                                        id: params.permit(:id)[:id]).first
-
-      unless @test_case_execution
-        raise ActiveRecord::RecordNotFound
-      end
+      raise ActiveRecord::RecordNotFound unless @test_case_execution
+      raise ::Unauthorized unless @test_case_execution.editable?
       @test_case_execution.execution_date = test_case_execution_params[:execution_date]
       @test_case_execution.result = test_case_execution_params[:result]
       @test_case_execution.comment = test_case_execution_params[:comment]
@@ -138,6 +134,7 @@ class TestCaseExecutionsController < ApplicationController
         flash.now[:error] = l(:error_update_failure)
         render :edit, status: :unprocessable_entity
       end
+    rescue ::Unauthorized
     rescue
       flash.now[:error] = l(:error_test_case_execution_not_found)
       render 'forbidden', status: 404
@@ -152,9 +149,9 @@ class TestCaseExecutionsController < ApplicationController
                                                                        test_case_id: @test_case.id,
                                                                        id: params.permit(:id)[:id]).first
 
-      unless @test_case_execution
-        raise ActiveRecord::RecordNotFound
-      end
+      raise ActiveRecord::RecordNotFound unless @test_case_execution
+      raise ActiveRecord::RecordNotFound unless @test_case_execution.visible?
+      raise ::Unauthorized unless @test_case_execution.deletable?
       if @test_case_execution.destroy
         flash[:notice] = l(:notice_successful_delete)
         redirect_to project_test_plan_test_case_test_case_executions_path
@@ -162,6 +159,7 @@ class TestCaseExecutionsController < ApplicationController
         flash.now[:error] = l(:error_delete_failure)
         render :show
       end
+    rescue ::Unauthorized
     rescue
       flash.now[:error] = l(:error_test_case_execution_not_found)
       render 'forbidden', status: 404

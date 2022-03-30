@@ -14,19 +14,24 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Index < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_001), [:view_project, :view_issues])
+    end
+
     def test_index
       get :index, params: { project_id: projects(:projects_001).identifier }
 
       assert_response :success
       # show all test plans
-      assert_select "tbody tr", 5
+      assert_select "tbody tr", 2
       plans = []
       assert_select "tbody tr td:first-child" do |tds|
         tds.each do |td|
           plans << td.text
         end
       end
-      assert_equal test_plans.pluck(:name), plans
+      assert_equal test_plans(:test_plans_001, :test_plans_005).pluck(:name), plans
       # verify columns
       columns = []
       assert_select "thead tr:first-child th" do |ths|
@@ -61,6 +66,11 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Show < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002), [:view_project, :view_issues])
+    end
+
     def test_show
       test_plan = test_plans(:test_plans_002)
       get :show, params: { project_id: @project_id, id: test_plan.id }
@@ -107,9 +117,14 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Edit < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
+    end
+
     def test_edit
       test_plan = test_plans(:test_plans_002)
-      get :edit, params: { project_id: @project_id, id: test_plan.id }
+      get :edit, params: { project_id: test_plan.project.id, id: test_plan.id }
       assert_select "div#content h2" do |h2|
         assert_equal "#{I18n.t(:permission_edit_test_plan)} #{test_plan.name}", h2.text
       end
@@ -152,12 +167,17 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Destroy < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002, :projects_001, :projects_003), [:view_project, :view_issues, :delete_issues])
+    end
+
     def test_destroy
       test_plan = test_plans(:test_plans_001)
-      assert_difference("TestPlan.count", -1) do
+      assert_no_difference("TestCaseExecution.count") do
         assert_no_difference("TestCase.count") do
-          assert_no_difference("TestCaseExecution.count") do
-            delete :destroy, params: { project_id: @project_id, id: test_plan.id }
+          assert_difference("TestPlan.count", -1) do
+            delete :destroy, params: { project_id: test_plan.project.id, id: test_plan.id }
           end
         end
       end
@@ -188,15 +208,20 @@ class TestPlansControllerTest < ActionController::TestCase
 
     def test_destroy_dependent_test_case_executions
       test_plan = test_plans(:test_plans_003)
-      assert_difference("TestPlan.count", -1) do
-        assert_difference("TestCaseExecution.count", -3) do
-          delete :destroy, params: { project_id: @project_id, id: test_plan.id }
+      assert_difference("TestCaseExecution.count", -3) do
+        assert_difference("TestPlan.count", -1) do
+          delete :destroy, params: { project_id: test_plan.project.id, id: test_plan.id }
         end
       end
     end
   end
 
   class Create < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :add_issues])
+    end
+
     def test_create_test_plan
       assert_difference("TestPlan.count") do
         project_id = projects(:projects_002).id
@@ -225,9 +250,11 @@ class TestPlansControllerTest < ActionController::TestCase
 
   class Assign < self
     def setup
+      super
       @project = projects(:projects_003)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
+      login_with_permissions(@project, [:view_project, :view_issues, :add_issues, :delete_issues])
     end
 
     def test_assign_test_case
@@ -254,6 +281,102 @@ class TestPlansControllerTest < ActionController::TestCase
       end
       assert_equal I18n.t(:notice_successful_delete), flash[:notice]
       assert_redirected_to project_test_plan_path(:id => @test_plan.id)
+    end
+  end
+
+  class ViewWithoutPermission < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project])
+    end
+
+    def test_index
+      get :index, params: { project_id: projects(:projects_001).identifier }
+
+      assert_response :success
+      assert_select "tbody tr", 0
+    end
+
+    def test_show
+      test_plan = test_plans(:test_plans_002)
+      get :show, params: { project_id: test_plan.project.id, id: test_plan.id }
+
+      assert_response :missing
+    end
+  end
+
+  class ModifyWithoutPermission < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
+    end
+
+    def test_create
+      assert_no_difference("TestPlan.count") do
+        project_id = projects(:projects_002).id
+        post :create, params: { project_id: project_id, test_plan: { name: "test", user: 2, issue_status: 1 } }
+      end
+
+      assert_response :forbidden
+    end
+
+    def test_destroy
+      test_plan = test_plans(:test_plans_001)
+      assert_no_difference("TestCaseExecution.count") do
+        assert_no_difference("TestCase.count") do
+          assert_no_difference("TestPlan.count", -1) do
+            delete :destroy, params: { project_id: @project_id, id: test_plan.id }
+          end
+        end
+      end
+
+      assert_response :forbidden
+    end
+
+    def test_edit
+      test_plan = test_plans(:test_plans_002)
+      get :edit, params: { project_id: test_plan.project.id, id: test_plan.id }
+
+      assert_response :forbidden
+    end
+
+    def test_update
+      test_plan = test_plans(:test_plans_002)
+      get :update, params: { project_id: test_plan.project.id, id: test_plan.id, test_plan: { name: "test" } }
+
+      assert_response :forbidden
+    end
+
+    def test_assign_test_case
+      @project = projects(:projects_003)
+      @test_plan = test_plans(:test_plans_002)
+      @test_case = test_cases(:test_cases_001)
+      assert_no_difference("TestCaseTestPlan.count", 1) do
+        post :assign_test_case, params: {
+               project_id: @project.identifier,
+               test_plan_id: @test_plan.id,
+               test_case_test_plan: {
+                 test_case_id: test_cases(:test_cases_002).id
+               }
+             }
+      end
+
+      assert_response :forbidden
+    end
+
+    def test_unassign_test_case
+      @project = projects(:projects_003)
+      @test_plan = test_plans(:test_plans_002)
+      @test_case = test_cases(:test_cases_001)
+      assert_no_difference("TestCaseTestPlan.count", -1) do
+        delete :unassign_test_case, params: {
+                 project_id: @project.identifier,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: @test_case.id
+               }
+      end
+
+      assert_response :forbidden
     end
   end
 end
