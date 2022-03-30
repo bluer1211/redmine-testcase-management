@@ -4,8 +4,13 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
   fixtures :projects, :users, :issues, :issue_statuses
   fixtures :test_plans
 
+  def setup
+    @project = projects(:projects_001)
+    login_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
+  end
+
   test "add new test plan" do
-    url = "/projects/#{projects(:projects_001).identifier}/test_plans"
+    url = "/projects/#{@project.identifier}/test_plans"
 
     get "#{url}/new"
     assert_response :success
@@ -19,7 +24,7 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "edit test plan" do
-    url = "/projects/#{projects(:projects_001).identifier}/test_plans/#{test_plans(:test_plans_001).id}"
+    url = "/projects/#{@project.identifier}/test_plans/#{test_plans(:test_plans_001).id}"
 
     get url
     assert_response :success
@@ -30,7 +35,7 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
 
   test "update test plan" do
     test_plan = test_plans(:test_plans_001)
-    url = "/projects/#{projects(:projects_001).identifier}/test_plans/#{test_plan.id}"
+    url = "/projects/#{@project.identifier}/test_plans/#{test_plan.id}"
 
     get "#{url}/edit"
     assert_response :success
@@ -44,7 +49,7 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "delete test plan" do
-    url = "/projects/#{projects(:projects_001).identifier}/test_plans/#{test_plans(:test_plans_001).id}"
+    url = "/projects/#{@project.identifier}/test_plans/#{test_plans(:test_plans_001).id}"
     get url
     assert_response :success
 
@@ -56,7 +61,7 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
 
   def create_test_plan(params={})
     post_params = {
-      project_id: projects(:projects_001).identifier,
+      project_id: @project.identifier,
       test_plan: {
         name: "dummy",
         user: 1,
@@ -64,6 +69,6 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
       }
     }
     post_params.merge!(params)
-    post "/projects/#{projects(:projects_001).identifier}/test_plans", params: post_params
+    post "/projects/#{@project.identifier}/test_plans", params: post_params
   end
 end
