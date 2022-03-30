@@ -36,6 +36,7 @@ en:
   field_environment: "Environment"
   field_scenario: "Scenario"
   field_expected: "Expected"
+  field_latest_result: "Execution Result"
 
   # TestCaseExecution
   field_test_case: "Test Case"

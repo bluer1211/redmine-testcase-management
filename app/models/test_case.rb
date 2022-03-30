@@ -22,6 +22,19 @@ class TestCase < ActiveRecord::Base
     where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
   end)
 
+  #self.test_case_executions.order("execution_date desc").first
+  has_one :latest_result, -> {
+    where(<<~SQL
+    NOT EXISTS (
+      SELECT 1 FROM test_case_executions AS tce
+      WHERE test_case_executions.execution_date < tce.execution_date
+      AND test_case_executions.test_case_id = tce.test_case_id
+      AND tce.execution_date IS NOT NULL
+    )
+SQL
+         )
+  }, class_name: :TestCaseExecution
+
   def attachments_visible?(user=User.current)
     visible?(user)
   end

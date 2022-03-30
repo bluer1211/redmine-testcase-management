@@ -34,6 +34,7 @@ ja:
   field_environment: "環境"
   field_scenario: "シナリオ"
   field_expected: "期待する結果"
+  field_latest_result: "テスト実行結果"
 
   # TestCaseExecution
   field_test_case: "テストケース"

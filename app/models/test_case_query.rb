@@ -8,9 +8,9 @@ class TestCaseQuery < Query
     QueryColumn.new(:name, :sortable => "#{TestCase.table_name}.name"),
     QueryColumn.new(:user, :sortable => "#{TestCase.table_name}.user_id"),
     QueryColumn.new(:environment, :sortable => "#{TestCase.table_name}.environment"),
+    QueryColumn.new(:latest_result, :sortable => "#{TestCaseExecution.table_name}.result"),
     QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
     QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected")
-    # FIXME: missing status column
   ]
 
   def initialize(attributes=nil, *args)
@@ -24,6 +24,10 @@ class TestCaseQuery < Query
     add_available_filter(
       "user_id",
       :type => :list, :values => lambda { author_values }
+    )
+    add_available_filter(
+      "latest_result",
+      :type => :list, :values => lambda { [[l(:label_succeed), true], [l(:label_failure), false]] }
     )
     add_available_filter "scenario", :type => :text
     add_available_filter "expected", :type => :text
@@ -58,17 +62,27 @@ class TestCaseQuery < Query
     unless filters["expected"].blank?
       conditions << sql_for_field("expected", filters["expected"][:operator], filters["expected"][:values], TestCase.table_name, "expected")
     end
+    unless filters["last_result"].blank?
+      conditions << sql_for_last_result_field("result", filters["last_result"][:operator], filters["last_result"][:values], TestCaseExecution.table_name, "result")
+    end
     conditions.join(" AND ")
   end
 
   def base_scope
     TestCase.visible.joins(:test_plans)
+      .joins(<<-SQL
+          INNER JOIN (SELECT test_case_id, max(execution_date) as execution_date
+          FROM test_case_executions GROUP BY test_case_id) AS latest_tce on latest_tce.test_case_id = test_cases.id
+          INNER JOIN test_case_executions on latest_tce.test_case_id = test_case_executions.test_case_id
+           AND latest_tce.execution_date = test_case_executions.execution_date
+SQL
+            )
       .where(getTestCaseConditions)
   end
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :name, :environment, :user, :scenario, :expected]
+    [:id, :name, :environment, :user, :latest_result, :scenario, :expected]
   end
 
   def default_sort_criteria
@@ -101,4 +115,25 @@ class TestCaseQuery < Query
   def test_case_count
     base_scope.count
   end
+
+  # override default statement for .result
+  def sql_for_latest_result_field(field, operator, value)
+    case operator
+    when "="
+      if value == ["true"]
+        "result = 't'"
+      else
+        "result = 'f'"
+      end
+    when "!"
+      if value == ["true"]
+        "result IS NOT true"
+      else
+        "result IS NOT false"
+      end
+    else
+      "1=0"
+    end
+  end
 end
+

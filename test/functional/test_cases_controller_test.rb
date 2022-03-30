@@ -36,6 +36,7 @@ class TestCasesControllerTest < ActionController::TestCase
                       I18n.t(:field_name),
                       I18n.t(:field_environment),
                       I18n.t(:field_user),
+                      I18n.t(:field_latest_result),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected)
                      ],
@@ -348,6 +349,7 @@ class TestCasesControllerTest < ActionController::TestCase
                       I18n.t(:field_name),
                       I18n.t(:field_environment),
                       I18n.t(:field_user),
+                      I18n.t(:field_latest_result),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected)
                      ],
@@ -444,6 +446,24 @@ class TestCasesControllerTest < ActionController::TestCase
           assert_response :success
           # test_cases_003 must be ignored
           assert_equal [test_cases(:test_cases_002).id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_result_filter
+          get :index, params: filter_params("latest_result", "=",
+                                            { "latest_result": [true] })
+          assert_response :success
+          # test_cases_003 must be ignored
+          assert_equal [test_cases(:test_cases_002).id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_result_filter
+          get :index, params: filter_params("latest_result", "=",
+                                            { "latest_result": [false] })
+          assert_response :success
+          # test_cases_002 must be ignored
+          assert_equal [test_cases(:test_cases_003).id],
                        css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
         end
 
@@ -554,6 +574,22 @@ class TestCasesControllerTest < ActionController::TestCase
         def test_expected_order_by_asc
           ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
           get :index, params: @order_params.merge({ sort: "expected:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_result_order_by_desc
+          ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "latest_result:desc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_result_order_by_asc
+          ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+          get :index, params: @order_params.merge({ sort: "latest_result:asc" })
           assert_response :success
           assert_equal ids,
                        css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
