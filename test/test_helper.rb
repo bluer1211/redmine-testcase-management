@@ -23,8 +23,9 @@ def assert_back_to_lists_link(path)
 end
 
 def login_with_permissions(projects, permissions=[:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
+  projects = [projects] if projects.is_a?(Project)
+  permissions = [permissions] unless permissions.is_a?(Array)
   @role = Role.generate!(:permissions => permissions)
-  @role.save!
   @user = User.generate!
   projects.each do |project|
     User.add_to_project(@user, project, @role)
