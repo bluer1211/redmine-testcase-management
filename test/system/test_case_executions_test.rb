@@ -10,7 +10,8 @@ class ApplicationSystemTestCase
 end
 
 class TestCaseExecutionsTest < ApplicationSystemTestCase
-  fixtures :projects, :issue_statuses, :users
+  fixtures :projects, :users, :issues, :members, :member_roles, :roles, :issue_statuses,
+           :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions
 
   include ApplicationsHelper
