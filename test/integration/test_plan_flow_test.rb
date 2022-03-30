@@ -7,7 +7,8 @@ class TestPlanFlowTest < ActionDispatch::IntegrationTest
 
   def setup
     @project = projects(:projects_001)
-    login_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
+    login_as(@user, :scope => :user)
   end
 
   test "add new test plan" do
