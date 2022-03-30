@@ -916,12 +916,33 @@ class TestCasesControllerTest < ActionController::TestCase
     def test_index
       get :index, params: {
             project_id: projects(:projects_003).identifier,
+          }
+      assert_response :success
+      assert_select "tbody tr", 0
+    end
+
+    def test_index_with_test_plan
+      get :index, params: {
+            project_id: projects(:projects_003).identifier,
             test_plan_id: test_plans(:test_plans_003).id
           }
       assert_response :missing
     end
 
     def test_create
+      assert_no_difference("TestCase.count") do
+        post :create, params: {
+               project_id: projects(:projects_001).identifier,
+               test_case: {
+                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                 user: 2
+               }
+             }
+      end
+      assert_response :forbidden
+    end
+
+    def test_create_with_test_plan
       assert_no_difference("TestCase.count") do
         post :create, params: {
                project_id: projects(:projects_001).identifier,
@@ -937,6 +958,15 @@ class TestCasesControllerTest < ActionController::TestCase
 
     def test_show
       test_case = test_cases(:test_cases_002)
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            id: test_case.id
+          }
+      assert_response :missing
+    end
+
+    def test_show_with_test_plan
+      test_case = test_cases(:test_cases_002)
       test_plan = test_plans(:test_plans_003)
       get :show, params: {
             project_id: projects(:projects_002).identifier,
@@ -947,6 +977,15 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     def test_edit
+      test_case = test_cases(:test_cases_001)
+      get :edit, params: {
+            project_id: projects(:projects_002).identifier,
+            id: test_case.id
+          }
+      assert_response :missing
+    end
+
+    def test_edit_with_test_plan
       test_plan = test_plans(:test_plans_002)
       test_case = test_cases(:test_cases_001)
       get :edit, params: {
@@ -958,6 +997,21 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     def test_update
+      test_case = test_cases(:test_cases_001)
+      assert_no_difference("TestCase.count") do
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              id: test_case.id,
+              test_case: {
+                name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                user: 2
+              }
+            }
+      end
+      assert_response :missing
+    end
+
+    def test_update_with_test_plan
       test_case = test_cases(:test_cases_001)
       test_plan = test_plans(:test_plans_002)
       assert_no_difference("TestCase.count") do
@@ -979,6 +1033,16 @@ class TestCasesControllerTest < ActionController::TestCase
       assert_no_difference("TestCase.count", -1) do
         delete :destroy, params: {
                  project_id: projects(:projects_003).identifier,
+                 id: test_cases(:test_cases_001).id
+               }
+      end
+      assert_response :missing
+    end
+
+    def test_destroy_with_test_plan
+      assert_no_difference("TestCase.count", -1) do
+        delete :destroy, params: {
+                 project_id: projects(:projects_003).identifier,
                  test_plan_id: test_plans(:test_plans_002).id,
                  id: test_cases(:test_cases_001).id
                }
@@ -996,6 +1060,19 @@ class TestCasesControllerTest < ActionController::TestCase
       assert_no_difference("TestCase.count") do
         post :create, params: {
                project_id: projects(:projects_001).identifier,
+               test_case: {
+                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                 user: 2
+               }
+             }
+      end
+      assert_response :forbidden
+    end
+
+    def test_create_with_test_plan
+      assert_no_difference("TestCase.count") do
+        post :create, params: {
+               project_id: projects(:projects_001).identifier,
                test_plan_id: test_plans(:test_plans_001).id,
                test_case: {
                  name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
@@ -1007,6 +1084,15 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     def test_edit
+      test_case = test_cases(:test_cases_001)
+      get :edit, params: {
+            project_id: projects(:projects_002).identifier,
+            id: test_case.id
+          }
+      assert_response :forbidden
+    end
+
+    def test_edit_with_test_plan
       test_plan = test_plans(:test_plans_002)
       test_case = test_cases(:test_cases_001)
       get :edit, params: {
@@ -1018,6 +1104,21 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     def test_update
+      test_case = test_cases(:test_cases_001)
+      assert_no_difference("TestCase.count") do
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              id: test_case.id,
+              test_case: {
+                name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                user: 2
+              }
+            }
+      end
+      assert_response :forbidden
+    end
+
+    def test_update_with_test_plan
       test_case = test_cases(:test_cases_001)
       test_plan = test_plans(:test_plans_002)
       assert_no_difference("TestCase.count") do
@@ -1036,6 +1137,16 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     def test_destroy
+      assert_no_difference("TestCase.count", -1) do
+        delete :destroy, params: {
+                 project_id: projects(:projects_003).identifier,
+                 id: test_cases(:test_cases_001).id
+               }
+      end
+      assert_response :forbidden
+    end
+
+    def test_destroy_with_test_plan
       assert_no_difference("TestCase.count", -1) do
         delete :destroy, params: {
                  project_id: projects(:projects_003).identifier,

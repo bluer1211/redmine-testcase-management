@@ -809,4 +809,150 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_redirected_to project_test_plan_test_case_test_case_executions_path
     end
   end
+
+  class ViewWithoutPermission < self
+    def setup
+      @project = projects(:projects_003)
+      @test_plan = test_plans(:test_plans_003)
+      @test_case = test_cases(:test_cases_002)
+      @test_case_execution = test_case_executions(:test_case_executions_001)
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project])
+    end
+
+    def test_index
+      get :index, params: {
+            project_id: @project.identifier,
+            test_plan_id: test_plans(:test_plans_003).id,
+            test_case_id: test_cases(:test_cases_002).id,
+            c: ["result", "user", "execution_date", "comment", "issue"]
+          }
+      assert_response :missing
+    end
+
+    def test_new
+      assert_no_difference("TestCaseExecution.count") do
+        get :new, params: {
+              project_id: @project.identifier,
+              test_plan_id: @test_plan.id,
+              test_case_id: @test_case.id
+            }
+      end
+      assert_response :missing
+    end
+
+    def test_create
+      assert_no_difference("TestCaseExecution.count") do
+        post :create, params: {
+               project_id: projects(:projects_002).identifier,
+               test_plan_id: test_plans(:test_plans_002).id,
+               test_case_id: test_cases(:test_cases_001).id,
+               test_case_execution: {
+                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 comment: "dummy", execution_date: "2022-01-01"
+               }
+             }
+      end
+      assert_response :missing
+    end
+
+    def test_show
+      get :show, params: {
+            project_id: projects(:projects_003).identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id
+          }
+      assert_response :missing
+    end
+
+    def test_edit
+      get :edit, params: {
+            project_id: projects(:projects_003).identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id
+          }
+      assert_response :missing
+    end
+
+    def test_update
+      assert_no_difference("TestCase.count") do
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: @test_plan.id,
+              test_case_id: @test_case.id,
+              id: @test_case_execution.id,
+              test_case_execution: {
+                result: true, user: 2, issue_id: issues(:issues_001).id,
+                comment: "dummy", execution_date: "2022-01-01"
+              }
+            }
+      end
+      assert_response :missing
+    end
+
+    def test_destroy
+      assert_no_difference("TestCaseExecution.count") do
+        delete :destroy, params: {
+                 project_id: projects(:projects_003).identifier,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: @test_case.id,
+                 id: @test_case_execution.id
+               }
+      end
+      assert_response :missing
+    end
+  end
+
+  class ModifyWithoutPermission < self
+    def setup
+      @test_plan = test_plans(:test_plans_003)
+      @test_case = test_cases(:test_cases_002)
+      @test_case_execution = test_case_executions(:test_case_executions_001)
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
+    end
+
+    def test_create
+      assert_no_difference("TestCaseExecution.count") do
+        post :create, params: {
+               project_id: projects(:projects_002).identifier,
+               test_plan_id: test_plans(:test_plans_002).id,
+               test_case_id: test_cases(:test_cases_001).id,
+               test_case_execution: {
+                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 comment: "dummy", execution_date: "2022-01-01"
+               }
+             }
+      end
+      assert_response :forbidden
+    end
+
+    def test_update
+      assert_no_difference("TestCase.count") do
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: @test_plan.id,
+              test_case_id: @test_case.id,
+              id: @test_case_execution.id,
+              test_case_execution: {
+                result: true, user: 2, issue_id: issues(:issues_001).id,
+                comment: "dummy", execution_date: "2022-01-01"
+              }
+            }
+      end
+      assert_response :forbidden
+    end
+
+    def test_destroy
+      assert_no_difference("TestCaseExecution.count") do
+        delete :destroy, params: {
+                 project_id: projects(:projects_003).identifier,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: @test_case.id,
+                 id: @test_case_execution.id
+               }
+      end
+      assert_response :forbidden
+    end
+  end
 end

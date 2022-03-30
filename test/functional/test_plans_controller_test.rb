@@ -293,9 +293,7 @@ class TestPlansControllerTest < ActionController::TestCase
     def test_index
       get :index, params: { project_id: projects(:projects_001).identifier }
 
-      #assert_response :missing
       assert_response :success
-      # show all test plans
       assert_select "tbody tr", 0
     end
 
