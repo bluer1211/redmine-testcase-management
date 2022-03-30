@@ -309,8 +309,8 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_destroy_dependent_test_case_executions
-        assert_difference("TestCase.count", -1) do
-          assert_difference("TestCaseExecution.count", -1) do
+        assert_difference("TestCaseExecution.count", -1) do
+          assert_difference("TestCase.count", -1) do
             delete :destroy, params: {
                      project_id: projects(:projects_002).identifier,
                      id: test_cases(:test_cases_002).id
@@ -893,8 +893,8 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_destroy_dependent_test_case_executions
-        assert_difference("TestCase.count", -1) do
-          assert_difference("TestCaseExecution.count", -1) do
+        assert_difference("TestCaseExecution.count", -1) do
+          assert_difference("TestCase.count", -1) do
             delete :destroy, params: {
                      project_id: projects(:projects_002).identifier,
                      test_plan_id: test_plans(:test_plans_003).id,
