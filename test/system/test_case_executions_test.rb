@@ -20,6 +20,8 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
     @test_plan = test_plans(:test_plans_003)
     @test_case = test_cases(:test_cases_002)
     @test_case_execution = test_case_executions(:test_case_executions_001)
+    @role = Role.generate!(:permissions => [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
+    User.add_to_project(User.all.first, @project, @role)
     login_with_admin
   end
 
