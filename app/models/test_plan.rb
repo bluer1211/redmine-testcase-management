@@ -11,6 +11,7 @@ class TestPlan < ActiveRecord::Base
   validates :name, presence: true
   validates :user, presence: true
   validates :issue_status, presence: true
+  validates :project, presence: true
 
   validates_associated :test_cases
   validates_associated :test_case_executions

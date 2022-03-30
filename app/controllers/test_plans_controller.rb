@@ -83,13 +83,14 @@ class TestPlansController < ApplicationController
 
   # POST /projects/:project_id/test_plans
   def create
+    find_project(params.permit(:project_id)[:project_id])
     @test_plan = TestPlan.new(:name => test_plan_params[:name],
                               :begin_date => test_plan_params[:begin_date],
                               :end_date => test_plan_params[:end_date],
                               :user => User.find(test_plan_params[:user].to_i),
                               :estimated_bug => test_plan_params[:estimated_bug],
                               :issue_status => IssueStatus.find(test_plan_params[:issue_status].to_i),
-                              :project => @project)
+                              :project_id => @project.id)
     if @test_plan.valid?
       @test_plan.save
       flash[:notice] = l(:notice_successful_create)

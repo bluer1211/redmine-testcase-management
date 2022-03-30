@@ -25,7 +25,8 @@ class TestPlanTest < ActiveSupport::TestCase
                              :end_date => "2022-02-28",
                              :estimated_bug => 10,
                              :user => users(:users_001),
-                             :issue_status => issue_statuses(:issue_statuses_001))
+                             :issue_status => issue_statuses(:issue_statuses_001),
+                             :project => projects(:projects_001))
     assert_save test_plan
     assert test_plan.destroy
   end
@@ -77,10 +78,21 @@ class TestPlanTest < ActiveSupport::TestCase
                              :end_date => "2022-02-28",
                              :estimated_bug => 10,
                              :user => users(:users_001),
-                             :issue_status => issue_statuses(:issue_statuses_001))
+                             :issue_status => issue_statuses(:issue_statuses_001),
+                             :project => projects(:projects_001))
     assert_raises ActiveRecord::RecordNotUnique do
       test_plan.save
     end
+  end
+
+  def test_invalid_project
+    test_plan = TestPlan.new(:name => "dummy",
+                             :begin_date => "2022-02-16",
+                             :end_date => "2022-02-28",
+                             :estimated_bug => 10,
+                             :user => users(:users_001),
+                             :issue_status => issue_statuses(:issue_statuses_001))
+    assert_not test_plan.valid?
   end
 
   def test_missing_project
