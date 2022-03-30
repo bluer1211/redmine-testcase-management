@@ -11,7 +11,7 @@ class TestPlansController < ApplicationController
   def index
     begin
       find_project(params.permit(:project_id)[:project_id])
-      @test_plans = TestPlan.all
+      @test_plans = TestPlan.where(project_id: @project.id).visible
     rescue
       flash.now[:error] = l(:error_project_not_found)
       render 'forbidden', status: 404
