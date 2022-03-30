@@ -137,7 +137,8 @@ class TestCasesController < ApplicationController
   # DELETE /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def destroy
     begin
-      if params[:test_plan_id].present? and @test_plan.nil?
+      test_plan_id = params.permit(:test_plan_id)[:test_plan_id]
+      if test_plan_id.present? and @test_plan.nil?
         raise ActiveRecord::RecordNotFound.new
       end
       @test_case = TestCase.find(params.permit(:id)[:id])
@@ -146,7 +147,7 @@ class TestCasesController < ApplicationController
       if @test_case.destroy
         flash[:notice] = l(:notice_successful_delete)
         if params[:test_plan_id].present?
-          redirect_to project_test_plan_test_cases_path(test_plan_id: params[:test_plan_id])
+          redirect_to project_test_plan_test_cases_path(test_plan_id: test_plan_id)
         else
           redirect_to project_test_cases_path
         end
