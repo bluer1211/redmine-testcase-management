@@ -907,4 +907,143 @@ class TestCasesControllerTest < ActionController::TestCase
       end
     end
   end
+
+  class ViewWithoutPermissions < self
+    def setup
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project])
+    end
+
+    def test_index
+      get :index, params: {
+            project_id: projects(:projects_003).identifier,
+            test_plan_id: test_plans(:test_plans_003).id
+          }
+      assert_response :missing
+    end
+
+    def test_create
+      assert_no_difference("TestCase.count") do
+        post :create, params: {
+               project_id: projects(:projects_001).identifier,
+               test_plan_id: test_plans(:test_plans_001).id,
+               test_case: {
+                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                 user: 2
+               }
+             }
+      end
+      assert_response :missing
+    end
+
+    def test_show
+      test_case = test_cases(:test_cases_002)
+      test_plan = test_plans(:test_plans_003)
+      get :show, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plan.id,
+            id: test_case.id
+          }
+      assert_response :missing
+    end
+
+    def test_edit
+      test_plan = test_plans(:test_plans_002)
+      test_case = test_cases(:test_cases_001)
+      get :edit, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plan.id,
+            id: test_case.id
+          }
+      assert_response :missing
+    end
+
+    def test_update
+      test_case = test_cases(:test_cases_001)
+      test_plan = test_plans(:test_plans_002)
+      assert_no_difference("TestCase.count") do
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: test_plan.id,
+              id: test_case.id,
+              test_case: {
+                test_plan_id: test_plans(:test_plans_002).id,
+                name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                user: 2
+              }
+            }
+      end
+      assert_response :missing
+    end
+
+    def test_destroy
+      assert_no_difference("TestCase.count", -1) do
+        delete :destroy, params: {
+                 project_id: projects(:projects_003).identifier,
+                 test_plan_id: test_plans(:test_plans_002).id,
+                 id: test_cases(:test_cases_001).id
+               }
+      end
+      assert_response :missing
+    end
+  end
+
+  class ModifyWithoutPermissions < self
+    def setup
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
+    end
+
+    def test_create
+      assert_no_difference("TestCase.count") do
+        post :create, params: {
+               project_id: projects(:projects_001).identifier,
+               test_plan_id: test_plans(:test_plans_001).id,
+               test_case: {
+                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                 user: 2
+               }
+             }
+      end
+      assert_response :forbidden
+    end
+
+    def test_edit
+      test_plan = test_plans(:test_plans_002)
+      test_case = test_cases(:test_cases_001)
+      get :edit, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plan.id,
+            id: test_case.id
+          }
+      assert_response :forbidden
+    end
+
+    def test_update
+      test_case = test_cases(:test_cases_001)
+      test_plan = test_plans(:test_plans_002)
+      assert_no_difference("TestCase.count") do
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: test_plan.id,
+              id: test_case.id,
+              test_case: {
+                test_plan_id: test_plans(:test_plans_002).id,
+                name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                user: 2
+              }
+            }
+      end
+      assert_response :forbidden
+    end
+
+    def test_destroy
+      assert_no_difference("TestCase.count", -1) do
+        delete :destroy, params: {
+                 project_id: projects(:projects_003).identifier,
+                 test_plan_id: test_plans(:test_plans_002).id,
+                 id: test_cases(:test_cases_001).id
+               }
+      end
+      assert_response :forbidden
+    end
+  end
 end
