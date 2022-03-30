@@ -2,6 +2,11 @@ class TestPlansController < ApplicationController
 
   include ApplicationsHelper
 
+  before_action :find_project_id
+  before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
+  before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
+  before_action :find_test_case_id, :only => [:unassign_test_case]
+
   before_action do
     prepare_issue_status_candidates
     prepare_user_candidates
@@ -10,7 +15,6 @@ class TestPlansController < ApplicationController
   # GET /projects/:project_id/test_plans
   def index
     begin
-      find_project(params.permit(:project_id)[:project_id])
       @test_plans = TestPlan.where(project_id: @project.id).visible
     rescue
       flash.now[:error] = l(:error_project_not_found)
@@ -21,16 +25,9 @@ class TestPlansController < ApplicationController
   # GET /projects/:project_id/test_plans/:id
   def show
     begin
-      find_project(params.permit(:project_id)[:project_id])
-      begin
-        @test_plan = TestPlan.find(params.permit(:project_id, :id)[:id])
-        @test_case_test_plan = TestCaseTestPlan.new
-      rescue
-        flash.now[:error] = l(:error_test_plan_not_found)
-        render 'forbidden', status: 404
-      end
+      @test_case_test_plan = TestCaseTestPlan.new
     rescue
-      flash.now[:error] = l(:error_project_not_found)
+      flash.now[:error] = l(:error_test_plan_not_found)
       render 'forbidden', status: 404
     end
   end
@@ -38,15 +35,9 @@ class TestPlansController < ApplicationController
   # GET /projects/:project_id/test_plans/:id/edit
   def edit
     begin
-      find_project(params.permit(:project_id)[:project_id])
-      begin
-        @test_plan = TestPlan.find(params.permit(:id)[:id])
-      rescue
-        flash.now[:error] = l(:error_test_plan_not_found)
-        render 'forbidden', status: 404
-      end
+      @test_plan = TestPlan.find(params.permit(:id)[:id])
     rescue
-      flash.now[:error] = l(:error_project_not_found)
+      flash.now[:error] = l(:error_test_plan_not_found)
       render 'forbidden', status: 404
     end
   end
@@ -103,22 +94,16 @@ class TestPlansController < ApplicationController
   # DELETE /projects/:project_id/test_plans/:id
   def destroy
     begin
-      find_project(params.permit(:project_id)[:project_id])
-      begin
-        @test_plan = TestPlan.find(params.permit(:id)[:id])
-        if @test_plan.destroy
-          flash[:notice] = l(:notice_successful_delete)
-          redirect_to project_test_plans_path
-        else
-          flash.now[:error] = l(:error_delete_failure)
-          render :show
-        end
-      rescue
-        flash.now[:error] = l(:error_test_plan_not_found)
-        render 'forbidden', status: 404
+      @test_plan = TestPlan.find(params.permit(:id)[:id])
+      if @test_plan.destroy
+        flash[:notice] = l(:notice_successful_delete)
+        redirect_to project_test_plans_path
+      else
+        flash.now[:error] = l(:error_delete_failure)
+        render :show
       end
     rescue
-      flash.now[:error] = l(:error_project_not_found)
+      flash.now[:error] = l(:error_test_plan_not_found)
       render 'forbidden', status: 404
     end
   end
@@ -126,8 +111,6 @@ class TestPlansController < ApplicationController
   # POST /projects/:project_id/test_plans/:test_plan_id/assign_test_case
   def assign_test_case
     begin
-      find_project(params.permit(:project_id)[:project_id])
-      @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
       @test_case = TestCase.find(params.require(:test_case_test_plan).permit(:test_case_id)[:test_case_id])
       @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
                                                     test_case: @test_case).first
@@ -147,9 +130,6 @@ class TestPlansController < ApplicationController
   # DELETE /projects/:project_id/test_plans/:test_plan_id/assign_test_case/:test_case_id
   def unassign_test_case
     begin
-      find_project(params.permit(:project_id)[:project_id])
-      @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
-      @test_case = TestCase.find(params.permit(:test_case_id)[:test_case_id])
       @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
                                                     test_case: @test_case).first
       if @test_case_test_plan

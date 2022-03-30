@@ -109,7 +109,7 @@ class TestPlansControllerTest < ActionController::TestCase
   class Edit < self
     def test_edit
       test_plan = test_plans(:test_plans_002)
-      get :edit, params: { project_id: @project_id, id: test_plan.id }
+      get :edit, params: { project_id: test_plan.project.id, id: test_plan.id }
       assert_select "div#content h2" do |h2|
         assert_equal "#{I18n.t(:permission_edit_test_plan)} #{test_plan.name}", h2.text
       end
@@ -152,11 +152,16 @@ class TestPlansControllerTest < ActionController::TestCase
   end
 
   class Destroy < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :delete_issues])
+    end
+
     def test_destroy
       test_plan = test_plans(:test_plans_001)
-      assert_difference("TestPlan.count", -1) do
+      assert_no_difference("TestCaseExecution.count") do
         assert_no_difference("TestCase.count") do
-          assert_no_difference("TestCaseExecution.count") do
+          assert_difference("TestPlan.count", -1) do
             delete :destroy, params: { project_id: @project_id, id: test_plan.id }
           end
         end
@@ -228,6 +233,7 @@ class TestPlansControllerTest < ActionController::TestCase
       @project = projects(:projects_003)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
+      login_with_permissions(@project, [:view_project, :view_issues, :add_issues, :delete_issues])
     end
 
     def test_assign_test_case

@@ -382,7 +382,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                }
              }
       end
-      assert_response :unprocessable_entity
+      assert_response :missing
       assert_back_to_lists_link(projects_path)
     end
 
@@ -398,7 +398,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                }
              }
       end
-      assert_response :unprocessable_entity
+      assert_response :missing
       assert_back_to_lists_link(project_test_plans_path)
     end
 
@@ -414,7 +414,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                }
              }
       end
-      assert_response :unprocessable_entity
+      assert_response :missing
       assert_back_to_lists_link(project_test_plan_test_cases_path)
     end
 

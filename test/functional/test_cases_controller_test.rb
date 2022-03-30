@@ -89,7 +89,7 @@ class TestCasesControllerTest < ActionController::TestCase
                  }
                }
         end
-        assert_response :unprocessable_entity
+        assert_response :missing
       end
 
       def test_create_with_missing_params
@@ -592,7 +592,7 @@ class TestCasesControllerTest < ActionController::TestCase
                  }
                }
         end
-        assert_response :unprocessable_entity
+        assert_response :missing
       end
 
       def test_create_with_nonexistent_test_plan
@@ -606,7 +606,7 @@ class TestCasesControllerTest < ActionController::TestCase
                  }
                }
         end
-        assert_response :unprocessable_entity
+        assert_response :missing
       end
 
       def test_create_with_missing_params

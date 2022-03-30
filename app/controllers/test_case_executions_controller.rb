@@ -2,9 +2,9 @@ class TestCaseExecutionsController < ApplicationController
 
   include ApplicationsHelper
 
-  before_action :find_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
-  before_action :find_test_plan_id, :only => [:new, :show, :edit, :index, :update, :destroy]
-  before_action :find_test_case_id, :only => [:show, :edit, :index, :update, :destroy]
+  before_action :find_project_id
+  before_action :find_test_plan_id
+  before_action :find_test_case_id, :only => [:show, :new, :create, :edit, :index, :update, :destroy]
 
   before_action do
     prepare_user_candidates
@@ -35,21 +35,15 @@ class TestCaseExecutionsController < ApplicationController
 
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/new
   def new
-    find_project(params.permit(:project_id)[:project_id])
     @test_case_execution = TestCaseExecution.new
     # FIXME:
     # @test_plan = @test_case_execution.test_plan
     # @test_case = @test_case_execution.test_case
-    @test_plan = TestPlan.find(permit_param(:test_plan_id))
-    @test_case = TestCase.find(permit_param(:test_case_id))
   end
 
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions
   def create
     begin
-      find_project(params.permit(:project_id)[:project_id])
-      @test_plan = TestPlan.find(permit_param(:test_plan_id))
-      @test_case = TestCase.find(permit_param(:test_case_id))
       create_params = {
         result: test_case_execution_params[:result],
         user: User.find(test_case_execution_params[:user]),

@@ -37,7 +37,7 @@ module ApplicationsHelper
   end
 
   def find_project_id
-    @project = Project.where(:identifier => params[:project_id]).first
+    @project = find_project(params.permit(:project_id)[:project_id])
     raise ActiveRecord::RecordNotFound unless @project
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_project_not_found)
@@ -45,7 +45,7 @@ module ApplicationsHelper
   end
 
   def find_test_plan_id
-    @test_plan = TestPlan.find(params[:test_plan_id])
+    @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
     raise ActiveRecord::RecordNotFound.new unless @test_plan.visible?
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_plan_not_found)
@@ -55,21 +55,23 @@ module ApplicationsHelper
   def find_test_plan_id_if_given
     if params[:test_plan_id].present?
       @test_plan_given = true
-      begin
-        @test_plan = TestPlan.find(params[:test_plan_id])
-        raise ActiveRecord::RecordNotFound.new unless @test_plan.visible?
-      rescue ActiveRecord::RecordNotFound
-        flash.now[:error] = l(:error_test_plan_not_found)
-        render 'forbidden', status: 404
-      end
+      find_test_plan_id
     else
       @test_plan_given = false
       @test_plan = nil
     end
   end
 
+  def find_test_plan
+    @test_plan = TestPlan.find(params.permit(:id)[:id])
+    raise ActiveRecord::RecordNotFound.new unless @test_plan.visible?
+  rescue ActiveRecord::RecordNotFound
+    flash.now[:error] = l(:error_test_plan_not_found)
+    render 'forbidden', status: 404
+  end
+
   def find_test_case_id
-    @test_case = TestCase.find(params[:test_case_id])
+    @test_case = TestCase.find(params.permit(:test_case_id)[:test_case_id])
     raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_case_not_found)
@@ -77,7 +79,7 @@ module ApplicationsHelper
   end
 
   def find_test_case
-    @test_case = TestCase.find(params[:id])
+    @test_case = TestCase.find(params.permit(:id)[:id])
     raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
   rescue ActiveRecord::RecordNotFound
     flash.now[:error] = l(:error_test_case_not_found)
@@ -93,7 +95,7 @@ module ApplicationsHelper
       if @project && @project.archived?
         @archived_project = @project
         render_403 :message => :notice_not_authorized_archived_project
-      elsif @project && !@project.allows_to?(:controller => ctrl, :action => action)
+      elsif @project && !@project.allows_to?(controller: controller, action: action)
         # Project module is disabled
         render_403
       else

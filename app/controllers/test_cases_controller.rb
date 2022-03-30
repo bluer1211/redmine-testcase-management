@@ -2,8 +2,8 @@ class TestCasesController < ApplicationController
 
   include ApplicationsHelper
 
-  before_action :find_project_id, :only => [:new, :show, :edit, :index, :update, :destroy]
-  before_action :find_test_plan_id_if_given, :only => [:new, :show, :edit, :index, :update, :destroy]
+  before_action :find_project_id
+  before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
   before_action :authorize_with_issues_permission, :except => [:index, :new, :create]
 
@@ -61,11 +61,6 @@ class TestCasesController < ApplicationController
       raise ::Unauthorized
     end
     begin
-      if params.permit(:test_plan_id)[:test_plan_id]
-        @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
-        raise ActiveRecord::RecordNotFound.new unless @test_plan
-      end
-      find_project(params.permit(:project_id)[:project_id])
       @test_case = TestCase.new(:project_id => @project.id,
                                 :name => test_case_params[:name],
                                 :user => User.find(test_case_params[:user]),
@@ -95,19 +90,16 @@ class TestCasesController < ApplicationController
   # GET /projects/:project_id/test_cases/:id
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def show
-    @test_case = TestCase.find(params.permit(:id)[:id])
   end
 
   # GET /projects/:project_id/test_cases/:id/edit
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id/edit
   def edit
-    @test_case = TestCase.find(params.permit(:id)[:id])
   end
 
   # PUT /projects/:project_id/test_cases/:id
   # PUT /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def update
-    @test_case = TestCase.find(params.permit(:id)[:id])
     raise ::Unauthorized unless @test_case.editable?
     update_params = {
       name: test_case_params[:name],
@@ -137,17 +129,12 @@ class TestCasesController < ApplicationController
   # DELETE /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def destroy
     begin
-      test_plan_id = params.permit(:test_plan_id)[:test_plan_id]
-      if test_plan_id.present? and @test_plan.nil?
-        raise ActiveRecord::RecordNotFound.new
-      end
-      @test_case = TestCase.find(params.permit(:id)[:id])
       raise ActiveRecord::RecordNotFound.new unless @test_case.visible?
       raise ::Unauthorized unless @test_case.deletable?
       if @test_case.destroy
         flash[:notice] = l(:notice_successful_delete)
         if params[:test_plan_id].present?
-          redirect_to project_test_plan_test_cases_path(test_plan_id: test_plan_id)
+          redirect_to project_test_plan_test_cases_path(test_plan_id: params.permit(:test_plan_id)[:test_plan_id])
         else
           redirect_to project_test_cases_path
         end
