@@ -6,7 +6,7 @@ module TestCaseManagement
 
     def redirect_to_test_case_execution_query(options)
       # FIXME: redirect to test case executions list
-      redirect_to project_test_cases_path
+      redirect_to project_test_cases_path(project_id: @project.identifier)
     end
   end
 end
