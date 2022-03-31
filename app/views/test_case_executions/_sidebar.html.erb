@@ -6,3 +6,9 @@
 </ul>
 
 <%= call_hook(:view_test_case_executions_sidebar_bottom) %>
+
+<% if controller.action_name == "index" %>
+  <%= render_sidebar_queries(TestCaseExecutionQuery, @project) %>
+  <%= call_hook(:view_test_case_executions_sidebar_queries_bottom) %>
+<% end %>
+
