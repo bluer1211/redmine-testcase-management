@@ -59,6 +59,102 @@ class TestCasesControllerTest < ActionController::TestCase
           end
         end
       end
+
+      class Filter < self
+        def setup
+          @project = projects(:projects_003)
+          login_with_permissions(@project, [:view_project, :view_issues])
+          @test_case = TestCase.create(name: "dummy",
+                                       scenario: "dummy",
+                                       expected: "dummy",
+                                       environment: "dummy",
+                                       project: @project,
+                                       user: @user)
+        end
+
+        def teardown
+          @test_case.destroy
+        end
+
+        def test_index_with_invalid_filter
+          get :index, params: filter_params("user_id", "=", {})
+          assert_flash_error I18n.t(:error_index_failure)
+          assert_response :unprocessable_entity
+        end
+
+        def test_index_with_name_filter
+          get :index, params: filter_params("name", "~",
+                                            { "name": [@test_case.name] })
+          assert_response :success
+          assert_equal [@test_case.id],
+                       css_select("table#test_cases_list tbody tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_user_filter
+          get :index, params: filter_params("user_id", "=", { "user_id": [@user.id] })
+          assert_response :success
+          assert_equal [@test_case.id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_environment_filter
+          get :index, params: filter_params("environment", "~",
+                                            { "environment": [@test_case.environment] })
+          assert_response :success
+          assert_equal [@test_case.id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_scenario_filter
+          get :index, params: filter_params("scenario", "~",
+                                            { "scenario": [@test_case.scenario] })
+          assert_response :success
+          assert_equal [@test_case.id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_expected_filter
+          get :index, params: filter_params("expected", "~",
+                                            { "expected": [@test_case.expected] })
+          assert_response :success
+          assert_equal [@test_case.id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_succeeded_result_filter
+          get :index, params: filter_params("latest_result", "=",
+                                            { "latest_result": [true] })
+          assert_response :success
+          # @test_case should not listed
+          assert_equal [test_cases(:test_cases_002).id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_index_with_result_filter
+          get :index, params: filter_params("latest_result", "=",
+                                            { "latest_result": [false] })
+          assert_response :success
+          # @test_case.id no related test case execution
+          assert_equal [@test_case.id, test_cases(:test_cases_003).id],
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        private
+
+        def filter_params(field, operation, values)
+          filters = {
+            project_id: @project.identifier,
+            set_filter: 1,
+            f: [field],
+            op: {
+              "#{field}" => operation
+            },
+            v: values,
+            c: ["name", "environment", "user", "scheduled_date", "scenario", "expected"]
+          }
+          filters
+        end
+      end
     end
 
     class Create < self
