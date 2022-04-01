@@ -106,7 +106,6 @@ SQL
         .offset(options[:offset])
     else
       base_scope
-        .where(getTestCaseConditions)
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
