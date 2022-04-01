@@ -155,6 +155,145 @@ class TestCasesControllerTest < ActionController::TestCase
           filters
         end
       end
+
+      class Order < self
+        def setup
+          @project = projects(:projects_003)
+          login_with_permissions(@project, [:view_project, :view_issues])
+          @test_case = TestCase.create(name: "dummy",
+                                       scenario: "dummy",
+                                       expected: "dummy",
+                                       environment: "dummy",
+                                       project: @project,
+                                       user: @user)
+          @order_params = {
+            project_id: @project.identifier
+          }
+        end
+
+        def teardown
+          @test_case.destroy
+        end
+
+        def test_id_order_by_desc
+          ids = test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id)
+          ids.unshift(@test_case.id)
+          get :index, params: @order_params
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_id_order_by_asc
+          ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
+          ids.push(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "id:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_name_order_by_desc
+          ids = test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id)
+          # test case ..., dummy
+          ids.push(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "name:desc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_name_order_by_asc
+          ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
+          # dummy, test case ...
+          ids.unshift(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "name:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_user_order_by_desc
+          test_cases(:test_cases_001).update(user: users(:users_001))
+          test_cases(:test_cases_003).update(user: users(:users_003))
+          ids = test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id)
+          ids.unshift(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "user:desc" })
+          assert_response :success
+          # should be listed in @user, dlopper, jsmith, admin
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_user_order_by_asc
+          test_cases(:test_cases_001).update(user: users(:users_001))
+          test_cases(:test_cases_003).update(user: users(:users_003))
+          ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
+          ids.push(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "user:asc" })
+          assert_response :success
+          # should be listed in admin, jsmith, dlopper, @user
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_scenario_order_by_desc
+          ids = test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id)
+          ids.push(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "scenario:desc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_scenario_order_by_asc
+          ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
+          ids.unshift(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "scenario:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_expected_order_by_desc
+          ids = test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id)
+          ids.push(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "expected:desc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_expected_order_by_asc
+          ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
+          ids.unshift(@test_case.id)
+          get :index, params: @order_params.merge({ sort: "expected:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_result_order_by_desc
+          ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
+          ids.unshift(@test_case.id)
+          # should be listed in none (desc), true, false
+          get :index, params: @order_params.merge({ sort: "latest_result:desc,id:desc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+
+        def test_result_order_by_asc
+          ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+          ids.push(@test_case.id)
+          ids.push(test_cases(:test_cases_001).id)
+          # should be listed in false, true, none (desc)
+          get :index, params: @order_params.merge({ sort: "latest_result:asc, id:asc" })
+          assert_response :success
+          assert_equal ids,
+                       css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        end
+      end
     end
 
     class Create < self
