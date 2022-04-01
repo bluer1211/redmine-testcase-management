@@ -32,6 +32,7 @@ sqlite3:
     - command -v geckodriver
   script:
     - dev/ci.sh sqlite3 $TESTS
+  allow_failure: true
 
 postgresql:
   extends: .template
