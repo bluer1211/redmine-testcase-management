@@ -121,9 +121,9 @@ SQL
     case operator
     when "="
       if value == ["true"]
-        "result = 't'"
+        "result = '1'"
       else
-        "result = 'f'"
+        "result = '0'"
       end
     when "!"
       if value == ["true"]
