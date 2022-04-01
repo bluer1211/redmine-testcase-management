@@ -69,7 +69,7 @@ class TestCaseQuery < Query
   end
 
   def base_scope
-    TestCase.visible.joins(:test_plans)
+    TestCase.visible
       .joins(<<-SQL
           INNER JOIN (SELECT test_case_id, max(execution_date) as execution_date
           FROM test_case_executions GROUP BY test_case_id) AS latest_tce on latest_tce.test_case_id = test_cases.id
@@ -99,12 +99,13 @@ SQL
     ]
     if options[:test_plan_id]
       base_scope
+        .joins(:test_plans)
         .where(conditions.join(" AND "))
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
     else
-      TestCase.visible
+      base_scope
         .where(getTestCaseConditions)
         .order(order_option)
         .limit(options[:limit])
