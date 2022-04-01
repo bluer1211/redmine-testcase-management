@@ -71,10 +71,10 @@ class TestCaseQuery < Query
   def base_scope
     TestCase.visible
       .joins(<<-SQL
-          INNER JOIN (SELECT test_case_id, max(execution_date) as execution_date
+          LEFT JOIN (SELECT test_case_id, max(execution_date) as execution_date
           FROM test_case_executions GROUP BY test_case_id) AS latest_tce on latest_tce.test_case_id = test_cases.id
-          INNER JOIN test_case_executions on latest_tce.test_case_id = test_case_executions.test_case_id
-           AND latest_tce.execution_date = test_case_executions.execution_date
+          LEFT JOIN test_case_executions on latest_tce.test_case_id = test_case_executions.test_case_id
+          AND latest_tce.execution_date = test_case_executions.execution_date
 SQL
             )
       .where(getTestCaseConditions)
