@@ -20,7 +20,8 @@ class TestCaseExecutionsController < ApplicationController
   include TestCaseExecutionsQueriesHelper
 
   # GET /projects/:project_id/test_case_executions
-  # GET /projects/:project_id/test_cases/:test_case_id:/test_case_executions
+  # GET /projects/:project_id/test_cases/:test_case_id/test_case_executions
+  # GET /projects/:project_id/test_plans/:test_plan_id/test_case_executions
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions
   def index
     retrieve_query(TestCaseExecutionQuery, false)
@@ -28,10 +29,15 @@ class TestCaseExecutionsController < ApplicationController
     if @query.valid?
       @test_case_execution_count = @query.test_case_execution_count
       @test_case_execution_pages = Paginator.new @test_case_execution_count, per_page_option, params['page']
-      @test_case_executions = @query.test_case_executions(test_plan_id: params[:test_plan_id],
-                                                          test_case_id: params[:test_case_id],
-                                                          offset: @test_case_execution_pages.offset,
-                                                          limit: @test_case_execution_pages.per_page)
+      test_case_executions_params = {offset: @test_case_execution_pages.offset,
+                                     limit: @test_case_execution_pages.per_page}
+      if params[:test_plan_id].present?
+        test_case_executions_params[:test_plan_id] = params[:test_plan_id]
+      end
+      if params[:test_case_id].present?
+        test_case_executions_params[:test_case_id] = params[:test_case_id]
+      end
+      @test_case_executions = @query.test_case_executions(test_case_executions_params)
     else
       flash.now[:error] = l(:error_index_failure)
       render 'forbidden', status: :unprocessable_entity

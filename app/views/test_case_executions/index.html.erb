@@ -10,6 +10,7 @@
 
 <%= form_tag((@test_plan_given and @test_case_given) ? project_test_plan_test_case_test_case_executions_path :
               @test_case_given ? project_test_case_test_case_executions_path :
+              @test_plan_given ? project_test_plan_test_case_executions_path :
               project_test_case_executions_path,
              :method => :get, :id => 'query_form') do %>
   <%= render :partial => 'queries/query_form' %>
