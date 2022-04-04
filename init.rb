@@ -38,6 +38,11 @@ Redmine::Plugin.register :testcase_management do
        :testcase_management,
        {:controller => 'test_cases', :action => 'index', :caption => 'Test Cases'},
        :param => :project_id
+
+  settings partial: "settings/testcase_management",
+           default: {
+             test_cases_export_limit: 10000,
+           }
 end
 
 Rails.configuration.to_prepare do

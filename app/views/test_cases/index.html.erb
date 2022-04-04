@@ -32,6 +32,11 @@
   <% end %>
 <% end %>
 
+<% other_formats_links do |f| %>
+  <%= f.link_to_with_query_parameters 'CSV',
+                                      :format => 'csv' %>
+<% end %>
+
 <% content_for :sidebar do %>
   <%= render :partial => 'test_cases/sidebar' %>
 <% end %>

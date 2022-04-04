@@ -40,6 +40,17 @@ class TestCasesController < ApplicationController
                                             limit: @test_case_pages.per_page).visible
           end
         end
+        format.csv do
+          if @test_plan_given
+            @test_cases = @query.test_cases(test_plan_id: params[:test_plan_id],
+                                            limit: Setting.test_cases_export_limit.to_i).visible
+          else
+            @test_cases = @query.test_cases(offset: @test_case_pages.offset,
+                                            limit: Setting.test_cases_export_limit.to_i).visible
+          end
+          send_data(query_to_csv(@test_cases, @query, params[:csv]),
+                    :type => 'text/csv; header=present', :filename => 'test_cases.csv')
+        end
       end
     else
       flash.now[:error] = l(:error_index_failure)
