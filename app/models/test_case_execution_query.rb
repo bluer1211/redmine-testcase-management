@@ -5,6 +5,8 @@ class TestCaseExecutionQuery < Query
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestCaseExecution.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
+    QueryColumn.new(:test_case, :sortable => "#{TestCaseExecution.table_name}.test_case_id"),
+    QueryColumn.new(:test_plan, :sortable => "#{TestCaseExecution.table_name}.test_plan_id"),
     QueryColumn.new(:result, :sortable => "#{TestCaseExecution.table_name}.result"),
     QueryColumn.new(:user, :sortable => "#{TestCaseExecution.table_name}.user_id"),
     QueryColumn.new(:issue, :sortable => "#{TestCaseExecution.table_name}.issue_id"),
@@ -70,12 +72,12 @@ class TestCaseExecutionQuery < Query
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :result, :user, :execution_date, :comment, :issue]
+    [:id, :test_case, :test_plan, :result, :user, :execution_date, :comment, :issue]
   end
 
   def default_sort_criteria
     # Newer test case execution should be listed on top
-    [['id', 'desc']]
+    [['id', 'test_case', 'test_plan', 'desc']]
   end
 
   # Valid options:
