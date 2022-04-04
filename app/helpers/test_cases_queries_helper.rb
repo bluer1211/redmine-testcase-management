@@ -4,7 +4,7 @@ module TestCasesQueriesHelper
     if item.is_a?(TestCase)
       case column.name
       when :id
-        if item.test_plan
+        if @test_plan_given and item.test_plan
           link_to item.id,
                 project_test_plan_test_case_url(project_id: item.project.identifier,
                                                 test_plan_id: item.test_plan.id,
@@ -15,7 +15,7 @@ module TestCasesQueriesHelper
                                         id: item.id)
         end
       when :name
-        if item.test_plan
+        if @test_plan_given and item.test_plan
           link_to item.name,
                   project_test_plan_test_case_url(project_id: item.project.identifier,
                                                   test_plan_id: item.test_plan.id,
