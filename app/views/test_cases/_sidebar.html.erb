@@ -12,7 +12,7 @@
                     new_project_test_plan_test_case_test_case_execution_path(
                       test_case_id: @test_case.id,
                     ) %></li>
-  <% elsif @test_case %>
+  <% elsif @test_case and @test_case.id %>
     <li><%= link_to l(:label_test_case_executions),
                     project_test_case_test_case_executions_path(
                       test_case_id: @test_case.id,
