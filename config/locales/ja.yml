@@ -11,6 +11,7 @@ ja:
 
   label_succeed: "成功"
   label_failure: "失敗"
+  label_none: "(未実行)"
 
   permission_edit_test_plan: "テスト計画の編集"
   permission_edit_test_case: "テストケースの編集"

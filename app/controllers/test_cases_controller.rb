@@ -217,4 +217,15 @@ class TestCasesController < ApplicationController
                                       :scenario,
                                       :expected)
   end
+
+  def csv_value(column, test_case, value)
+    case column.name
+    when :latest_result
+      !value ? l(:label_succeed) :
+        value.result ? l(:label_succeed) :
+        l(:label_failure)
+    else
+      super
+    end
+  end
 end

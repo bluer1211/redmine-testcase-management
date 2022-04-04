@@ -12,6 +12,7 @@ en:
 
   label_succeed: "Succeed"
   label_failure: "Failure"
+  label_none: "(N/A)"
 
   permission_edit_test_plan: "Edit Test Plan"
   permission_edit_test_case: "Edit Test Case"
