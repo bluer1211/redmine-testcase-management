@@ -1,5 +1,5 @@
 <p><%= label_tag("settings[test_cases_export_limit]",
                  l("settings_test_cases_export_limit")) %>
    <%= number_field_tag("settings[test_cases_export_limit]",
-                        settings[:test_cases_export_limit],
+                        settings["test_cases_export_limit"],
                         { min: 0, step: 1 }) %></p>

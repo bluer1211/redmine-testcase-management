@@ -41,7 +41,7 @@ Redmine::Plugin.register :testcase_management do
 
   settings partial: "settings/testcase_management",
            default: {
-             test_cases_export_limit: 10000,
+             "test_cases_export_limit" => 10000,
            }
 end
 
