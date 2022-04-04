@@ -8,6 +8,9 @@ ja:
   label_test_case_execution_new: "新しいテスト実行結果"
   label_back_to_lists: "一覧に戻る"
   label_test_plan_statistics: "テスト計画の統計"
+  label_import_test_cases: "テストケースのインポート"
+  label_import_test_plans: "テスト計画のインポート"
+  label_import_test_case_executions: "テスト実行結果のインポート"
 
   label_succeed: "成功"
   label_failure: "失敗"

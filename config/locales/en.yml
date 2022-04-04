@@ -9,6 +9,9 @@ en:
   label_test_case_execution_new: "New Test Case Execution"
   label_back_to_lists: "Back to lists"
   label_test_plan_statistics: "Test Plan Statistics"
+  label_import_test_cases: "Import Test Cases"
+  label_import_test_plans: "Import Test Plans"
+  label_import_test_case_executions: "Import Test Case Executions"
 
   label_succeed: "Succeed"
   label_failure: "Failure"

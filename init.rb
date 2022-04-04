@@ -12,8 +12,10 @@ Redmine::Plugin.register :testcase_management do
   url 'https://gitlab.com/clear-code/redmine-plugin-testcase-management'
   author_url 'https://www.clear-code.com'
 
-=begin
   project_module :testcase_management do
+    permission :import_test_cases, :test_cases => :imports
+
+=begin
     permission :view_test_cases, :test_cases => :show
     permission :add_test_cases, :test_cases => :create
     permission :edit_test_cases, :test_cases => :update
@@ -28,8 +30,8 @@ Redmine::Plugin.register :testcase_management do
     permission :add_test_case_executions, :test_case_executions => :create
     permission :edit_test_case_executions, :test_case_executions => :update
     permission :delete_test_case_executions, :test_case_executions => :destroy
-  end
 =end
+  end
 
   permission :test_cases, {:test_cases => [:index]}, :public => true
   permission :test_plans, {:test_plans => [:index]}, :public => true
