@@ -24,3 +24,8 @@
 </ul>
 
 <%= call_hook(:view_test_cases_sidebar_bottom) %>
+
+<% if controller.action_name == "index" %>
+  <%= render_sidebar_queries(TestCaseQuery, @project) %>
+  <%= call_hook(:view_test_cases_sidebar_queries_bottom) %>
+<% end %>
