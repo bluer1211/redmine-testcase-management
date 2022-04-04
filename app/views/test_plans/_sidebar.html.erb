@@ -15,8 +15,3 @@
 </ul>
 
 <%= call_hook(:view_test_plans_sidebar_bottom) %>
-
-<% if controller.action_name == "index" %>
-  <%= render_sidebar_queries(TestPlanQuery, @project) %>
-  <%= call_hook(:view_test_plans_sidebar_queries_bottom) %>
-<% end %>
