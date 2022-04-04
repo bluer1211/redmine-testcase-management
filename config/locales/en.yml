@@ -59,3 +59,5 @@ en:
   text_test_plan_destroy_confirmation: "Are you sure you want to delete this test plan and related data?"
   text_test_case_destroy_confirmation: "Are you sure you want to delete this test case and related data?"
   text_test_case_execution_destroy_confirmation: "Are you sure you want to delete this test case execution and related data?"
+
+  settings_test_cases_export_limit: "Maximum number of exported test cases at a time"
