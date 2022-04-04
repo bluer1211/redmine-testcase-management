@@ -24,6 +24,7 @@ en:
   error_project_not_found: "The project was not found."
   error_test_plan_not_found: "The test plan was not found."
   error_test_case: "The test case was not found."
+  error_test_case_not_found: "The test case was not found."
   error_test_case_execution_not_found: "The test case execution was not found."
 
   # TestPlan

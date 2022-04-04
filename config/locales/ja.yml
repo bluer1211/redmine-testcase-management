@@ -23,6 +23,7 @@ ja:
   error_project_not_found: "プロジェクトが存在しません。"
   error_test_plan_not_found: "テスト計画が存在しません。"
   error_test_case: "テストケースが存在しません。"
+  error_test_case_not_found: "テストケースが存在しません。"
   error_test_case_execution_not_found: "テスト実行結果が存在しません。"
 
   field_estimated_bug: "想定バグ数"

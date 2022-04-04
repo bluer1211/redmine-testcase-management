@@ -113,6 +113,9 @@ class TestPlansController < ApplicationController
         end
       end
       redirect_to project_test_plan_path(id: @test_plan.id)
+    rescue ActiveRecord::RecordNotFound
+      flash[:error] = l(:error_test_case_not_found) unless @test_case
+      redirect_to project_test_plan_path(id: @test_plan.id)
     rescue
       render 'forbidden', status: 404
     end
