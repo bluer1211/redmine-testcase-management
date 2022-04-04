@@ -27,6 +27,8 @@ class TestCasesController < ApplicationController
     retrieve_query(TestCaseQuery, false)
 
     if @query.valid?
+      respond_to do |format|
+        format.html do
       @test_case_count = @query.test_case_count
       @test_case_pages = Paginator.new @test_case_count, per_page_option, params['page']
       if @test_plan_given
@@ -36,6 +38,8 @@ class TestCasesController < ApplicationController
       else
         @test_cases = @query.test_cases(offset: @test_case_pages.offset,
                                         limit: @test_case_pages.per_page).visible
+      end
+        end
       end
     else
       flash.now[:error] = l(:error_index_failure)
