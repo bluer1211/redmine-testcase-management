@@ -1,8 +1,9 @@
 <h3><%= l(:label_testcase_management) %></h3>
 
 <ul>
+  <li><%= link_to l(:label_test_cases), project_test_cases_path %></li>
   <li><%= link_to l(:label_test_plans), project_test_plans_path %></li>
-  <% if @test_plan and @test_case %>
+  <% if @test_plan and @test_case and @test_case.id %>
     <li><%= link_to l(:label_test_case_executions),
                     project_test_plan_test_case_test_case_executions_path(
                       test_case_id: @test_case.id,
