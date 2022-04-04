@@ -3,6 +3,15 @@
 <ul>
   <li><%= link_to l(:label_test_cases), project_test_cases_path %></li>
   <li><%= link_to l(:label_test_plans), project_test_plans_path %></li>
+  <% if @test_case %>
+    <li><%= link_to l(:label_test_case_executions),
+                    project_test_case_test_case_executions_path(
+                      test_case_id: @test_case.id,
+                    ) %></li>
+  <% else %>
+    <li><%= link_to l(:label_test_case_executions),
+                    project_test_case_executions_path %></li>
+  <% end %>
 </ul>
 
 <%= call_hook(:view_test_plans_sidebar_bottom) %>

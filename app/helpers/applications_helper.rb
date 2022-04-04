@@ -87,6 +87,17 @@ module ApplicationsHelper
     false
   end
 
+  def find_test_case_id_if_given
+    if params[:test_case_id].present?
+      @test_case_given = true
+      find_test_case_id
+    else
+      @test_case_given = false
+      @test_case = nil
+      true
+    end
+  end
+
   def find_test_case
     @test_case = TestCase.find(params.permit(:id)[:id])
     raise ActiveRecord::RecordNotFound unless @test_case.visible?

@@ -3,8 +3,10 @@ class TestCaseExecutionsController < ApplicationController
   include ApplicationsHelper
 
   before_action :find_project_id
-  before_action :find_test_plan_id
-  before_action :find_test_case_id, :only => [:show, :new, :create, :edit, :index, :update, :destroy]
+  before_action :find_test_plan_id, :except => [:index]
+  before_action :find_test_plan_id_if_given, :only => [:index]
+  before_action :find_test_case_id, :only => [:show, :new, :create, :edit, :update, :destroy]
+  before_action :find_test_case_id_if_given, :only => [:index]
   before_action :authorize_with_issues_permission, :except => [:index, :new, :create]
 
   before_action do
@@ -17,6 +19,8 @@ class TestCaseExecutionsController < ApplicationController
   helper :test_case_executions_queries
   include TestCaseExecutionsQueriesHelper
 
+  # GET /projects/:project_id/test_case_executions
+  # GET /projects/:project_id/test_cases/:test_case_id:/test_case_executions
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions
   def index
     retrieve_query(TestCaseExecutionQuery, false)
