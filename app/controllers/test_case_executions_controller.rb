@@ -132,6 +132,8 @@ class TestCaseExecutionsController < ApplicationController
       if test_case_execution_params[:issue_id].present?
         issue = Issue.find(test_case_execution_params[:issue_id])
         @test_case_execution.issue = issue if issue.present?
+      else
+        @test_case_execution.issue = nil
       end
       if params[:attachments].present?
         @test_case_execution.save_attachments params.require(:attachments).permit!

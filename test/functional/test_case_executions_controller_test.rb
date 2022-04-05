@@ -650,6 +650,25 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_redirected_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
     end
 
+    def test_unassign_issue
+      assert_no_difference("TestCase.count") do
+        put :update, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: @test_plan.id,
+              test_case_id: @test_case.id,
+              id: @test_case_execution.id,
+              test_case_execution: {
+                result: true, user: 2, issue_id: "",
+                comment: "dummy", execution_date: "2022-01-01"
+              }
+            }
+      end
+      assert_equal I18n.t(:notice_successful_update), flash[:notice]
+      @test_case_execution.reload
+      assert_equal nil, @test_case_execution.issue
+      assert_redirected_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
+    end
+
     def test_update_with_nonexistent_project
       put :update, params: {
             project_id: NONEXISTENT_PROJECT_ID,
