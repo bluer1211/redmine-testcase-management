@@ -29,7 +29,7 @@
   </p>
   <p>
     <%= form.label :issue %>
-    <%= form.text_field :issue_id %>
+    <%= form.text_field :issue_id, id: 'issue_id' %>
   </p>
   <p>
     <%= form.label :comment %>
@@ -43,3 +43,5 @@
     <%= render partial: 'attachments/form' %>
   </p>
 </div>
+
+<%= javascript_tag "observeAutocompleteField('issue_id', '#{escape_javascript auto_complete_issues_path(project_id: @project, issue_id: @test_case_execution.issue_id)}')" %>
