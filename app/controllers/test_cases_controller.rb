@@ -3,9 +3,9 @@ class TestCasesController < ApplicationController
   include ApplicationsHelper
 
   before_action :find_project_id
-  before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
+  before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy, :auto_completes]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
-  before_action :authorize_with_issues_permission, :except => [:index, :new, :create]
+  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :auto_completes]
 
   before_action do
     prepare_user_candidates
@@ -152,7 +152,46 @@ class TestCasesController < ApplicationController
     end
   end
 
+  # GET /projects/:project_id/test_cases/auto_completes
+  def auto_completes
+    q = params.permit(:term)[:term]
+    test_plan_id = params.permit(:test_plan_id)[:test_plan_id]
+    num = 0
+    if q.present?
+      begin
+        num = Integer(q)
+      rescue
+      end
+    end
+    like = if Redmine::Database.postgresql?
+             "ILIKE"
+           else
+             "LIKE"
+           end
+    test_cases = []
+    begin
+      if test_plan_id.present?
+        test_cases = TestCase.visible.where.not(id: TestPlan.find(test_plan_id).test_cases.select(:id))
+                       .where("projects.identifier = ? AND test_cases.name #{like} ?",
+                              @project.identifier, "%#{q}%").order(id: :desc).limit(10).to_a
+      end
+      render :json => format_test_cases_json(test_cases)
+    rescue
+      render :json => test_cases
+    end
+  end
+
   private
+
+  def format_test_cases_json(test_cases)
+    test_cases.map do |test_case|
+      {
+        'id': test_case.id,
+        'label': "##{test_case.id} #{test_case.name.truncate(60)}",
+        'value': test_case.id
+      }
+    end
+  end
 
   def test_case_params
     params.require(:test_case).permit(:project_id,

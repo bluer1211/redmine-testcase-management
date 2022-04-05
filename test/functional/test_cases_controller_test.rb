@@ -557,6 +557,74 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_redirected_to project_test_cases_path
       end
     end
+
+    class AutoComplete < self
+      def setup
+        @project = projects(:projects_003)
+        login_with_permissions(@project, [:view_project, :view_issues])
+        @params = {
+          project_id: @project.identifier
+        }
+      end
+
+      def test_missing_test_plan
+        get :auto_completes, params: @params.merge({term: "TEST"})
+        assert_response :success
+        assert_equal [],
+                     JSON.parse(@response.body)
+      end
+
+      def test_nonexistent_test_plan
+        get :auto_completes, params: @params.merge({term: "TEST", test_plan_id: NONEXISTENT_TEST_PLAN_ID})
+        assert_response :missing
+      end
+
+      def test_uppercase_name
+        get :auto_completes, params: @params.merge({term: "TEST", test_plan_id: test_plans(:test_plans_002).id})
+        assert_response :success
+        expected = []
+        test_cases(:test_cases_003, :test_cases_002).each do |test_case|
+          expected << {
+            "id" => test_case.id,
+            "label" => "##{test_case.id} #{test_case.name}",
+            "value" => test_case.id
+          }
+        end
+        assert_equal expected,
+                     JSON.parse(@response.body)
+      end
+
+      def test_lowercase_name
+        get :auto_completes, params: @params.merge({term: "test", test_plan_id: test_plans(:test_plans_002).id})
+        assert_response :success
+        expected = []
+        test_cases(:test_cases_003, :test_cases_002).each do |test_case|
+          expected << {
+            "id" => test_case.id,
+            "label" => "##{test_case.id} #{test_case.name}",
+            "value" => test_case.id
+          }
+        end
+        assert_equal expected,
+                     JSON.parse(@response.body)
+      end
+
+      def test_non_associated
+        get :auto_completes, params: @params.merge({term: "test",
+                                                    test_plan_id: test_plans(:test_plans_003).id})
+        assert_response :success
+        expected = []
+        # non associated test_cases_001 should be listed
+        test_case = test_cases(:test_cases_001)
+        expected << {
+          "id" => test_case.id,
+          "label" => "##{test_case.id} #{test_case.name}",
+          "value" => test_case.id
+        }
+        assert_equal expected,
+                     JSON.parse(@response.body)
+      end
+    end
   end
 
   class AssociatedWithTestPlan < self
