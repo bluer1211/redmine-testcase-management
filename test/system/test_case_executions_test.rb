@@ -81,6 +81,16 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
     accept_confirm I18n.t(:text_test_case_execution_destroy_confirmation)
   end
 
+  test "autocomplete issue" do
+    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{@test_case_execution.id}/edit"
+
+    fill_in 'test_case_execution[issue_id]', with: "subproject"
+    assert_selector "ul#ui-id-1 li", count: 1, text: "Bug ##{issues(:issues_013).id}: #{issues(:issues_013).subject}"
+    assert_selector "ul#ui-id-1 li", count: 1, text: "Bug ##{issues(:issues_005).id}: #{issues(:issues_005).subject}"
+    page.execute_script "$('ul.ui-autocomplete li:first-child').trigger('mouseenter').click()"
+    assert_equal issues(:issues_013).id.to_s, page.evaluate_script("$('#issue_id').val()")
+  end
+
   private
 
   def login_with_admin
