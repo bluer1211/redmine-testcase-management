@@ -37,6 +37,7 @@ class TestCasesControllerTest < ActionController::TestCase
                       I18n.t(:field_environment),
                       I18n.t(:field_user),
                       I18n.t(:field_latest_result),
+                      I18n.t(:field_execution_date),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected)
                      ],
@@ -136,6 +137,17 @@ class TestCasesControllerTest < ActionController::TestCase
                                           { "latest_result": [false] })
         assert_response :success
         # @test_case is not associated test case execution
+        assert_equal [test_cases(:test_cases_003).id],
+                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_execution_date_filter
+        ActiveRecord::Base.default_timezone = :utc
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        get :index, params: filter_params("execution_date", "=",
+                                          { "execution_date": [test_case_execution.execution_date.strftime("%F")] })
+        assert_response :success
+        # @test_case should not listed
         assert_equal [test_cases(:test_cases_003).id],
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
@@ -677,6 +689,7 @@ class TestCasesControllerTest < ActionController::TestCase
                       I18n.t(:field_environment),
                       I18n.t(:field_user),
                       I18n.t(:field_latest_result),
+                      I18n.t(:field_execution_date),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected)
                      ],
