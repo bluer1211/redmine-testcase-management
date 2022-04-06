@@ -559,6 +559,7 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class AutoComplete < self
+      class Authorized < self
       def setup
         @project = projects(:projects_003)
         login_with_permissions(@project, [:view_project, :view_issues])
@@ -623,6 +624,28 @@ class TestCasesControllerTest < ActionController::TestCase
         }
         assert_equal expected,
                      JSON.parse(@response.body)
+      end
+
+      end
+
+      class Unauthorized < self
+        def setup
+          @project = projects(:projects_003)
+          @params = {
+            project_id: @project.identifier
+          }
+        end
+
+        def test_without_permission
+          # No view_issues
+          generate_user_with_permissions(@project, [:view_project])
+          @request.session[:user_id] = @user.id
+          get :auto_complete, params: @params.merge({term: "test",
+                                                     test_plan_id: test_plans(:test_plans_003).id})
+          assert_response :success
+          assert_equal [],
+                       JSON.parse(@response.body)
+        end
       end
     end
   end
