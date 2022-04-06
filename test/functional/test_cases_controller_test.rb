@@ -568,19 +568,19 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_missing_test_plan
-        get :auto_completes, params: @params.merge({term: "TEST"})
+        get :auto_complete, params: @params.merge({term: "TEST"})
         assert_response :success
         assert_equal [],
                      JSON.parse(@response.body)
       end
 
       def test_nonexistent_test_plan
-        get :auto_completes, params: @params.merge({term: "TEST", test_plan_id: NONEXISTENT_TEST_PLAN_ID})
+        get :auto_complete, params: @params.merge({term: "TEST", test_plan_id: NONEXISTENT_TEST_PLAN_ID})
         assert_response :missing
       end
 
       def test_uppercase_name
-        get :auto_completes, params: @params.merge({term: "TEST", test_plan_id: test_plans(:test_plans_002).id})
+        get :auto_complete, params: @params.merge({term: "TEST", test_plan_id: test_plans(:test_plans_002).id})
         assert_response :success
         expected = []
         test_cases(:test_cases_003, :test_cases_002).each do |test_case|
@@ -595,7 +595,7 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_lowercase_name
-        get :auto_completes, params: @params.merge({term: "test", test_plan_id: test_plans(:test_plans_002).id})
+        get :auto_complete, params: @params.merge({term: "test", test_plan_id: test_plans(:test_plans_002).id})
         assert_response :success
         expected = []
         test_cases(:test_cases_003, :test_cases_002).each do |test_case|
@@ -610,7 +610,7 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_non_associated
-        get :auto_completes, params: @params.merge({term: "test",
+        get :auto_complete, params: @params.merge({term: "test",
                                                     test_plan_id: test_plans(:test_plans_003).id})
         assert_response :success
         expected = []
