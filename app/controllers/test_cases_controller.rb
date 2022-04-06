@@ -3,7 +3,7 @@ class TestCasesController < ApplicationController
   include ApplicationsHelper
 
   before_action :find_project_id
-  before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy, :auto_complete]
+  before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
   before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :auto_complete]
 
@@ -154,8 +154,10 @@ class TestCasesController < ApplicationController
 
   # GET /projects/:project_id/test_cases/auto_complete
   def auto_complete
+    test_cases = []
     unless User.current.allowed_to?(:view_issues, @project, :global => true)
-      raise ::Unauthorized
+      render :json => test_cases
+      return
     end
     q = params.permit(:term)[:term]
     test_plan_id = params.permit(:test_plan_id)[:test_plan_id]
@@ -171,7 +173,6 @@ class TestCasesController < ApplicationController
            else
              "LIKE"
            end
-    test_cases = []
     begin
       if test_plan_id.present?
         test_cases = TestCase.visible.where.not(id: TestPlan.find(test_plan_id).test_cases.select(:id))
