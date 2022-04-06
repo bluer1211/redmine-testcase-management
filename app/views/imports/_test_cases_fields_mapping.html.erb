@@ -1,0 +1,26 @@
+<p>
+  <label for="import_mapping_project_id"><%= l(:label_project) %></label>
+  <%= select_tag 'import_settings[mapping][project_id]',
+        options_for_select(project_tree_options_for_select(@import.allowed_target_projects, :selected => @import.project)),
+        :id => 'import_mapping_project_id' %>
+</p>
+<p>
+  <label for="import_mapping_name"><%= l(:field_name) %></label>
+  <%= mapping_select_tag @import, 'name', :required => true %>
+</p>
+<p>
+  <label for="import_mapping_user"><%= l(:field_user) %></label>
+  <%= mapping_select_tag @import, 'user', :required => true %>
+</p>
+<p>
+  <label for="import_mapping_environment"><%= l(:field_environment) %></label>
+  <%= mapping_select_tag @import, 'environment', :required => true %>
+</p>
+<p>
+  <label for="import_mapping_scenario"><%= l(:field_scenario) %></label>
+  <%= mapping_select_tag @import, 'scenario', :required => true %>
+</p>
+<p>
+  <label for="import_mapping_expected"><%= l(:field_expected) %></label>
+  <%= mapping_select_tag @import, 'expected', :required => true %>
+</p>
