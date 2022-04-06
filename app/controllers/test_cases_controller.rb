@@ -3,9 +3,9 @@ class TestCasesController < ApplicationController
   include ApplicationsHelper
 
   before_action :find_project_id
-  before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy, :auto_completes]
+  before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy, :auto_complete]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
-  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :auto_completes]
+  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :auto_complete]
 
   before_action do
     prepare_user_candidates
@@ -152,8 +152,8 @@ class TestCasesController < ApplicationController
     end
   end
 
-  # GET /projects/:project_id/test_cases/auto_completes
-  def auto_completes
+  # GET /projects/:project_id/test_cases/auto_complete
+  def auto_complete
     q = params.permit(:term)[:term]
     test_plan_id = params.permit(:test_plan_id)[:test_plan_id]
     num = 0
