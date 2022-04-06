@@ -577,7 +577,8 @@ class TestCasesControllerTest < ActionController::TestCase
 
         def test_nonexistent_test_plan
           get :auto_complete, params: @params.merge({term: "TEST", test_plan_id: NONEXISTENT_TEST_PLAN_ID})
-          assert_response :missing
+          assert_equal [],
+                       JSON.parse(@response.body)
         end
 
         def test_uppercase_name
