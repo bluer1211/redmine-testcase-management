@@ -48,6 +48,7 @@ esac
 
 cat config/database.yml
 cp plugins/testcase_management/test/fixtures/*.yml test/fixtures/
+cp plugins/testcase_management/test/fixtures/files/*.csv test/fixtures/files/
 bundle install
 bin/rails db:create
 bin/rails generate_secret_token
