@@ -154,6 +154,9 @@ class TestCasesController < ApplicationController
 
   # GET /projects/:project_id/test_cases/auto_complete
   def auto_complete
+    unless User.current.allowed_to?(:view_issues, @project, :global => true)
+      raise ::Unauthorized
+    end
     q = params.permit(:term)[:term]
     test_plan_id = params.permit(:test_plan_id)[:test_plan_id]
     num = 0
