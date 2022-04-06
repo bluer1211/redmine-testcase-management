@@ -9,6 +9,7 @@ class TestCaseQuery < Query
     QueryColumn.new(:user, :sortable => "#{TestCase.table_name}.user_id"),
     QueryColumn.new(:environment, :sortable => "#{TestCase.table_name}.environment"),
     QueryColumn.new(:latest_result, :sortable => "#{TestCaseExecution.table_name}.result"),
+    QueryColumn.new(:execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date"),
     QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
     QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected")
   ]
@@ -29,6 +30,7 @@ class TestCaseQuery < Query
       "latest_result",
       :type => :list, :values => lambda { [[l(:label_succeed), true], [l(:label_failure), false]] }
     )
+    add_available_filter "execution_date", :type => :date
     add_available_filter "scenario", :type => :text
     add_available_filter "expected", :type => :text
   end
@@ -65,6 +67,9 @@ class TestCaseQuery < Query
     unless filters["last_result"].blank?
       conditions << sql_for_last_result_field("result", filters["last_result"][:operator], filters["last_result"][:values], TestCaseExecution.table_name, "result")
     end
+    unless filters["execution_date"].blank?
+      conditions << sql_for_field("execution_date", filters["execution_date"][:operator], filters["execution_date"][:values], TestCaseExecution.table_name, "execution_date")
+    end
     conditions.join(" AND ")
   end
 
@@ -82,7 +87,7 @@ SQL
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :name, :environment, :user, :latest_result, :scenario, :expected]
+    [:id, :name, :environment, :user, :latest_result, :execution_date, :scenario, :expected]
   end
 
   def default_sort_criteria
@@ -134,6 +139,11 @@ SQL
     else
       "1=0"
     end
+  end
+
+  # override default statement for .execution_date
+  def sql_for_execution_date_field(field, operator, value)
+    "1=1"
   end
 end
 
