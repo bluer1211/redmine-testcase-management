@@ -72,7 +72,7 @@ class TestCaseExecutionQuery < Query
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :test_case, :test_plan, :result, :user, :execution_date, :comment, :issue]
+    [:id, :test_plan, :test_case, :result, :user, :execution_date, :comment, :issue]
   end
 
   def default_sort_criteria
