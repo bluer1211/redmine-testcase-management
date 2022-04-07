@@ -12,7 +12,12 @@
     <li><%= link_to l(:label_test_case_executions),
                     project_test_case_executions_path %></li>
   <% end %>
-  <li><%= link_to l(:label_test_plan_statistics), project_test_plan_statistics_path %></li>
+</ul>
+
+<h3><%= l(:label_statistics) %></h3>
+
+<ul>
+  <li><%= link_to l(:label_test_plan_statistics), project_test_plan_statistics_path, class: 'icon icon-stats' %></li>
 </ul>
 
 <%= call_hook(:view_test_plans_sidebar_bottom) %>
