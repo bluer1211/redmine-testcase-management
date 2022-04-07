@@ -25,7 +25,7 @@ class TestCasesImportTest < ApplicationSystemTestCase
     click_on "Next »"
 
     select "Comma", :from => "Field separator"
-    select "Double quote", :from => 'Field wrapper"
+    select "Double quote", :from => "Field wrapper"
     select "UTF-8", :from => "Encoding"
     click_on "Next »"
 
@@ -38,7 +38,7 @@ class TestCasesImportTest < ApplicationSystemTestCase
 
     assert_difference "TestCase.count", 3 do
       click_button "Import"
-      assert page.has_content?('3 items have been imported')
+      assert page.has_content?("3 items have been imported")
     end
   end
 end
