@@ -41,4 +41,13 @@ class TestCasesImportTest < ApplicationSystemTestCase
       assert page.has_content?("3 items have been imported")
     end
   end
+
+  private
+
+  def login_with_admin
+    visit "/login"
+    fill_in 'username', with: "admin"
+    fill_in 'password', with: "admin"
+    click_button 'login-submit'
+  end
 end
