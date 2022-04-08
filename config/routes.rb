@@ -29,4 +29,14 @@ Rails.application.routes.draw do |map|
       :to => 'imports#new',
       :defaults => {:type => 'TestCaseImport'},
       :as => 'new_test_cases_import'
+
+  get 'projects/:project_id/test_plans/imports/new',
+      :to => 'imports#new',
+      :defaults => {:type => 'TestPlanImport'},
+      :as => 'new_test_plans_import'
+
+  get 'projects/:project_id/test_case_executions/imports/new',
+      :to => 'imports#new',
+      :defaults => {:type => 'TestCaseExecutionImport'},
+      :as => 'new_test_case_executions_import'
 end

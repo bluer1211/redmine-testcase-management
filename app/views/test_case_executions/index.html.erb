@@ -1,10 +1,17 @@
-<% if @test_plan_given and @test_case_given %>
 <div class="contextual">
-  <%= link_to l(:label_test_case_execution_new),
-              new_project_test_plan_test_case_test_case_execution_path,
-              :class => 'icon icon-add new-issue' %>
+  <% if @test_plan_given and @test_case_given %>
+    <%= link_to l(:label_test_case_execution_new),
+                new_project_test_plan_test_case_test_case_execution_path,
+                :class => 'icon icon-add new-issue' %>
+  <% end %>
+  <%= actions_dropdown do %>
+    <% if User.current.allowed_to?(:import_test_case_executions, @project, :global => true) %>
+      <%= link_to l(:button_import),
+                  new_test_case_executions_import_path(:project_id => @project),
+                  :class => 'icon icon-import' %>
+    <% end %>
+  <% end %>
 </div>
-<% end %>
 
 <h2><%=l(:label_test_case_executions)%></h2>
 
@@ -24,6 +31,11 @@
     <%= render :partial => 'test_case_executions/list', :locals => {:test_case_executions => @test_case_executions, :query => @query} %>
     <span class="pagination"><%= pagination_links_full @test_case_execution_pages, @test_case_execution_count %></span>
   <% end %>
+<% end %>
+
+<% other_formats_links do |f| %>
+  <%= f.link_to_with_query_parameters 'CSV',
+                                      :format => 'csv' %>
 <% end %>
 
 <% content_for :sidebar do %>

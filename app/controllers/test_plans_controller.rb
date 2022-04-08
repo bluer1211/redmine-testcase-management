@@ -16,6 +16,15 @@ class TestPlansController < ApplicationController
   # GET /projects/:project_id/test_plans
   def index
     @test_plans = TestPlan.where(project_id: @project.id).visible
+    respond_to do |format|
+      format.html do
+      end
+      format.csv do
+        max_export = Setting.plugin_testcase_management["test_plans_export_limit"].to_i
+        send_data(items_to_csv(@test_plans, columns, params[:csv]),
+                  :type => 'text/csv; header=present', :filename => 'test_plans.csv')
+      end
+    end
   end
 
   # GET /projects/:project_id/test_plans/:id
@@ -184,5 +193,9 @@ SQL
                                       :end_date,
                                       :estimated_bug,
                                       :issue_status)
+  end
+
+  def columns
+    []
   end
 end

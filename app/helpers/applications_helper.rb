@@ -126,4 +126,15 @@ module ApplicationsHelper
       false
     end
   end
+
+  def items_to_csv(items, columns, options={})
+    Redmine::Export::CSV.generate(:encoding => params[:encoding]) do |csv|
+      # csv header fields
+      csv << columns.map {|c| c.caption.to_s}
+      # csv lines
+      items.each do |item|
+        csv << columns.map {|c| csv_content(c, item)}
+      end
+    end
+  end
 end

@@ -1,5 +1,12 @@
 <div class="contextual">
   <%= link_to l(:label_test_plan_new), new_project_test_plan_path(@project), :class => 'icon icon-add new-issue' %>
+  <%= actions_dropdown do %>
+    <% if User.current.allowed_to?(:import_test_plans, @project, :global => true) %>
+      <%= link_to l(:button_import),
+                  new_test_plans_import_path(:project_id => @project),
+                  :class => 'icon icon-import' %>
+    <% end %>
+  <% end %>
 </div>
 
 <h2><%=l(:label_test_plans)%></h2>
@@ -30,6 +37,11 @@
     </tbody>
   </table>
 </div>
+
+<% other_formats_links do |f| %>
+  <%= f.link_to_with_query_parameters 'CSV',
+                                      :format => 'csv' %>
+<% end %>
 
 <% content_for :sidebar do %>
   <%= render :partial => 'test_plans/sidebar' %>

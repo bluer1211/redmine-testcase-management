@@ -27,17 +27,33 @@ class TestCaseExecutionsController < ApplicationController
     retrieve_query(TestCaseExecutionQuery, false)
 
     if @query.valid?
-      @test_case_execution_count = @query.test_case_execution_count
-      @test_case_execution_pages = Paginator.new @test_case_execution_count, per_page_option, params['page']
-      test_case_executions_params = {offset: @test_case_execution_pages.offset,
-                                     limit: @test_case_execution_pages.per_page}
-      if params[:test_plan_id].present?
-        test_case_executions_params[:test_plan_id] = params[:test_plan_id]
+        format.html do
+          @test_case_execution_count = @query.test_case_execution_count
+          @test_case_execution_pages = Paginator.new @test_case_execution_count, per_page_option, params['page']
+          test_case_executions_params = {offset: @test_case_execution_pages.offset,
+                                         limit: @test_case_execution_pages.per_page}
+          if params[:test_plan_id].present?
+            test_case_executions_params[:test_plan_id] = params[:test_plan_id]
+          end
+          if params[:test_case_id].present?
+            test_case_executions_params[:test_case_id] = params[:test_case_id]
+          end
+          @test_case_executions = @query.test_case_executions(test_case_executions_params).visible
+        end
+        format.csv do
+          max_export = Setting.plugin_testcase_management["test_case_executions_export_limit"].to_i
+          test_case_executions_params = {limit: max_export}
+          if params[:test_plan_id].present?
+            test_case_executions_params[:test_plan_id] = params[:test_plan_id]
+          end
+          if params[:test_case_id].present?
+            test_case_executions_params[:test_case_id] = params[:test_case_id]
+          end
+          @test_case_executions = @query.test_case_executions(test_case_executions_params).visible
+          send_data(query_to_csv(@test_case_executions, @query, params[:csv]),
+                    :type => 'text/csv; header=present', :filename => 'test_case_executions.csv')
+        end
       end
-      if params[:test_case_id].present?
-        test_case_executions_params[:test_case_id] = params[:test_case_id]
-      end
-      @test_case_executions = @query.test_case_executions(test_case_executions_params)
     else
       flash.now[:error] = l(:error_index_failure)
       render 'forbidden', status: :unprocessable_entity
