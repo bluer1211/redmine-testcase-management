@@ -88,25 +88,13 @@ class TestPlanQuery < Query
   end
 
   # Valid options:
-  #   :test_plan_id :test_plan_id :limit :offset
+  #   :test_plan_id :limit :offset
   def test_plans(options={})
     order_option = [sort_clause]
-    conditions = [
-      sql_for_field("id", "=", [options[:test_plan_id]], TestPlan.table_name, 'id')
-    ]
-    if options[:test_plan_id]
-      base_scope
-        .joins(:test_plans)
-        .where(conditions.join(" AND "))
-        .order(order_option)
-        .limit(options[:limit])
-        .offset(options[:offset])
-    else
-      base_scope
-        .order(order_option)
-        .limit(options[:limit])
-        .offset(options[:offset])
-    end
+    base_scope
+      .order(order_option)
+      .limit(options[:limit])
+      .offset(options[:offset])
   end
 
   def test_plan_count

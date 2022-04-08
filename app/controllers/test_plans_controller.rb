@@ -29,7 +29,7 @@ class TestPlansController < ApplicationController
           @test_plan_count = @query.test_plan_count
           @test_plan_pages = Paginator.new @test_plan_count, per_page_option, params["page"]
           test_plans_params = {offset: @test_plan_pages.offset,
-                                         limit: @test_plan_pages.per_page}
+                               limit: @test_plan_pages.per_page}
           if params[:test_case_id].present?
             test_plans_params[:test_case_id] = params[:test_case_id]
           end
