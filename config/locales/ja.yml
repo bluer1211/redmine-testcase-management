@@ -66,3 +66,5 @@ ja:
   text_test_case_execution_destroy_confirmation: "本当にこのテスト実行結果と関連データを削除しますか？"
 
   settings_test_cases_export_limit: "テストケースのCSV出力件数の上限"
+  settings_test_plans_export_limit: ""テスト計画のCSV出力件数の上限"
+  settings_test_case_executions_export_limit: "テスト実行結果のCSV出力件数の上限"
