@@ -13,9 +13,43 @@ class TestPlansController < ApplicationController
     prepare_user_candidates
   end
 
+  helper :queries
+  include QueriesHelper
+  helper :test_plans_queries
+  include TestPlansQueriesHelper
+
   # GET /projects/:project_id/test_plans
   def index
-    @test_plans = TestPlan.where(project_id: @project.id).visible
+    retrieve_query(TestPlanQuery, false)
+
+    if @query.valid?
+      respond_to do |format|
+        @test_plans_export_limit = Setting.plugin_testcase_management["test_plans_export_limit"].to_i
+        format.html do
+          @test_plan_count = @query.test_plan_count
+          @test_plan_pages = Paginator.new @test_plan_count, per_page_option, params["page"]
+          test_plans_params = {offset: @test_plan_pages.offset,
+                               limit: @test_plan_pages.per_page}
+          if params[:test_case_id].present?
+            test_plans_params[:test_case_id] = params[:test_case_id]
+          end
+          @test_plans = @query.test_plans(test_plans_params).visible
+          @csv_url = project_test_plans_path(@project, format: "csv")
+        end
+        format.csv do
+          test_plans_params = {limit: @test_plans_export_limit}
+          if params[:test_case_id].present?
+            test_plans_params[:test_case_id] = params[:test_case_id]
+          end
+          @test_plans = @query.test_plans(test_plans_params).visible
+          send_data(query_to_csv(@test_plans, @query, params[:csv]),
+                    :type => 'text/csv; header=present', :filename => 'test_plans.csv')
+        end
+      end
+    else
+      flash.now[:error] = l(:error_index_failure)
+      render 'forbidden', status: :unprocessable_entity
+    end
   end
 
   # GET /projects/:project_id/test_plans/:id
@@ -184,5 +218,18 @@ SQL
                                       :end_date,
                                       :estimated_bug,
                                       :issue_status)
+  end
+
+  def query_to_csv(items, query, options={})
+    columns = query.columns
+
+    Redmine::Export::CSV.generate(:encoding => params[:encoding]) do |csv|
+      # csv header fields
+      csv << columns.map {|c| c.caption.to_s} + [l(:field_test_cases)]
+      # csv lines
+      items.each do |item|
+        csv << columns.map {|c| csv_content(c, item)} + [item.test_cases.pluck(:id).join(",")]
+      end
+    end
   end
 end

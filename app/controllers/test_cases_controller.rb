@@ -28,17 +28,30 @@ class TestCasesController < ApplicationController
 
     if @query.valid?
       respond_to do |format|
+        @test_cases_export_limit = Setting.plugin_testcase_management["test_cases_export_limit"].to_i
         format.html do
           @test_case_count = @query.test_case_count
-          @test_case_pages = Paginator.new @test_case_count, per_page_option, params['page']
+          @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
           if @test_plan_given
             @test_cases = @query.test_cases(test_plan_id: params[:test_plan_id],
                                             offset: @test_case_pages.offset,
                                             limit: @test_case_pages.per_page).visible
+            @csv_url = project_test_plan_test_cases_path(@project, test_plan_id: params[:test_plan_id], format: "csv")
           else
             @test_cases = @query.test_cases(offset: @test_case_pages.offset,
                                             limit: @test_case_pages.per_page).visible
+            @csv_url = project_test_cases_path(@project, format: "csv")
           end
+        end
+        format.csv do
+          if @test_plan_given
+            @test_cases = @query.test_cases(test_plan_id: params[:test_plan_id],
+                                            limit: @test_cases_export_limit).visible
+          else
+            @test_cases = @query.test_cases(limit: @test_cases_export_limit).visible
+          end
+          send_data(query_to_csv(@test_cases, @query, params[:csv]),
+                    :type => 'text/csv; header=present', :filename => 'test_cases.csv')
         end
       end
     else
@@ -205,5 +218,19 @@ class TestCasesController < ApplicationController
                                       :environment,
                                       :scenario,
                                       :expected)
+  end
+
+  def csv_value(column, test_case, value)
+    case column.name
+    when :latest_result
+      !value ? l(:label_succeed) :
+        value.result ? l(:label_succeed) :
+        l(:label_failure)
+    when :execution_date
+      !value ? l(:label_none) :
+        yyyymmdd_date(value.execution_date)
+    else
+      super
+    end
   end
 end

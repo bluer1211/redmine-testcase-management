@@ -9,9 +9,13 @@ en:
   label_test_case_execution_new: "New Test Case Execution"
   label_back_to_lists: "Back to lists"
   label_test_plan_statistics: "Test Plan Statistics"
+  label_import_test_cases: "Import Test Cases"
+  label_import_test_plans: "Import Test Plans"
+  label_import_test_case_executions: "Import Test Case Executions"
 
   label_succeed: "Succeed"
   label_failure: "Failure"
+  label_none: "(N/A)"
 
   permission_edit_test_plan: "Edit Test Plan"
   permission_edit_test_case: "Edit Test Case"
@@ -32,6 +36,8 @@ en:
   field_estimated_bug: "Estimated Bugs"
   field_begin_date: "Begin Date"
   field_end_date: "End Date"
+  field_issue_status: "Status"
+  field_test_cases: "Test Cases"
 
   field_count_test_cases: "Number of Test Cases"
   field_count_not_executed: "Not Executed"
@@ -59,3 +65,7 @@ en:
   text_test_plan_destroy_confirmation: "Are you sure you want to delete this test plan and related data?"
   text_test_case_destroy_confirmation: "Are you sure you want to delete this test case and related data?"
   text_test_case_execution_destroy_confirmation: "Are you sure you want to delete this test case execution and related data?"
+
+  settings_test_cases_export_limit: "Maximum number of exported test cases at a time"
+  settings_test_plans_export_limit: "Maximum number of exported test plans at a time"
+  settings_test_case_executions_export_limit: "Maximum number of exported test case ececutions at a time"

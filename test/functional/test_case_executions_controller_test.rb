@@ -26,9 +26,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
             c: ["result", "user", "execution_date", "comment", "issue"]
           }
       assert_response :success
-      assert_select "tbody tr", 1
+      assert_select "table#test_case_executions_list tbody tr", 1
       executions = []
-      assert_select "tbody tr td:first-child" do |tds|
+      assert_select "table#test_case_executions_list tbody tr td:first-child" do |tds|
         tds.each do |td|
           executions << td.text.to_i
         end
@@ -665,7 +665,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       end
       assert_equal I18n.t(:notice_successful_update), flash[:notice]
       @test_case_execution.reload
-      assert_equal nil, @test_case_execution.issue
+      assert_nil @test_case_execution.issue
       assert_redirected_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
     end
 

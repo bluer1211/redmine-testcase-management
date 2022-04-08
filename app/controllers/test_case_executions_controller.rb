@@ -27,17 +27,35 @@ class TestCaseExecutionsController < ApplicationController
     retrieve_query(TestCaseExecutionQuery, false)
 
     if @query.valid?
-      @test_case_execution_count = @query.test_case_execution_count
-      @test_case_execution_pages = Paginator.new @test_case_execution_count, per_page_option, params['page']
-      test_case_executions_params = {offset: @test_case_execution_pages.offset,
-                                     limit: @test_case_execution_pages.per_page}
-      if params[:test_plan_id].present?
-        test_case_executions_params[:test_plan_id] = params[:test_plan_id]
+      @test_case_executions_export_limit = Setting.plugin_testcase_management["test_case_executions_export_limit"].to_i
+      respond_to do |format|
+        format.html do
+          @test_case_execution_count = @query.test_case_execution_count
+          @test_case_execution_pages = Paginator.new @test_case_execution_count, per_page_option, params['page']
+          test_case_executions_params = {offset: @test_case_execution_pages.offset,
+                                         limit: @test_case_execution_pages.per_page}
+          if params[:test_plan_id].present?
+            test_case_executions_params[:test_plan_id] = params[:test_plan_id]
+          end
+          if params[:test_case_id].present?
+            test_case_executions_params[:test_case_id] = params[:test_case_id]
+          end
+          @test_case_executions = @query.test_case_executions(test_case_executions_params).visible
+          @csv_url = project_test_case_executions_path(@project, test_case_executions_params.merge(format: "csv"))
+        end
+        format.csv do
+          test_case_executions_params = {limit: @test_case_executions_export_limit}
+          if params[:test_plan_id].present?
+            test_case_executions_params[:test_plan_id] = params[:test_plan_id]
+          end
+          if params[:test_case_id].present?
+            test_case_executions_params[:test_case_id] = params[:test_case_id]
+          end
+          @test_case_executions = @query.test_case_executions(test_case_executions_params).visible
+          send_data(query_to_csv(@test_case_executions, @query, params[:csv]),
+                    :type => 'text/csv; header=present', :filename => 'test_case_executions.csv')
+        end
       end
-      if params[:test_case_id].present?
-        test_case_executions_params[:test_case_id] = params[:test_case_id]
-      end
-      @test_case_executions = @query.test_case_executions(test_case_executions_params)
     else
       flash.now[:error] = l(:error_index_failure)
       render 'forbidden', status: :unprocessable_entity
@@ -193,5 +211,14 @@ class TestCaseExecutionsController < ApplicationController
                                                 :comment,
                                                 :result,
                                                 :issue_id)
+  end
+
+  def csv_value(column, test_case, value)
+    case column.name
+    when :test_plan, :test_case
+      value.id
+    else
+      super
+    end
   end
 end

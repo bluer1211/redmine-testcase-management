@@ -8,9 +8,13 @@ ja:
   label_test_case_execution_new: "新しいテスト実行結果"
   label_back_to_lists: "一覧に戻る"
   label_test_plan_statistics: "テスト計画の統計"
+  label_import_test_cases: "テストケースのインポート"
+  label_import_test_plans: "テスト計画のインポート"
+  label_import_test_case_executions: "テスト実行結果のインポート"
 
   label_succeed: "成功"
   label_failure: "失敗"
+  label_none: "(未実行)"
 
   permission_edit_test_plan: "テスト計画の編集"
   permission_edit_test_case: "テストケースの編集"
@@ -31,6 +35,8 @@ ja:
   field_estimated_bug: "想定バグ数"
   field_begin_date: "開始日"
   field_end_date: "終了日"
+  field_issue_status: "ステータス"
+  field_test_cases: "テストケース"
 
   field_count_test_cases: "テストケース数"
   field_count_not_executed: "未実行"
@@ -58,3 +64,7 @@ ja:
   text_test_plan_destroy_confirmation: "本当にこのテスト計画と関連データを削除しますか？"
   text_test_case_destroy_confirmation: "本当にこのテストケースと関連データを削除しますか？"
   text_test_case_execution_destroy_confirmation: "本当にこのテスト実行結果と関連データを削除しますか？"
+
+  settings_test_cases_export_limit: "テストケースのCSV出力件数の上限"
+  settings_test_plans_export_limit: "テスト計画のCSV出力件数の上限"
+  settings_test_case_executions_export_limit: "テスト実行結果のCSV出力件数の上限"

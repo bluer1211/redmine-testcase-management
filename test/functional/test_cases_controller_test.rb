@@ -23,11 +23,10 @@ class TestCasesControllerTest < ActionController::TestCase
             }
         assert_response :success
         # match all test cases
-        assert_select "tbody tr", 3
         assert_equal test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id),
                      css_select("table#test_cases_list tbody tr td.id").map(&:text).map(&:to_i)
         columns = []
-        assert_select "thead tr:first-child th" do |ths|
+        assert_select "table#test_cases_list thead tr:first-child th" do |ths|
           ths.each do |th|
             columns << th.text
           end
