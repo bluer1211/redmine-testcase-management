@@ -23,16 +23,16 @@ class TestPlansControllerTest < ActionController::TestCase
       get :index, params: { project_id: projects(:projects_001).identifier }
 
       assert_response :success
-      # show all test plans
-      assert_equal test_cases(:test_cases_005, :test_cases_001).pluck(:id),
+      # show all test plans including sub projects
+      assert_equal test_plans(:test_plans_005, :test_plans_003, :test_plans_002, :test_plans_001).pluck(:id),
                    css_select("table#test_plans_list tbody tr td.id").map(&:text).map(&:to_i)
       plans = []
-      assert_select "table#test_plans_list tbody tr td:first-child" do |tds|
+      assert_select "table#test_plans_list tbody tr td.name" do |tds|
         tds.each do |td|
           plans << td.text
         end
       end
-      assert_equal test_plans(:test_cases_005, :test_cases_001).pluck(:name), plans
+      assert_equal test_plans(:test_plans_005, :test_plans_003, :test_plans_002, :test_plans_001).pluck(:name), plans
       # verify columns
       columns = []
       assert_select "table#test_plans_list thead tr:first-child th" do |ths|
@@ -40,7 +40,8 @@ class TestPlansControllerTest < ActionController::TestCase
           columns << th.text
         end
       end
-      assert_equal [I18n.t(:field_name),
+      assert_equal ['#',
+                    I18n.t(:field_name),
                     I18n.t(:field_status),
                     I18n.t(:field_estimated_bug),
                     I18n.t(:field_user),

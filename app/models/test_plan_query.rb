@@ -6,11 +6,11 @@ class TestPlanQuery < Query
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestPlan.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
     QueryColumn.new(:name, :sortable => "#{TestPlan.table_name}.name"),
-    QueryColumn.new(:begin_date, :sortable => "#{TestPlan.table_name}.begin_date"),
-    QueryColumn.new(:end_date, :sortable => "#{TestPlan.table_name}.end_date"),
+    QueryColumn.new(:issue_status, :sortable => "#{TestPlan.table_name}.issue_status_id"),
     QueryColumn.new(:estimated_bug, :sortable => "#{TestPlan.table_name}.estimated_bug"),
     QueryColumn.new(:user, :sortable => "#{TestPlan.table_name}.user_id"),
-    QueryColumn.new(:issue_status, :sortable => "#{TestPlan.table_name}.issue_status_id"),
+    QueryColumn.new(:begin_date, :sortable => "#{TestPlan.table_name}.begin_date"),
+    QueryColumn.new(:end_date, :sortable => "#{TestPlan.table_name}.end_date"),
   ]
 
   def initialize(attributes=nil, *args)
@@ -79,7 +79,7 @@ class TestPlanQuery < Query
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :name, :begin_date, :end_date, :estimated_bug, :user, :issue_status]
+    [:id, :name, :issue_status, :estimated_bug, :user, :begin_date, :end_date]
   end
 
   def default_sort_criteria
