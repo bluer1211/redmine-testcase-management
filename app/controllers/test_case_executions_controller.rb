@@ -27,6 +27,7 @@ class TestCaseExecutionsController < ApplicationController
     retrieve_query(TestCaseExecutionQuery, false)
 
     if @query.valid?
+      respond_to do |format|
         format.html do
           @test_case_execution_count = @query.test_case_execution_count
           @test_case_execution_pages = Paginator.new @test_case_execution_count, per_page_option, params['page']
