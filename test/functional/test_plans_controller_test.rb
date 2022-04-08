@@ -24,17 +24,18 @@ class TestPlansControllerTest < ActionController::TestCase
 
       assert_response :success
       # show all test plans
-      assert_select "tbody tr", 2
+      assert_equal test_cases(:test_cases_005, :test_cases_001).pluck(:id),
+                   css_select("table#test_plans_list tbody tr td.id").map(&:text).map(&:to_i)
       plans = []
-      assert_select "tbody tr td:first-child" do |tds|
+      assert_select "table#test_plans_list tbody tr td:first-child" do |tds|
         tds.each do |td|
           plans << td.text
         end
       end
-      assert_equal test_plans(:test_plans_001, :test_plans_005).pluck(:name), plans
+      assert_equal test_plans(:test_cases_005, :test_cases_001).pluck(:name), plans
       # verify columns
       columns = []
-      assert_select "thead tr:first-child th" do |ths|
+      assert_select "table#test_plans_list thead tr:first-child th" do |ths|
         ths.each do |th|
           columns << th.text
         end

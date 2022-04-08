@@ -26,9 +26,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
             c: ["result", "user", "execution_date", "comment", "issue"]
           }
       assert_response :success
-      assert_select "tbody tr", 1
+      assert_select "table#test_case_executions_list tbody tr", 1
       executions = []
-      assert_select "tbody tr td:first-child" do |tds|
+      assert_select "table#test_case_executions_list tbody tr td:first-child" do |tds|
         tds.each do |td|
           executions << td.text.to_i
         end
