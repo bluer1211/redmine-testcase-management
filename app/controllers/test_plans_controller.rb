@@ -24,19 +24,20 @@ class TestPlansController < ApplicationController
 
     if @query.valid?
       respond_to do |format|
+        @test_plans_export_limit = Setting.plugin_testcase_management["test_plans_export_limit"].to_i
         format.html do
           @test_plan_count = @query.test_plan_count
-          @test_plan_pages = Paginator.new @test_plan_count, per_page_option, params['page']
+          @test_plan_pages = Paginator.new @test_plan_count, per_page_option, params["page"]
           test_plans_params = {offset: @test_plan_pages.offset,
                                          limit: @test_plan_pages.per_page}
           if params[:test_case_id].present?
             test_plans_params[:test_case_id] = params[:test_case_id]
           end
           @test_plans = @query.test_plans(test_plans_params).visible
+          @csv_url = project_test_plans_path(@project, format: "csv")
         end
         format.csv do
-          max_export = Setting.plugin_testcase_management["test_plans_export_limit"].to_i
-          test_plans_params = {limit: max_export}
+          test_plans_params = {limit: @test_plans_export_limit}
           if params[:test_case_id].present?
             test_plans_params[:test_case_id] = params[:test_case_id]
           end

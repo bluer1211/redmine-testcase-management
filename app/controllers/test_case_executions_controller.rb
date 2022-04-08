@@ -27,6 +27,7 @@ class TestCaseExecutionsController < ApplicationController
     retrieve_query(TestCaseExecutionQuery, false)
 
     if @query.valid?
+      @test_case_executions_export_limit = Setting.plugin_testcase_management["test_case_executions_export_limit"].to_i
       respond_to do |format|
         format.html do
           @test_case_execution_count = @query.test_case_execution_count
@@ -40,10 +41,10 @@ class TestCaseExecutionsController < ApplicationController
             test_case_executions_params[:test_case_id] = params[:test_case_id]
           end
           @test_case_executions = @query.test_case_executions(test_case_executions_params).visible
+          @csv_url = project_test_case_executions_path(@project, test_case_executions_params.merge(format: "csv"))
         end
         format.csv do
-          max_export = Setting.plugin_testcase_management["test_case_executions_export_limit"].to_i
-          test_case_executions_params = {limit: max_export}
+          test_case_executions_params = {limit: @test_case_executions_export_limit}
           if params[:test_plan_id].present?
             test_case_executions_params[:test_plan_id] = params[:test_plan_id]
           end
