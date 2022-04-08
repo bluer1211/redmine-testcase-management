@@ -35,6 +35,7 @@ ja:
   field_estimated_bug: "想定バグ数"
   field_begin_date: "開始日"
   field_end_date: "終了日"
+  field_issue_status: "ステータス"
 
   field_count_test_cases: "テストケース数"
   field_count_not_executed: "未実行"

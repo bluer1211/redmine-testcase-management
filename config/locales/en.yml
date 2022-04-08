@@ -36,6 +36,7 @@ en:
   field_estimated_bug: "Estimated Bugs"
   field_begin_date: "Begin Date"
   field_end_date: "End Date"
+  field_issue_status: "Status"
 
   field_count_test_cases: "Number of Test Cases"
   field_count_not_executed: "Not Executed"

@@ -11,32 +11,19 @@
 
 <h2><%=l(:label_test_plans)%></h2>
 
-<div class="autoscroll">
-  <table class="list issues odd-even sort-by-id sort-desc">
-    <thead>
-      <tr>
-        <th><%=l(:field_name)%></th>
-        <th><%=l(:field_status)%></th>
-        <th><%=l(:field_estimated_bug)%></th>
-        <th><%=l(:field_user)%></th>
-        <th><%=l(:field_begin_date)%></th>
-        <th><%=l(:field_end_date)%></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @test_plans.each do |test_plan| %>
-      <tr>
-        <td><%= link_to test_plan.name, "/projects/#{@project.name}/test_plans/#{test_plan.id}" %></td>
-        <td><%= test_plan.issue_status.name %></td>
-        <td><%= test_plan.estimated_bug %></td>
-        <td><%= test_plan.user.name %></td>
-        <td><%= yyyymmdd_date(test_plan.begin_date) %></td>
-        <td><%= yyyymmdd_date(test_plan.end_date) %></td>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<%= form_tag(project_test_plans_path, :method => :get, :id => 'query_form') do %>
+  <%= render :partial => 'queries/query_form' %>
+<% end %>
+
+<% if @query.valid? %>
+  <% if @test_plans.empty? %>
+    <p class="nodata"><%= l(:label_no_data) %></p>
+  <% else %>
+    <%= render_query_totals(@query) %>
+    <%= render :partial => "test_plans/list", :locals => {:test_plans => @test_plans, :query => @query} %>
+    <span class="pagination"><%= pagination_links_full @test_plan_pages, @test_plan_count %></span>
+  <% end %>
+<% end %>
 
 <% other_formats_links do |f| %>
   <%= f.link_to_with_query_parameters 'CSV',

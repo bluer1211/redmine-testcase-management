@@ -13,17 +13,41 @@ class TestPlansController < ApplicationController
     prepare_user_candidates
   end
 
+  helper :queries
+  include QueriesHelper
+  helper :test_plans_queries
+  include TestPlansQueriesHelper
+
   # GET /projects/:project_id/test_plans
   def index
-    @test_plans = TestPlan.where(project_id: @project.id).visible
-    respond_to do |format|
-      format.html do
+    retrieve_query(TestPlanQuery, false)
+
+    if @query.valid?
+      respond_to do |format|
+        format.html do
+          @test_plan_count = @query.test_plan_count
+          @test_plan_pages = Paginator.new @test_plan_count, per_page_option, params['page']
+          test_plans_params = {offset: @test_plan_pages.offset,
+                                         limit: @test_plan_pages.per_page}
+          if params[:test_case_id].present?
+            test_plans_params[:test_case_id] = params[:test_case_id]
+          end
+          @test_plans = @query.test_plans(test_plans_params).visible
+        end
+        format.csv do
+          max_export = Setting.plugin_testcase_management["test_plans_export_limit"].to_i
+          test_plans_params = {limit: max_export}
+          if params[:test_case_id].present?
+            test_plans_params[:test_case_id] = params[:test_case_id]
+          end
+          @test_plans = @query.test_plans(test_plans_params).visible
+          send_data(query_to_csv(@test_plans, @query, params[:csv]),
+                    :type => 'text/csv; header=present', :filename => 'test_plans.csv')
+        end
       end
-      format.csv do
-        max_export = Setting.plugin_testcase_management["test_plans_export_limit"].to_i
-        send_data(items_to_csv(@test_plans, columns, params[:csv]),
-                  :type => 'text/csv; header=present', :filename => 'test_plans.csv')
-      end
+    else
+      flash.now[:error] = l(:error_index_failure)
+      render 'forbidden', status: :unprocessable_entity
     end
   end
 
