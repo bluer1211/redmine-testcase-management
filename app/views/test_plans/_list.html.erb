@@ -15,7 +15,7 @@
     </thead>
     <tbody>
       <% test_plans.each do |test_plan| -%>
-        <tr id="test-case-<%= test_plan.id %>" class="hascontextmenu <%= cycle('odd', 'even') %>">
+        <tr id="test-plan-<%= test_plan.id %>" class="hascontextmenu <%= cycle('odd', 'even') %>">
           <% query.inline_columns.each do |column| %>
             <%= content_tag('td', column_content(column, test_plan), :class => column.css_classes) %>
           <% end %>
