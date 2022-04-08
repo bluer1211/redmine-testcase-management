@@ -8,6 +8,7 @@ en:
   label_test_case_new: "New Test Case"
   label_test_case_execution_new: "New Test Case Execution"
   label_back_to_lists: "Back to lists"
+  label_test_plan_statistics: "Test Plan Statistics"
 
   label_succeed: "Succeed"
   label_failure: "Failure"
@@ -31,6 +32,16 @@ en:
   field_estimated_bug: "Estimated Bugs"
   field_begin_date: "Begin Date"
   field_end_date: "End Date"
+
+  field_count_test_cases: "Number of Test Cases"
+  field_count_not_executed: "Not Executed"
+  field_count_succeeded: "Succeeded"
+  field_count_failed: "Failed"
+  field_detected_bug: "Detected Bug"
+  field_remained_bug: "Remained Bug"
+  field_progress_rate: "Progress Rate"
+  field_fixed_rate: "Fixed Rate"
+  field_succeeded_rate: "Succeeded Rate"
 
   # TestCase
   field_test_plan: "Test Plan"

@@ -1,0 +1,68 @@
+<h2><%=l(:label_test_plan_statistics)%></h2>
+
+<% if @test_plans.empty? %>
+  <p class="nodata"><%= l(:nodata) %></p>
+<% else %>
+  <div class="autoscroll">
+    <table id="statistics" class="list issues odd-even sort-by-id sort-desc">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th><%=l(:field_name)%></th>
+          <th><%=l(:field_user)%></th>
+          <th><%=l(:field_count_test_cases)%></th>
+          <th><%=l(:field_count_not_executed)%></th>
+          <th><%=l(:field_count_succeeded)%></th>
+          <th><%=l(:field_count_failed)%></th>
+          <th><%=l(:field_succeeded_rate)%></th>
+          <th><%=l(:field_progress_rate)%></th>
+          <th><%=l(:field_estimated_bug)%></th>
+          <th><%=l(:field_detected_bug)%></th>
+          <th><%=l(:field_remained_bug)%></th>
+          <th><%=l(:field_fixed_rate)%></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @test_plans.each do |test_plan| %>
+        <tr>
+          <td class="id"><%= link_to test_plan.id, "/projects/#{@project.name}/test_plans/#{test_plan.id}" %></td>
+          <td class="name"><%= link_to test_plan.name, "/projects/#{@project.name}/test_plans/#{test_plan.id}" %></td>
+          <td class="user"><%= link_to test_plan.user.name, "/users/#{test_plan.user.id}" %></td>
+          <td class="test_cases"><%= test_plan.test_cases.size %></td>
+          <td class="count_not_executed"><%= test_plan.count_not_executed %></td>
+          <td class="count_succeeded"><%= test_plan.count_succeeded %></td>
+          <td class="count_failed"><%= test_plan.count_failed %></td>
+          <td class="succeeded_rate">
+            <% if test_plan.test_cases.size > 0 %>
+              <%= ((test_plan.count_succeeded / test_plan.test_cases.size.to_f) * 100).round %>
+            <% else %>
+              -
+            <% end %>
+          </td>
+          <td class="progress_rate">
+            <% if test_plan.test_cases.size > 0 %>
+              <%= (((test_plan.count_succeeded + test_plan.count_failed) / test_plan.test_cases.size.to_f) * 100).round %>
+            <% else %>
+              -
+            <% end %>
+          </td>
+          <td class="estimated_bug"><%= test_plan.estimated_bug %></td>
+          <td class="detected_bug"><%= test_plan.detected_bug %></td>
+          <td class="remained_bug"><%= test_plan.detected_bug - test_plan.fixed_bug %></td>
+          <td class="fixed_rate">
+            <% if test_plan.detected_bug > 0 %>
+              <%= ((test_plan.fixed_bug / test_plan.detected_bug.to_f) * 100).round %>
+            <% else %>
+              -
+            <% end %>
+          </td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<% content_for :sidebar do %>
+  <%= render :partial => 'test_plans/sidebar' %>
+<% end %>

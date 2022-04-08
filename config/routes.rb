@@ -5,6 +5,8 @@ Rails.application.routes.draw do |map|
   resources :projects do
     get 'test_cases/auto_complete', to: 'test_cases#auto_complete', as: 'auto_complete_test_cases'
 
+    get 'test_plans/statistics', to: 'test_plans#statistics', as: 'test_plan_statistics'
+
     resources :test_cases do
       resources :test_case_executions
     end

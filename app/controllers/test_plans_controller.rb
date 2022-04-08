@@ -6,7 +6,7 @@ class TestPlansController < ApplicationController
   before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
   before_action :find_test_case_id, :only => [:unassign_test_case]
-  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case]
+  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case, :statistics]
 
   before_action do
     prepare_issue_status_candidates
@@ -135,6 +135,40 @@ class TestPlansController < ApplicationController
         flash[:notice] = l(:notice_successful_delete)
       end
       redirect_to project_test_plan_path(id: @test_plan.id)
+    rescue
+      render 'forbidden', status: 404
+    end
+  end
+
+  # GET /projects/:project_id/test_plans/statistics
+  def statistics
+    return unless authorize_with_issues_permission(params[:controller], :index)
+    begin
+      @test_plans = TestPlan.joins(:test_cases)
+                      .joins(<<-SQL
+                      LEFT JOIN (SELECT test_case_id, max(execution_date) AS execution_date
+                        FROM test_case_executions GROUP BY test_case_id) AS latest_tce
+                        ON latest_tce.test_case_id = test_cases.id
+                      LEFT JOIN test_case_executions
+                        ON latest_tce.test_case_id = test_case_executions.test_case_id
+                        AND latest_tce.execution_date = test_case_executions.execution_date
+                      LEFT JOIN issues ON test_case_executions.issue_id = issues.id
+                      LEFT JOIN issue_statuses ON issues.status_id = issue_statuses.id
+SQL
+                            )
+                      .where(project: @project)
+                      .group(:id)
+                      .select(<<-SQL
+                      test_plans.id, test_plans.name, test_plans.user_id, test_plans.estimated_bug,
+                      SUM(CASE WHEN test_case_executions.result IS NULL THEN 1 ELSE 0 END) AS count_not_executed,
+                      SUM(CASE WHEN test_case_executions.result = '1' THEN 1 ELSE 0 END) AS count_succeeded,
+                      SUM(CASE WHEN test_case_executions.result = '0' THEN 1 ELSE 0 END) AS count_failed,
+                      SUM(CASE WHEN issues.id IS NOT NULL THEN 1 ELSE 0 END) AS detected_bug,
+                      SUM(CASE WHEN issue_statuses.is_closed = '1' THEN 1 ELSE 0 END) AS fixed_bug
+SQL
+                             )
+                      .order(id: :desc)
+      render :statistics
     rescue
       render 'forbidden', status: 404
     end
