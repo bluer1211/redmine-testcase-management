@@ -211,4 +211,13 @@ class TestCaseExecutionsController < ApplicationController
                                                 :result,
                                                 :issue_id)
   end
+
+  def csv_value(column, test_case, value)
+    case column.name
+    when :test_plan, :test_case
+      value.id
+    else
+      super
+    end
+  end
 end
