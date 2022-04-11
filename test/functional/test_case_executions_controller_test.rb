@@ -359,7 +359,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       login_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :add_issues])
     end
 
-    def test_create
+    def test_create_with_test_plan
       assert_difference("TestCaseExecution.count") do
         post :create, params: {
                project_id: projects(:projects_002).identifier,
@@ -372,7 +372,22 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
              }
       end
       assert_equal I18n.t(:notice_successful_create), flash[:notice]
-      assert_redirected_to project_test_plan_test_case_test_case_execution_path(:id => TestCaseExecution.last.id)
+      assert_redirected_to project_test_plan_path(id: test_plans(:test_plans_002).id)
+    end
+
+    def test_create_without_test_plan
+      assert_no_difference("TestCaseExecution.count") do
+        post :create, params: {
+               project_id: projects(:projects_002).identifier,
+               test_case_id: test_cases(:test_cases_001).id,
+               test_case_execution: {
+                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 comment: "dummy", execution_date: "2022-01-01"
+               }
+             }
+      end
+      assert_response :missing
+      assert_back_to_lists_link(project_test_plans_path)
     end
 
     def test_create_with_nonexistent_project

@@ -97,7 +97,7 @@ class TestCaseExecutionsController < ApplicationController
         render_attachment_warning_if_needed @test_case_execution
         @test_case_execution.save
         flash[:notice] = l(:notice_successful_create)
-        redirect_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
+        redirect_to project_test_plan_path(id: @test_plan.id)
       else
         render :new, status: :unprocessable_entity
       end
