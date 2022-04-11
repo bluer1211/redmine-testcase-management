@@ -1694,6 +1694,7 @@ class TestCasesControllerTest < ActionController::TestCase
         @params = { project_id: @project.identifier }
         @user = users(:users_002)
         @closed_issue = issues(:issues_008)
+        @closed_status = issue_statuses(:issue_statuses_005)
       end
 
       def test_statistics
@@ -1724,6 +1725,15 @@ class TestCasesControllerTest < ActionController::TestCase
         # no test case, no statistics
         TestPlan.find(test_plans(:test_plans_005).id).destroy
         @project = projects(:projects_001)
+        login_with_permissions(@project, [:view_project, :view_issues])
+        get :statistics, params: { project_id: @project.identifier }
+        assert_response :success
+        assert_select "p.nodata"
+      end
+
+      def test_ignore_closed_test_plan
+        TestPlan.find(test_plans(:test_plans_003).id).update(issue_status: @closed_status)
+        @project = projects(:projects_003)
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
