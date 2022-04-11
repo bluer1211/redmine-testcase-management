@@ -1,0 +1,34 @@
+<p>
+  <label for="import_mapping_project_id"><%= l(:label_project) %></label>
+  <%= select_tag 'import_settings[mapping][project_id]',
+        options_for_select(project_tree_options_for_select(@import.allowed_target_projects, :selected => @import.project)),
+        :id => 'import_mapping_project_id' %>
+</p>
+<p>
+  <label for="import_mapping_test_case"><%= l(:field_test_case) %></label>
+  <%= mapping_select_tag @import, 'test_case', :required => true %>
+</p>
+<p>
+  <label for="import_mapping_test_plan"><%= l(:field_test_plan) %></label>
+  <%= mapping_select_tag @import, 'test_plan', :required => true %>
+</p>
+<p>
+  <label for="import_mapping_result"><%= l(:field_result) %></label>
+  <%= mapping_select_tag @import, 'result', :required => true %>
+</p>
+<p>
+  <label for="import_mapping_user"><%= l(:field_user) %></label>
+  <%= mapping_select_tag @import, 'user' %>
+</p>
+<p>
+  <label for="import_mapping_issue"><%= l(:field_issue) %></label>
+  <%= mapping_select_tag @import, 'issue' %>
+</p>
+<p>
+  <label for="import_mapping_commento"><%= l(:field_comment) %></label>
+  <%= mapping_select_tag @import, 'comment' %>
+</p>
+<p>
+  <label for="import_mapping_execution_date"><%= l(:field_execution_date) %></label>
+  <%= mapping_select_tag @import, 'execution_date' %>
+</p>
