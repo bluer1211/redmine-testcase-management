@@ -30,7 +30,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
 
     test_plans = new_records(TestPlan, 3) do
       import.run
-      sleep 0.1 # wait until all imports are finished
+      sleep 0.2 # wait until all imports are finished
     end
     assert_equal [project_id, project_id, project_id],
                  test_plans.collect(&:project_id)
@@ -44,7 +44,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
 
     test_plans = new_records(TestPlan, 3) do
       import.run
-      sleep 0.1 # wait until all imports are finished
+      sleep 0.2 # wait until all imports are finished
     end
     assert_equal [user.id, user.id, user.id],
                  test_plans.collect(&:user_id)
@@ -64,7 +64,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
     import.save!
     test_plans = new_records(TestPlan, 3) do
       import.run
-      sleep 0.1 # wait until all imports are finished
+      sleep 0.2 # wait until all imports are finished
     end
     assert_equal [[1,2,3], [4,5], [6,7]],
                  test_plans.collect{|test_plan|test_plan.test_cases.collect(&:id)}
