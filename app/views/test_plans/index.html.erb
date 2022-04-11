@@ -8,6 +8,9 @@
                   new_test_plans_import_path(:project_id => @project),
                   :class => "icon icon-import" %>
     <% end %>
+    <%= link_to l(:label_test_plan_statistics),
+                project_test_plan_statistics_path,
+                :class => "icon icon-stats" %>
   <% end %>
 </div>
 
