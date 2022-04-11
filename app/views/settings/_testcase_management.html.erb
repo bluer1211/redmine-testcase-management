@@ -3,3 +3,13 @@
    <%= number_field_tag("settings[test_cases_export_limit]",
                         settings["test_cases_export_limit"],
                         { min: 0, step: 1 }) %></p>
+<p><%= label_tag("settings[test_plans_export_limit]",
+                 l("settings_test_plans_export_limit")) %>
+   <%= number_field_tag("settings[test_plans_export_limit]",
+                        settings["test_plans_export_limit"],
+                        { min: 0, step: 1 }) %></p>
+<p><%= label_tag("settings[test_case_executions_export_limit]",
+                 l("settings_test_case_executions_export_limit")) %>
+   <%= number_field_tag("settings[test_case_executions_export_limit]",
+                        settings["test_case_executions_export_limit"],
+                        { min: 0, step: 1 }) %></p>

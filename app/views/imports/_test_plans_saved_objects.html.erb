@@ -1,0 +1,6 @@
+<ul id="saved-items">
+  <% saved_objects.each do |test_plan| %>
+    <li><%= link_to h("\##{test_plan.id}: #{test_plan.name}"),
+                    "/projects/#{test_plan.project.identifier}/test_plans/#{test_plan.id}" %></li>
+  <% end %>
+</ul>
