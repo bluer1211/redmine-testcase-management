@@ -1,7 +1,7 @@
 require "application_system_test_case"
 require "test_helper"
 
-class ApplicationSystemTestCaseExecution
+class ApplicationSystemTestCase
   options = {
     capabilities: Selenium::WebDriver::Remote::Capabilities.firefox
   }
@@ -9,7 +9,7 @@ class ApplicationSystemTestCaseExecution
   driven_by :selenium, using: browser, screen_size: [1024, 900], options: options
 end
 
-class TestCaseExecutionsImportTest < ApplicationSystemTestCaseExecution
+class TestCaseExecutionsImportTest < ApplicationSystemTestCase
   fixtures :projects, :users, :issues, :members, :member_roles, :roles, :issue_statuses,
            :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases
