@@ -41,7 +41,11 @@ class TestCaseExecutionImport < Import
     test_case_execution = TestCaseExecution.new
     test_case_execution.user = user
     test_case_execution.test_case = TestCase.find(row_value(row, "test_case"))
-    test_case_execution.test_plan = TestPlan.find(row_value(row, "test_plan"))
+
+    test_plan = TestPlan.find(row_value(row, "test_plan"))
+    existing_execution = TestCaseExecution.where(test_case: test_case_execution.test_case,
+                                                 test_plan: test_plan).first
+    test_case_execution.test_plan = test_plan unless existing_execution
 
     attributes = {
       "project_id" => mapping["project_id"],
