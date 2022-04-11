@@ -66,8 +66,6 @@ class TestPlanImport < Import
       attributes["end_date"] = end_date
     end
 
-    Rails.logger.info(attributes)
-
     test_plan.send :safe_attributes=, attributes, user
 
     if test_cases = row_date(row, "test_cases")

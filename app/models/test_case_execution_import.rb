@@ -63,8 +63,6 @@ class TestCaseExecutionImport < Import
       attributes["execution_date"] = execution_date
     end
 
-    Rails.logger.info(attributes)
-
     test_case_execution.send :safe_attributes=, attributes, user
 
     if test_cases = row_date(row, "test_cases")
