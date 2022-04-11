@@ -79,7 +79,9 @@
       </tr>
     </thead>
     <tbody>
-      <% @test_case.test_case_executions.each do |test_case_execution| %>
+      <% @test_case.test_case_executions.each do |test_case_execution|
+           next unless test_case_execution.test_case
+           next unless test_case_execution.test_plan %>
       <tr class="list issue">
         <td><%= link_to test_case_execution.id,
                         project_test_plan_test_case_test_case_execution_path(
