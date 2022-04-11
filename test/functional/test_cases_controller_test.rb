@@ -1685,6 +1685,7 @@ class TestCasesControllerTest < ActionController::TestCase
   end
 
   class Statistics < self
+    class SingleUser < self
     def setup
       @test_case = test_cases(:test_cases_004)
       @project = @test_case.project
@@ -1938,6 +1939,7 @@ class TestCasesControllerTest < ActionController::TestCase
         fixed_rate: [0],
       }
       assert_equal expected, actual_statistics
+    end
     end
 
     private
