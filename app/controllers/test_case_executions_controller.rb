@@ -217,6 +217,8 @@ class TestCaseExecutionsController < ApplicationController
     case column.name
     when :test_plan, :test_case
       value.id
+    when :result
+      value ? l(:label_succeed) : l(:label_failure)
     else
       super
     end

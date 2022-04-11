@@ -14,6 +14,8 @@ Redmine::Plugin.register :testcase_management do
 
   project_module :testcase_management do
     permission :import_test_cases, :test_cases => :imports
+    permission :import_test_plans, :test_plans => :imports
+    permission :import_test_case_executions, :test_case_executions => :imports
 
 =begin
     permission :view_test_cases, :test_cases => :show
@@ -51,4 +53,5 @@ end
 
 Rails.configuration.to_prepare do
   require_dependency "inherit_issue_permissions"
+  require_dependency "safe_attributes"
 end

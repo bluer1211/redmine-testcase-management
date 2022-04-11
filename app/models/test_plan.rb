@@ -1,4 +1,6 @@
 class TestPlan < ActiveRecord::Base
+  include Redmine::SafeAttributes
+  include TestCaseManagement::SafeAttributes
   include TestCaseManagement::InheritIssuePermissions
 
   belongs_to :user
@@ -17,6 +19,16 @@ class TestPlan < ActiveRecord::Base
   validates_associated :test_case_executions
 
   validates_length_of :name, :maximum => 255
+
+  safe_attributes(
+    "project_id'",
+    "name",
+    "issue_status_id",
+    "user_id",
+    "estimated_bug",
+    "begin_date",
+    "end_date",
+    :if => lambda {|test_plan, user| test_plan.new_record? || test_plan.attributes_editable?(user)})
 
   scope :visible, (lambda do |*args|
     joins(:project).

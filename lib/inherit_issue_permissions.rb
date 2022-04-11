@@ -33,6 +33,19 @@ module TestCaseManagement
       user_permission?(user, :delete_issues)
     end
 
+    def ownable_users
+      return [] if project.nil?
+
+      users = project.assignable_users.to_a
+      users.uniq.sort
+    end
+
+    def allowed_target_projects(user=User.current, scope=nil)
+      issue = Issue.new
+      issue.project = project
+      issue.allowed_target_projects(user, scope)
+    end
+
     private
 
     def user_permission?(user, permission)

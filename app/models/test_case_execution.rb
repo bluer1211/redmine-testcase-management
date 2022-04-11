@@ -1,4 +1,6 @@
 class TestCaseExecution < ActiveRecord::Base
+  include Redmine::SafeAttributes
+  include TestCaseManagement::SafeAttributes
   include TestCaseManagement::InheritIssuePermissions
 
   belongs_to :user
@@ -9,8 +11,18 @@ class TestCaseExecution < ActiveRecord::Base
   acts_as_attachable
 
   validates :result, inclusion: { in: [true, false] }
-  validates :comment, presence: true
   validates :user, presence: true
+  validates :test_plan, presence: true
+  validates :test_case, presence: true
+
+  safe_attributes(
+    "project_id'",
+    "name",
+    "issue_id",
+    "user_id",
+    "test_case_id",
+    "test_plan_id",
+    :if => lambda {|test_case_execution, user| test_case_execution.new_record? || test_case_execution.attributes_editable?(user)})
 
   scope :visible, (lambda do |*args|
     joins(:project).
