@@ -38,8 +38,6 @@ class TestPlanImport < Import
   private
 
   def build_object(row, item)
-    Rails.logger.info("BUILD OBJECT")
-    Rails.logger.info(item.inspect)
     test_plan = TestPlan.new
     test_plan.user = user
 
