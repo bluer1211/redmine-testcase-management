@@ -57,6 +57,16 @@ class TestPlanImportTest < ActiveSupport::TestCase
     assert !File.exist?(file_path)
   end
 
+  def test_attach_test_cases
+    import = generate_import_with_mapping
+    import.save!
+    test_plans = new_records(TestPlan, 3) do
+      import.run
+    end
+    assert_equal [[1,2,3], [4,5], [6,7]],
+                 test_plans.collect{|test_plan|test_plan.test_cases.collect(&:id)}
+  end
+
   private
 
   def prepare_authorized_user
