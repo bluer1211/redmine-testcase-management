@@ -47,6 +47,7 @@ module ApplicationsHelper
   end
 
   def find_test_plan_id
+    @test_plan_given = true
     @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
     raise ActiveRecord::RecordNotFound unless @test_plan.visible?
     true
@@ -78,6 +79,7 @@ module ApplicationsHelper
   end
 
   def find_test_case_id
+    @test_case_given = true
     @test_case = TestCase.find(params.permit(:test_case_id)[:test_case_id])
     raise ActiveRecord::RecordNotFound unless @test_case.visible?
     true

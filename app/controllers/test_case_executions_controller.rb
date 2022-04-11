@@ -3,10 +3,11 @@ class TestCaseExecutionsController < ApplicationController
   include ApplicationsHelper
 
   before_action :find_project_id
-  before_action :find_test_plan_id, :except => [:index]
-  before_action :find_test_plan_id_if_given, :only => [:index]
+  before_action :find_test_plan_id, :except => [:index, :show, :edit, :update]
+  before_action :find_test_plan_id_if_given, :only => [:index, :show, :edit, :update]
   before_action :find_test_case_id, :only => [:show, :new, :create, :edit, :update, :destroy]
   before_action :find_test_case_id_if_given, :only => [:index]
+  before_action :find_test_case_execution, :except => [:index, :new, :create]
   before_action :authorize_with_issues_permission, :except => [:index, :new, :create]
 
   before_action do
@@ -107,40 +108,19 @@ class TestCaseExecutionsController < ApplicationController
 
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id
   def show
-    @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
-                                                                     test_plan_id: @test_plan.id,
-                                                                     test_case_id: @test_case.id,
-                                                                     id: params.permit(:id)[:id]).first
-    if @test_case_execution
-      render :show
-    else
-      flash[:error] = l(:error_test_case_execution_not_found)
-      render 'forbidden', status: 404
-    end
   end
 
+  # GET /projects/:project_id/test_case_executions/:id/edit
+  # GET /projects/:project_id/test_cases/:test_case_id:/test_case_executions/:id/edit
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id/edit
   def edit
-    @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
-                                                                     test_plan_id: @test_plan.id,
-                                                                     test_case_id: @test_case.id,
-                                                                     id: params.permit(:id)[:id]).first
-    if @test_case_execution
-      render :edit
-    else
-      flash[:error] = l(:error_test_case_execution_not_found)
-      render 'forbidden', status: 404
-    end
   end
 
+  # PUT /projects/:project_id/test_case_executions/:id
+  # PUT /projects/:project_id/test_cases/:test_case_id:/test_case_executions/:id
   # PUT /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id
   def update
     begin
-      @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
-                                                                       test_plan_id: @test_plan.id,
-                                                                       test_case_id: @test_case.id,
-                                                                       id: params.permit(:id)[:id]).first
-      raise ActiveRecord::RecordNotFound unless @test_case_execution
       raise ::Unauthorized unless @test_case_execution.editable?
       @test_case_execution.execution_date = test_case_execution_params[:execution_date]
       @test_case_execution.result = test_case_execution_params[:result]
@@ -159,7 +139,12 @@ class TestCaseExecutionsController < ApplicationController
       if @test_case_execution.save
         render_attachment_warning_if_needed @test_case_execution
         flash[:notice] = l(:notice_successful_update)
-        redirect_to project_test_plan_test_case_test_case_execution_path
+        if @test_plan_given
+          redirect_to project_test_plan_test_case_path(test_plan_id: @test_plan.id,
+                                                       id: @test_case.id)
+        else
+          redirect_to project_test_case_path(id: @test_case.id)
+        end
       else
         flash.now[:error] = l(:error_update_failure)
         render :edit, status: :unprocessable_entity
@@ -171,16 +156,11 @@ class TestCaseExecutionsController < ApplicationController
     end
   end
 
+  # DELETE /projects/:project_id/test_case_executions/:id
+  # DELETE /projects/:project_id/test_cases/:test_case_id:/test_case_executions/:id
   # DELETE /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id
   def destroy
     begin
-      @test_case_execution = TestCaseExecution.joins(:test_case).where(project_id: @project.id,
-                                                                       test_plan_id: @test_plan.id,
-                                                                       test_case_id: @test_case.id,
-                                                                       id: params.permit(:id)[:id]).first
-
-      raise ActiveRecord::RecordNotFound unless @test_case_execution
-      raise ActiveRecord::RecordNotFound unless @test_case_execution.visible?
       raise ::Unauthorized unless @test_case_execution.deletable?
       if @test_case_execution.destroy
         flash[:notice] = l(:notice_successful_delete)
@@ -197,6 +177,23 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   private
+
+  def find_test_case_execution
+    find_params = {
+      project_id: @project.id,
+      id: params.permit(:id)[:id],
+    }
+    find_params[:test_plan_id] = @test_plan.id if @test_plan_given
+    find_params[:test_case_id] = @test_case.id if @test_case_given
+    @test_case_execution = TestCaseExecution.joins(:test_case).find_by(find_params)
+    if @test_case_execution and @test_case_execution.visible?
+      true
+    else
+      flash[:error] = l(:error_test_case_execution_not_found)
+      render 'forbidden', status: 404
+      false
+    end
+  end
 
   def permit_param(symbol)
     params.permit(symbol)[symbol]

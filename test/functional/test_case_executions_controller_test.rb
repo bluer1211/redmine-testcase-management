@@ -647,7 +647,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
             }
       end
       assert_equal I18n.t(:notice_successful_update), flash[:notice]
-      assert_redirected_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
+      assert_redirected_to project_test_plan_test_case_path(:id => @test_case.id)
     end
 
     def test_unassign_issue
@@ -666,7 +666,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_equal I18n.t(:notice_successful_update), flash[:notice]
       @test_case_execution.reload
       assert_nil @test_case_execution.issue
-      assert_redirected_to project_test_plan_test_case_test_case_execution_path(:id => @test_case_execution.id)
+      assert_redirected_to project_test_plan_test_case_path(:id => @test_case.id)
     end
 
     def test_update_with_nonexistent_project

@@ -1,11 +1,11 @@
 <div class="box tabular">
   <p>
     <%= form.label :test_plan %>
-    <%= @test_plan.name %>
+    <%= (@test_plan || @test_case_execution.test_plan).name %>
   </p>
   <p>
     <%= form.label :test_case %>
-    <%= @test_case.name %>
+    <%= (@test_case || @test_case_execution.test_case).name %>
   </p>
   <p>
     <%= form.label :environment %>

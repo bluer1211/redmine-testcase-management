@@ -61,12 +61,7 @@
 <div id="test_case_execution_tree">
   <% if @test_plan_given %>
     <div class="contextual">
-      <% if @test_case_execution %>
-        <%= link_to l(:label_test_case_execution_edit),
-                    edit_project_test_plan_test_case_test_case_execution_path(id: @test_case_execution.id,
-                                                                              test_case_id: @test_case.id),
-                    class: "icon icon-edit" %>
-      <% else %>
+      <% unless @test_case_execution %>
         <%= link_to l(:label_test_case_execution_new),
                     new_project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id),
                     class: "icon icon-add" %>
@@ -86,6 +81,7 @@
         <th><%=l(:field_user)%></th>
         <th><%=l(:field_execution_date)%></th>
         <th><%=l(:field_issue)%></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -115,6 +111,17 @@
           <% if test_case_execution.issue %>
           <%= link_to test_case_execution.issue, issue_path(id: test_case_execution.issue.id) %>
           <% end %>
+        </td>
+        <td>
+          <%= link_to l(:button_edit),
+                      (@test_plan_given ?
+                         edit_project_test_plan_test_case_test_case_execution_path(id: test_case_execution.id,
+                                                                                   test_plan_id: test_case_execution.test_plan.id,
+                                                                                   test_case_id: @test_case.id) :
+                         edit_project_test_case_test_case_execution_path(id: test_case_execution.id,
+                                                                         test_case_id: @test_case.id)),
+                      title: l(:label_test_case_execution_edit),
+                      class: "icon icon-edit" %>
         </td>
       </tr>
       <% end %>
