@@ -138,7 +138,7 @@ class TestCasesController < ApplicationController
     if @test_case.update(update_params)
       flash[:notice] = l(:notice_successful_update)
       if params[:test_plan_id].present?
-        redirect_to project_test_plan_test_case_path(test_plan_id: params[:test_plan_id])
+        redirect_to project_test_plan_path(id: params[:test_plan_id])
       else
         redirect_to project_test_case_path
       end
@@ -157,7 +157,7 @@ class TestCasesController < ApplicationController
       if @test_case.destroy
         flash[:notice] = l(:notice_successful_delete)
         if params[:test_plan_id].present?
-          redirect_to project_test_plan_test_cases_path(test_plan_id: params.permit(:test_plan_id)[:test_plan_id])
+          redirect_to project_test_plan_path(id: params.permit(:test_plan_id)[:test_plan_id])
         else
           redirect_to project_test_cases_path
         end

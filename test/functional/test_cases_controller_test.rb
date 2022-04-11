@@ -1171,7 +1171,7 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
       end
 
-      def test_update
+      def test_update_with_test_plan
         test_case = test_cases(:test_cases_001)
         test_plan = test_plans(:test_plans_002)
         assert_no_difference("TestCase.count") do
@@ -1187,7 +1187,23 @@ class TestCasesControllerTest < ActionController::TestCase
               }
         end
         assert_equal I18n.t(:notice_successful_update), flash[:notice]
-        assert_redirected_to project_test_plan_test_case_path(:id => test_case.id)
+        assert_redirected_to project_test_plan_path(:id => test_plan.id)
+      end
+
+      def test_update_without_test_plan
+        test_case = test_cases(:test_cases_001)
+        assert_no_difference("TestCase.count") do
+          put :update, params: {
+                project_id: projects(:projects_003).identifier,
+                id: test_case.id,
+                test_case: {
+                  name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                  user: 2
+                }
+              }
+        end
+        assert_equal I18n.t(:notice_successful_update), flash[:notice]
+        assert_redirected_to project_test_case_path(:id => test_case.id)
       end
 
       def test_update_with_nonexistent_project
@@ -1245,7 +1261,7 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues])
       end
 
-      def test_destroy
+      def test_destroy_with_test_plan
         assert_difference("TestCase.count", -1) do
           delete :destroy, params: {
                    project_id: projects(:projects_003).identifier,
@@ -1254,7 +1270,18 @@ class TestCasesControllerTest < ActionController::TestCase
                  }
         end
         assert_equal I18n.t(:notice_successful_delete), flash[:notice]
-        assert_redirected_to project_test_plan_test_cases_path
+        assert_redirected_to project_test_plan_path(id: test_plans(:test_plans_002).id)
+      end
+
+      def test_destroy_without_test_plan
+        assert_difference("TestCase.count", -1) do
+          delete :destroy, params: {
+                   project_id: projects(:projects_003).identifier,
+                   id: test_cases(:test_cases_001).id
+                 }
+        end
+        assert_equal I18n.t(:notice_successful_delete), flash[:notice]
+        assert_redirected_to project_test_cases_path
       end
 
       def test_destroy_with_nonexistent_project
@@ -1304,7 +1331,7 @@ class TestCasesControllerTest < ActionController::TestCase
           end
         end
         assert_equal I18n.t(:notice_successful_delete), flash[:notice]
-        assert_redirected_to project_test_plan_test_cases_path
+        assert_redirected_to project_test_plan_path(id: test_plans(:test_plans_003).id)
       end
     end
   end
