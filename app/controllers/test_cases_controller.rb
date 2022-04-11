@@ -92,7 +92,7 @@ class TestCasesController < ApplicationController
         @test_case.save
         flash[:notice] = l(:notice_successful_create)
         if @test_plan
-          redirect_to project_test_plan_test_case_path(id: @test_case.id)
+          redirect_to project_test_plan_path(id: @test_plan.id)
         else
           redirect_to project_test_case_path(id: @test_case.id)
         end

@@ -941,7 +941,7 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(projects(:projects_001), [:view_project, :view_issues, :add_issues])
       end
 
-      def test_create
+      def test_create_with_test_plan
         assert_difference("TestCase.count") do
           post :create, params: {
                  project_id: projects(:projects_001).identifier,
@@ -953,7 +953,21 @@ class TestCasesControllerTest < ActionController::TestCase
                }
         end
         assert_equal I18n.t(:notice_successful_create), flash[:notice]
-        assert_redirected_to project_test_plan_test_case_path(:id => TestCase.last.id)
+        assert_redirected_to project_test_plan_path(id: test_plans(:test_plans_001).id)
+      end
+
+      def test_create_without_test_plan
+        assert_difference("TestCase.count") do
+          post :create, params: {
+                 project_id: projects(:projects_001).identifier,
+                 test_case: {
+                   name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                   user: 2
+                 }
+               }
+        end
+        assert_equal I18n.t(:notice_successful_create), flash[:notice]
+        assert_redirected_to project_test_case_path(id: TestCase.last.id)
       end
 
       def test_create_with_nonexistent_project
