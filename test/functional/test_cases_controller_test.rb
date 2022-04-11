@@ -1683,4 +1683,311 @@ class TestCasesControllerTest < ActionController::TestCase
       assert_response :forbidden
     end
   end
+
+  class Statistics < self
+    def setup
+      @test_case = test_cases(:test_cases_004)
+      @project = @test_case.project
+      @test_plan = @test_case.test_plan
+      @test_case_execution = @test_case.test_case_executions.first
+      @params = { project_id: @project.identifier }
+      @user = users(:users_002)
+      @closed_issue = issues(:issues_008)
+    end
+
+    def test_statistics
+      @project = projects(:projects_001)
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      @test_plan = test_plans(:test_plans_005)
+      # test plan 001 should be ignored
+      @user = users(:users_002)
+      expected = {
+        id: [@user.id],
+        user: [@test_plan.user.name],
+        test_cases: [@test_plan.test_cases.size],
+        assigned_rate: [100],
+        count_not_executed: [0],
+        count_succeeded: [2],
+        count_failed: [1],
+        progress_rate: [100],
+        detected_bug: [2],
+        remained_bug: [2],
+        fixed_rate: [0],
+      }
+      assert_equal expected, actual_statistics
+    end
+
+    def test_no_statistics
+      # no test case, no statistics
+      TestPlan.find(test_plans(:test_plans_005).id).destroy
+      @project = projects(:projects_001)
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      assert_select "p.nodata"
+    end
+
+    def test_count_not_executed
+      TestCaseExecution.find(test_case_executions(:test_case_executions_004).id).destroy
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      assert_equal [1], css_select("table#statistics tr td.count_not_executed").map(&:text).map(&:to_i)
+    end
+
+    def test_no_count_not_executed
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      assert_equal [0], css_select("table#statistics tr td.count_not_executed").map(&:text).map(&:to_i)
+    end
+
+    def test_count_succeeded
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      assert_equal [1], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
+    end
+
+    def test_no_count_succeeded
+      TestCaseExecution.create(project: @project,
+                               test_plan: @test_plan,
+                               test_case: @test_case,
+                               user: @user,
+                               result: false,
+                               execution_date: Time.now.strftime("%F"),
+                               comment: "dummy")
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      # latest failed test case execution should be counted
+      assert_equal [0], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
+    end
+
+    def test_count_failed
+      TestCaseExecution.create(project: @project,
+                               test_plan: @test_plan,
+                               test_case: @test_case,
+                               user: @user,
+                               result: false,
+                               execution_date: Time.now.strftime("%F"),
+                               comment: "dummy")
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      assert_equal [1], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
+    end
+
+    def test_no_count_failed
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      assert_equal [0], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
+    end
+
+    def test_no_progress_rate
+      TestCaseExecution.find(@test_case_execution.id).destroy
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      assert_equal [0], css_select("table#statistics tr td.progress_rate").map(&:text).map(&:to_i)
+    end
+
+    def test_progress_rate_with_succeeded_only
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      # true => 1/1
+      assert_equal [100], css_select("table#statistics tr td.progress_rate").map(&:text).map(&:to_i)
+    end
+
+    def test_progress_rate_with_failed_only
+      add_test_case_with_test_case_execution({ result: false })
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      # false = 1/1
+      assert_equal [100], css_select("table#statistics tr td.progress_rate").map(&:text).map(&:to_i)
+    end
+
+    def test_progress_rate_with_mixed_result
+      add_test_case_without_test_case_execution
+      add_test_case_with_test_case_execution({ result: false })
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      # true, none, false => 2/3
+      assert_equal [67], css_select("table#statistics tr td.progress_rate").map(&:text).map(&:to_i)
+    end
+
+    def test_no_detected_bug
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      assert_equal [0], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
+    end
+
+    def test_detected_bug
+      @test_case_execution.update(issue: issues(:issues_001))
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      assert_equal [1], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
+    end
+
+    def test_no_remained_bug
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      assert_equal [0], css_select("table#statistics tr td.remained_bug").map(&:text).map(&:to_i)
+    end
+
+    def test_remained_bug
+      @project = projects(:projects_001)
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      # Even though same issue is assigned to multiple test case (and as a execution), they are counted
+      assert_equal [2], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
+    end
+
+    def test_remained_bug
+      @project = projects(:projects_001)
+      @test_case_execution = test_case_executions(:test_case_executions_007)
+      # prepare closed issue
+      @test_case_execution.update(issue: issues(:issues_008))
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      # associated issues 2 - 1 (closed)
+      assert_equal [1], css_select("table#statistics tr td.remained_bug").map(&:text).map(&:to_i)
+    end
+
+    def test_no_fixed_rate
+      TestCaseExecution.find(@test_case_execution.id).destroy
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: @params
+      assert_response :success
+      # detected_bug is 0, so it can't be calculated
+      assert_equal ['-'], css_select("table#statistics tr td.fixed_rate").map(&:text).map(&:strip)
+    end
+
+    def test_fixed_rate
+      @project = projects(:projects_001)
+      @test_case_execution = test_case_executions(:test_case_executions_007)
+      # prepare closed issue
+      @test_case_execution.update(issue: @closed_issue)
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      # associated issues 1/2
+      assert_equal [50], css_select("table#statistics tr td.fixed_rate").map(&:text).map(&:to_i)
+    end
+
+    def test_fixed_rate_some
+      @project = projects(:projects_001)
+      test_case_executions(:test_case_executions_005,
+                           :test_case_executions_006).each do |test_case_execution|
+        # prepare closed issue
+        test_case_execution.update(issue: @closed_issue)
+      end
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      # associated issues 2/3
+      assert_equal [67], css_select("table#statistics tr td.fixed_rate").map(&:text).map(&:to_i)
+    end
+
+    def test_fixed_rate_all
+      @project = projects(:projects_001)
+      test_case_executions(:test_case_executions_005,
+                           :test_case_executions_006,
+                           :test_case_executions_007).each do |test_case_execution|
+        # prepare closed issue
+        test_case_execution.update(issue: @closed_issue)
+      end
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      # associated issues 3/3
+      assert_equal [100], css_select("table#statistics tr td.fixed_rate").map(&:text).map(&:to_i)
+    end
+
+    def test_multiple_statistics
+      @project = projects(:projects_003)
+      login_with_permissions(@project, [:view_project, :view_issues])
+      @test_plan = test_plans(:test_plans_002)
+      #add_test_case_execution_for(test_cases(:test_cases_001), { result: false, issue: @closed_issue})
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :success
+      @first_test_plan = test_plans(:test_plans_002)
+      @second_test_plan = test_plans(:test_plans_003)
+      expected = {
+        id: [@second_test_plan.user.id],
+        user: [@second_test_plan.user.name],
+        test_cases: [@second_test_plan.test_cases.size + @first_test_plan.test_cases.size],
+        assigned_rate: [100],
+        count_not_executed: [1],
+        count_succeeded: [1],
+        count_failed: [1],
+        progress_rate: [67], # 2/3
+        detected_bug: [2],
+        remained_bug: [2],
+        fixed_rate: [0],
+      }
+      assert_equal expected, actual_statistics
+    end
+
+    private
+
+    def add_test_case_without_test_case_execution
+      test_case = TestCase.create(name: "dummy",
+                                  scenario: "dummy",
+                                  expected: "dummy",
+                                  environment: "dummy",
+                                  project: @project,
+                                  user: @user)
+      TestCaseTestPlan.create(test_plan: @test_plan,
+                              test_case: test_case)
+      test_case
+    end
+
+    def add_test_case_with_test_case_execution(options={ result: true, issue: nil })
+      test_case = add_test_case_without_test_case_execution
+      TestCaseExecution.create(project: @project,
+                               test_plan: @test_plan,
+                               test_case: test_case,
+                               user: @user,
+                               result: options[:result],
+                               issue: options[:issue],
+                               execution_date: Time.now.strftime("%F"),
+                               comment: "dummy")
+    end
+
+    def add_test_case_execution_for(test_case, options={ result: true, issue: nil })
+      TestCaseExecution.create(project: @project,
+                               test_plan: @test_plan,
+                               test_case: test_case,
+                               user: @user,
+                               result: options[:result],
+                               issue: options[:issue],
+                               execution_date: Time.now.strftime("%F"),
+                               comment: "dummy")
+    end
+
+    def actual_statistics
+      data = {}
+      %w(id test_cases count_not_executed count_succeeded count_failed
+         assigned_rate progress_rate detected_bug remained_bug fixed_rate).each do |klass|
+        data[klass.intern] = css_select("table#statistics tr td.#{klass}").map(&:text).map(&:to_i)
+      end
+      %w(user).each do |klass|
+        data[klass.intern] = css_select("table#statistics tr td.#{klass}").map(&:text)
+      end
+      data
+    end
+  end
+
 end

@@ -5,7 +5,7 @@ class TestCasesController < ApplicationController
   before_action :find_project_id
   before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
-  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :auto_complete]
+  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :auto_complete, :statistics]
 
   before_action do
     prepare_user_candidates
@@ -212,6 +212,44 @@ class TestCasesController < ApplicationController
       render :json => format_test_cases_json(test_cases)
     rescue
       render :json => test_cases
+    end
+  end
+
+  # GET /projects/:project_id/test_cases/statistics
+  def statistics
+    return unless authorize_with_issues_permission(params[:controller], :index)
+    begin
+      subquery = <<-SQL
+                   LEFT JOIN issue_statuses AS TPIS ON test_plans.issue_status_id = TPIS.id
+                     AND TPIS.is_closed = '0'
+                   LEFT JOIN (SELECT test_case_id, max(execution_date) AS execution_date
+                     FROM test_case_executions GROUP BY test_case_id) AS latest_tce
+                     ON latest_tce.test_case_id = test_cases.id
+                   LEFT JOIN test_case_executions
+                     ON latest_tce.test_case_id = test_case_executions.test_case_id
+                     AND latest_tce.execution_date = test_case_executions.execution_date
+                   LEFT JOIN issues ON test_case_executions.issue_id = issues.id
+                   LEFT JOIN issue_statuses AS TCEIS ON issues.status_id = TCEIS.id
+SQL
+      select_query = <<-SQL
+                      test_plans.user_id,
+                      count(test_plans.user_id) AS count_assigned_test_cases,
+                      SUM(CASE WHEN test_plans.id IS NOT NULL THEN 1 ELSE 0 END) AS count_test_cases,
+                      SUM(CASE WHEN test_case_executions.result IS NULL THEN 1 ELSE 0 END) AS count_not_executed,
+                      SUM(CASE WHEN test_case_executions.result = '1' THEN 1 ELSE 0 END) AS count_succeeded,
+                      SUM(CASE WHEN test_case_executions.result = '0' THEN 1 ELSE 0 END) AS count_failed,
+                      SUM(CASE WHEN issues.id IS NOT NULL THEN 1 ELSE 0 END) AS detected_bug,
+                      SUM(CASE WHEN TCEIS.is_closed = '1' THEN 1 ELSE 0 END) AS fixed_bug
+SQL
+      @test_cases = TestCase.joins(:test_plans)
+        .joins(subquery)
+        .where(project: @project)
+        .group("test_plans.user_id")
+        .select(select_query)
+        .order("test_plans.user_id desc")
+      render :statistics
+    rescue
+      render 'forbidden', status: 404
     end
   end
 
