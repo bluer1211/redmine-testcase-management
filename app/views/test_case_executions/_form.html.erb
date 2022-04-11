@@ -30,6 +30,10 @@
   <p>
     <%= form.label :issue %>
     <%= form.text_field :issue_id, id: 'issue_id' %>
+    <%= link_to l(:label_issue_new),
+                new_project_issue_path(@project),
+                :target => "_blank",
+                :class => "icon icon-add new-issue" %>
   </p>
   <p>
     <%= form.label :comment %>
