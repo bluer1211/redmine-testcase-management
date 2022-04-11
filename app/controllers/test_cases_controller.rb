@@ -220,7 +220,7 @@ class TestCasesController < ApplicationController
     return unless authorize_with_issues_permission(params[:controller], :index)
     begin
       subquery = <<-SQL
-                   LEFT JOIN issue_statuses AS TPIS ON test_plans.issue_status_id = TPIS.id
+                   INNER JOIN issue_statuses AS TPIS ON test_plans.issue_status_id = TPIS.id
                      AND TPIS.is_closed = '0'
                    LEFT JOIN (SELECT test_case_id, max(execution_date) AS execution_date
                      FROM test_case_executions GROUP BY test_case_id) AS latest_tce

@@ -1737,7 +1737,22 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
-        assert_select "p.nodata"
+        # test plan 3 should be ignored
+        @user = users(:users_002)
+        expected = {
+          id: [@user.id],
+          user: [@user.name],
+          test_cases: [1],
+          assigned_rate: [100],
+          count_not_executed: [1],
+          count_succeeded: [0],
+          count_failed: [0],
+          progress_rate: [0],
+          detected_bug: [0],
+          remained_bug: [0],
+          fixed_rate: [0],
+        }
+        assert_equal expected, actual_statistics
       end
 
       def test_count_not_executed
