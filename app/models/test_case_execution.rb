@@ -11,8 +11,9 @@ class TestCaseExecution < ActiveRecord::Base
   acts_as_attachable
 
   validates :result, inclusion: { in: [true, false] }
-  validates :comment, presence: true
   validates :user, presence: true
+  validates :test_plan, presence: true
+  validates :test_case, presence: true
 
   safe_attributes(
     "project_id'",

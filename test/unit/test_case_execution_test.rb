@@ -19,12 +19,14 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_create
     test_plan = TestPlan.new
+    test_case = TestCase.new
     test_case_execution = TestCaseExecution.new(:id => 100,
                                                 :result => true,
                                                 :execution_date => "2022-02-28",
                                                 :comment => "dummy",
                                                 :user => users(:users_001),
                                                 :test_plan => test_plan,
+                                                :test_case => test_case,
                                                 :issue => issues(:issues_001))
     assert_save test_case_execution
     assert test_case_execution.destroy
@@ -71,12 +73,14 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_not_unique
     test_plan = test_plans(:test_plans_001)
+    test_case = test_cases(:test_cases_001)
     test_case_execution = TestCaseExecution.new(:id => test_case_executions(:test_case_executions_001).id,
                                                 :result => true,
                                                 :comment => "dummy",
                                                 :execution_date => "2022-02-28",
                                                 :user => users(:users_002),
                                                 :test_plan => test_plan,
+                                                :test_case => test_case,
                                                 :issue => issues(:issues_001))
     assert_raises ActiveRecord::RecordNotUnique do
       test_case_execution.save
@@ -97,7 +101,9 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_missing_result
     object = TestCaseExecution.new(:comment => "dummy",
-                                   :user => users(:users_001))
+                                   :user => users(:users_001),
+                                   :test_case => TestCase.new,
+                                   :test_plan => TestPlan.new)
     # the default value of result is false
     assert_equal false, object.result
     assert_equal false, object.invalid?
@@ -106,16 +112,19 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_missing_user
     object = TestCaseExecution.new(:result => false,
-                                   :comment => "dummy")
+                                   :comment => "dummy",
+                                   :test_case => TestCase.new,
+                                   :test_plan => TestPlan.new)
     assert_equal true, object.invalid?
     assert_equal ["cannot be blank"], object.errors[:user]
   end
 
   def test_missing_comment
     object = TestCaseExecution.new(:result => false,
-                                   :user => users(:users_001))
-    assert_equal true, object.invalid?
-    assert_equal ["cannot be blank"], object.errors[:comment]
+                                   :user => users(:users_001),
+                                   :test_case => TestCase.new,
+                                   :test_plan => TestPlan.new)
+    assert object.valid?
   end
 
   # Test Relation

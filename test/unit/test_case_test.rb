@@ -196,7 +196,9 @@ class TestCaseTest < ActiveSupport::TestCase
     test_case = test_cases(:test_cases_001)
     test_case_execution = test_case.test_case_executions.new(:result => true,
                                                              :comment => "dummy",
-                                                             :user => users(:users_001))
+                                                             :user => users(:users_001),
+                                                             :test_case => test_case,
+                                                             :test_plan => TestPlan.new)
     assert_equal true, test_case_execution.valid?
     assert_equal true, test_case.valid?
     assert_save test_case
