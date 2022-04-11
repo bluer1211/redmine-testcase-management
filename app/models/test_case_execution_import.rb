@@ -43,8 +43,8 @@ class TestCaseExecutionImport < Import
     test_case_execution.test_case = TestCase.find(row_value(row, "test_case"))
 
     test_plan = TestPlan.find(row_value(row, "test_plan"))
-    existing_execution = TestCaseExecution.where(test_case: test_case_execution.test_case,
-                                                 test_plan: test_plan).first
+    existing_execution = TestCaseExecution.find_by(test_case: test_case_execution.test_case,
+                                                   test_plan: test_plan)
     test_case_execution.test_plan = test_plan unless existing_execution
 
     attributes = {

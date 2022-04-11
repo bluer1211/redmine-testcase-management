@@ -1004,9 +1004,11 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(projects(:projects_002), [:view_project, :view_issues])
       end
 
-      def test_show
-        test_case = test_cases(:test_cases_002)
+      def test_show_without_execution
+        test_case = test_cases(:test_cases_001)
         test_plan = test_plans(:test_plans_003)
+        test_plan.test_cases << test_case
+        test_plan.save!
         get :show, params: {
               project_id: projects(:projects_002).identifier,
               test_plan_id: test_plan.id,
@@ -1039,6 +1041,35 @@ class TestCasesControllerTest < ActionController::TestCase
                        a.first.attributes["href"].text
           assert_equal I18n.t(:label_test_case_execution_new), a.text
         end
+        assert_select "div#test_case_execution_tree tbody tr", 0
+      end
+
+      def test_show_with_execution
+        test_case = test_cases(:test_cases_002)
+        test_plan = test_plans(:test_plans_003)
+        get :show, params: {
+              project_id: projects(:projects_002).identifier,
+              test_plan_id: test_plan.id,
+              id: test_case.id
+            }
+        assert_response :success
+        assert_select "div#test_case_execution_tree div.contextual a:first-child" do |a|
+          test_case_execution = TestCaseExecution.find_by(test_plan_id: test_plan.id, test_case_id: test_case.id)
+          assert_equal edit_project_test_plan_test_case_test_case_execution_path(test_plan_id: test_plan.id, test_case_id: test_case.id, id: test_case_execution.id),
+                       a.first.attributes["href"].text
+          assert_equal I18n.t(:label_test_case_execution_edit), a.text
+        end
+        assert_select "div#test_case_execution_tree tbody tr", 1
+      end
+
+      def test_show_without_test_plan
+        test_case = test_cases(:test_cases_002)
+        get :show, params: {
+              project_id: projects(:projects_002).identifier,
+              id: test_case.id
+            }
+        assert_response :success
+        assert_select "div#test_case_execution_tree div.contextual a:first-child", 0
         assert_select "div#test_case_execution_tree tbody tr", 1
       end
 

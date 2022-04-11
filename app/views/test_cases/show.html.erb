@@ -61,9 +61,16 @@
 <div id="test_case_execution_tree">
   <% if @test_plan_given %>
     <div class="contextual">
-      <%= link_to l(:label_test_case_execution_new),
-                  new_project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id),
-                  class: 'icon icon-add' %> 
+      <% if @test_case_execution %>
+        <%= link_to l(:label_test_case_execution_edit),
+                    edit_project_test_plan_test_case_test_case_execution_path(id: @test_case_execution.id,
+                                                                              test_case_id: @test_case.id),
+                    class: "icon icon-edit" %>
+      <% else %>
+        <%= link_to l(:label_test_case_execution_new),
+                    new_project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id),
+                    class: "icon icon-add" %>
+      <% end %>
     </div>
   <% end %>
   <p><%=l(:label_test_case_executions)%></p>
@@ -72,6 +79,9 @@
     <thead>
       <tr>
         <th>#</th>
+        <% unless @test_plan_given %>
+        <th><%=l(:field_test_plan)%></th>
+        <% end %>
         <th><%=l(:field_result)%></th>
         <th><%=l(:field_user)%></th>
         <th><%=l(:field_execution_date)%></th>
@@ -79,7 +89,7 @@
       </tr>
     </thead>
     <tbody>
-      <% @test_case.test_case_executions.each do |test_case_execution|
+      <% @test_case_executions.each do |test_case_execution|
            next unless test_case_execution.test_case
            next unless test_case_execution.test_plan %>
       <tr class="list issue">
@@ -88,6 +98,10 @@
                           test_case_id: @test_case.id,
                           test_plan_id: test_case_execution.test_plan.id,
                           id: test_case_execution.id) %></td>
+        <% unless @test_plan_given %>
+        <td><%= link_to test_case_execution.test_plan.name,
+                        project_test_plan_path(id: test_case_execution.test_plan.id) %></td>
+        <% end %>
         <td>
           <% if test_case_execution.result %>
           <%= l(:label_succeed) %>

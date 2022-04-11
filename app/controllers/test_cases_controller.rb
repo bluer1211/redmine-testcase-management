@@ -107,6 +107,12 @@ class TestCasesController < ApplicationController
   # GET /projects/:project_id/test_cases/:id
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def show
+    @test_case_executions = @test_case.test_case_executions
+    if @test_plan_given
+      @test_case_execution = TestCaseExecution.find_by(test_case: @test_case,
+                                                       test_plan: @test_plan)
+      @test_case_executions = [@test_case_execution] if @test_case_execution
+    end
   end
 
   # GET /projects/:project_id/test_cases/:id/edit

@@ -7,6 +7,7 @@ en:
   label_test_plan_new: "New Test Plan"
   label_test_case_new: "New Test Case"
   label_test_case_execution_new: "New Test Case Execution"
+  label_test_case_execution_edit: "Edit Test Case Execution"
   label_back_to_lists: "Back to lists"
   label_test_plan_statistics: "Test Plan Statistics"
   label_import_test_cases: "Import Test Cases"
