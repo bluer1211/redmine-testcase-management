@@ -5,8 +5,12 @@ module TestPlansQueriesHelper
       case column.name
       when :id
         link_to item.id,
-              project_test_plan_url(project_id: item.project.identifier,
-                                    id: item.id)
+                project_test_plan_url(project_id: item.project.identifier,
+                                      id: item.id)
+      when :name
+        link_to item.name,
+                project_test_plan_url(project_id: item.project.identifier,
+                                      id: item.id)
       when :begin_date, :end_date
         if value
           yyyymmdd_date(value)
