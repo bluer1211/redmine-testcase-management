@@ -237,7 +237,9 @@ SQL
                       (SELECT count(*) FROM "test_cases"
                         INNER JOIN "test_case_test_plans" ON "test_case_test_plans"."test_case_id" = "test_cases"."id"
                         INNER JOIN "test_plans" ON "test_plans"."id" = "test_case_test_plans"."test_plan_id"
-                        AND test_plans.project_id = #{@project.id}) AS count_test_cases,
+                        AND test_plans.project_id = #{@project.id}
+                        INNER JOIN issue_statuses AS CTPIS ON test_plans.issue_status_id = CTPIS.id
+                        AND CTPIS.is_closed = '0') AS count_test_cases,
                       SUM(CASE WHEN test_case_executions.result IS NULL THEN 1 ELSE 0 END) AS count_not_executed,
                       SUM(CASE WHEN test_case_executions.result = '1' THEN 1 ELSE 0 END) AS count_succeeded,
                       SUM(CASE WHEN test_case_executions.result = '0' THEN 1 ELSE 0 END) AS count_failed,

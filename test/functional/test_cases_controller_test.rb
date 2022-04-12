@@ -1733,7 +1733,7 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
-        # test plan 3 should be ignored
+        # under test plan 3 should be ignored
         @user = users(:users_002)
         expected = {
           id: [@user.id],
