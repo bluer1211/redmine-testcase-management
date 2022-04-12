@@ -1,7 +1,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class TestPlansControllerTest < ActionController::TestCase
-  fixtures :projects, :users, :issues, :issue_statuses, :roles, :members, :member_roles,
+  fixtures :projects, :users, :issues, :issue_statuses, :enumerations, :roles, :members, :member_roles,
            :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
@@ -562,7 +562,8 @@ class TestPlansControllerTest < ActionController::TestCase
     end
 
     def test_detected_bug
-      @test_case_execution.update(issue: issues(:issues_001))
+      issue = Issue.generate!(project: @project)
+      @test_case_execution.update(issue: issue)
       login_with_permissions(@project, [:view_project, :view_issues])
       get :statistics, params: @params
       assert_response :success
