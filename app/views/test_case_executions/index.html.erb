@@ -13,7 +13,7 @@
   <% end %>
 </div>
 
-<h2><%= breadcrumb %><%=l(:label_test_case_executions)%></h2>
+<h2 class="inline-flex"><%= breadcrumb %><%=l(:label_test_case_executions)%></h2>
 
 <%= form_tag((@test_plan_given and @test_case_given) ? project_test_plan_test_case_test_case_executions_path :
               @test_case_given ? project_test_case_test_case_executions_path :

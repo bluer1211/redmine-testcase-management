@@ -14,7 +14,7 @@
   <% end %>
 </div>
 
-<h2><%=l(:label_test_plans)%></h2>
+<h2 class="inline-flex"><%=l(:label_test_plans)%></h2>
 
 <%= form_tag(project_test_plans_path, :method => :get, :id => 'query_form') do %>
   <%= render :partial => 'queries/query_form' %>

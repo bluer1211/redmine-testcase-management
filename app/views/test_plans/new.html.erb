@@ -1,4 +1,4 @@
-<h2><%= breadcrumb %><%= l(:label_test_plan_new) %></h2>
+<h2 class="inline-flex"><%= breadcrumb %><%= l(:label_test_plan_new) %></h2>
 
 <%= form_with model: @test_plan, url: project_test_plans_path do |f| %>
   <%= render partial: 'test_plans/form', locals: {form: f} %>

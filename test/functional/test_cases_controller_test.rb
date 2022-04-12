@@ -1029,7 +1029,7 @@ class TestCasesControllerTest < ActionController::TestCase
               id: test_case.id
             }
         assert_response :success
-        assert_select "h2.inline-flex" do |h2|
+        assert_select "div#content h2.inline-flex" do |h2|
           assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > \##{test_case.id} #{test_case.name}", h2.text
         end
         assert_select "div.subject div h3" do |h3|

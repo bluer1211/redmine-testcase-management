@@ -1,4 +1,4 @@
-<h2><%= breadcrumb %><%=l(:label_test_case_execution_edit)%> #<%= @test_case_execution.id %></h2>
+<h2 class="inline-flex"><%= breadcrumb %><%=l(:label_test_case_execution_edit)%> #<%= @test_case_execution.id %></h2>
 
 <%= form_with(model: @test_case_execution,
               url: (@test_plan_given ? project_test_plan_test_case_test_case_execution_path : project_test_case_test_case_execution_path),

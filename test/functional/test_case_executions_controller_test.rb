@@ -342,7 +342,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
             }
         #pp @response
         assert_response :success
-        assert_select "div#content h2" do |h2|
+        assert_select "div#content h2.inline-flex" do |h2|
           assert_equal "#{I18n.t(:label_test_plans)} > ##{@test_plan.id} #{@test_plan.name} > #{I18n.t(:label_test_cases)} ##{@test_case.id} #{@test_case.name} > #{I18n.t(:label_test_case_execution_new)}", h2.text
         end
         assert_select "select[name='test_case_execution[result]']", 1
@@ -470,7 +470,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
             id: @test_case_execution.id
           }
       assert_response :success
-      assert_select "h2.inline-flex" do |h2|
+      assert_select "div#content h2.inline-flex" do |h2|
         assert_equal "#{I18n.t(:label_test_plans)} > ##{@test_plan.id} #{@test_plan.name} > #{I18n.t(:label_test_cases)} ##{@test_case.id} #{@test_case.name} > #{I18n.t(:label_test_case_executions)} \##{@test_case_execution.id}", h2.text
       end
       assert_select "div.subject div h3" do |h3|
@@ -566,7 +566,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
             id: @test_case_execution.id
           }
       assert_response :success
-      assert_select "div#content h2" do |h2|
+      assert_select "div#content h2.inline-flex" do |h2|
         assert_equal "#{I18n.t(:label_test_plans)} > ##{@test_plan.id} #{@test_plan.name} > #{I18n.t(:label_test_cases)} ##{@test_case.id} #{@test_case.name} > #{I18n.t(:label_test_case_execution_edit)} ##{@test_case_execution.id}", h2.text
       end
       assert_select "select[name='test_case_execution[result]']" do |select|

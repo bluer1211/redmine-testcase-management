@@ -79,7 +79,7 @@ class TestPlansControllerTest < ActionController::TestCase
 
       assert_response :success
       assert_select "tbody tr", 1
-      assert_select "h2.inline-flex" do |h2|
+      assert_select "div#content h2.inline-flex" do |h2|
         assert_equal "#{I18n.t(:label_test_plans)} > \##{test_plan.id} #{test_plan.name}", h2.text
       end
       assert_select "div.subject div h3" do |h3|
@@ -127,7 +127,7 @@ class TestPlansControllerTest < ActionController::TestCase
     def test_edit
       test_plan = test_plans(:test_plans_002)
       get :edit, params: { project_id: test_plan.project.id, id: test_plan.id }
-      assert_select "div#content h2" do |h2|
+      assert_select "div#content h2.inline-flex" do |h2|
         assert_equal "#{I18n.t(:label_test_plans)} > #{I18n.t(:label_test_plan_edit)} ##{test_plan.id}", h2.text
       end
       assert_select "input[name='test_plan[name]']" do |input|
