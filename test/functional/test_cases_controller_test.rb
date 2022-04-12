@@ -41,7 +41,7 @@ class TestCasesControllerTest < ActionController::TestCase
                       I18n.t(:field_expected)
                      ],
                      columns
-        assert_select "div#content div.contextual a:first-child" do |a|
+        assert_select "div#content div.contextual > a:first-child" do |a|
           assert_equal new_project_test_case_path(project_id: projects(:projects_003).identifier), a.first.attributes["href"].text
           assert_equal I18n.t(:label_test_case_new), a.text
         end
@@ -777,7 +777,7 @@ class TestCasesControllerTest < ActionController::TestCase
                       I18n.t(:field_expected)
                      ],
                      columns
-        assert_select "div#content div.contextual a:first-child" do |a|
+        assert_select "div#content div.contextual > a:first-child" do |a|
           assert_equal new_project_test_plan_test_case_path(project_id: projects(:projects_003).identifier), a.first.attributes["href"].text
           assert_equal I18n.t(:label_test_case_new), a.text
         end
