@@ -58,14 +58,20 @@ SQL
          )
   }, class_name: :TestCaseExecution
 
-  def latest_effective_test_case_execution(test_plan=nil)
+  def latest_test_case_execution(test_plan=self.test_plan)
+    test_case_executions_for(test_plan)
+      .order("execution_date DESC")
+      .first
+  end
+
+  def latest_effective_test_case_execution(test_plan=self.test_plan)
     test_case_executions_for(test_plan)
       .where.not(execution_date: nil)
       .order("execution_date DESC")
       .first
   end
 
-  def test_case_executions_for(test_plan=nil)
+  def test_case_executions_for(test_plan=self.test_plan)
     conditions = {test_case: self}
     if test_plan
       if test_plan.is_a?(TestPlan)
