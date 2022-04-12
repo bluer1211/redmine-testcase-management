@@ -34,6 +34,7 @@ class TestPlansController < ApplicationController
             test_plans_params[:test_case_id] = params[:test_case_id]
           end
           @test_plans = @query.test_plans(test_plans_params).visible
+          @title = html_title(l(:label_test_plans))
           @csv_url = project_test_plans_path(@project, format: "csv")
         end
         format.csv do
@@ -55,10 +56,12 @@ class TestPlansController < ApplicationController
   # GET /projects/:project_id/test_plans/:id
   def show
     @test_case_test_plan = TestCaseTestPlan.new
+    @title = html_title("##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
   end
 
   # GET /projects/:project_id/test_plans/:id/edit
   def edit
+    @title = html_title("#{l(:label_test_plan_edit)} ##{@test_plan.id}")
   end
 
   # PUT /projects/:project_id/test_plans/:id
@@ -89,6 +92,7 @@ class TestPlansController < ApplicationController
   # GET /projects/:project_id/test_plans/new
   def new
     @test_plan = TestPlan.new
+    @title = html_title(l(:label_test_plan_new))
   end
 
   # POST /projects/:project_id/test_plans
@@ -202,6 +206,7 @@ SQL
 SQL
                              )
                       .order(id: :desc)
+      @title = html_title(l(:label_test_plan_statistics))
       render :statistics
     rescue
       render 'forbidden', status: 404

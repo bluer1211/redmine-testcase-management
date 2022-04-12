@@ -42,6 +42,15 @@ class TestCaseExecutionsController < ApplicationController
             test_case_executions_params[:test_case_id] = params[:test_case_id]
           end
           @test_case_executions = @query.test_case_executions(test_case_executions_params).visible
+          if @test_plan and @test_case
+            @title = html_title(l(:label_test_case_executions), "##{@test_case.id} #{@test_case.name}", l(:label_test_cases), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
+          elsif @test_plan
+            @title = html_title(l(:label_test_case_executions), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
+          elsif @test_case
+            @title = html_title(l(:label_test_case_executions), "##{@test_case.id} #{@test_case.name}", l(:label_test_cases))
+          else
+            @title = html_title(l(:label_test_case_executions))
+          end
           @csv_url = project_test_case_executions_path(@project, test_case_executions_params.merge(format: "csv"))
         end
         format.csv do
@@ -66,6 +75,7 @@ class TestCaseExecutionsController < ApplicationController
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/new
   def new
     @test_case_execution = TestCaseExecution.new
+    @title = html_title(l(:label_test_case_executions_new), "##{@test_case.id} #{@test_case.name}", l(:label_test_cases), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
     # FIXME:
     # @test_plan = @test_case_execution.test_plan
     # @test_case = @test_case_execution.test_case

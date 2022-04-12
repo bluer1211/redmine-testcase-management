@@ -36,10 +36,12 @@ class TestCasesController < ApplicationController
             @test_cases = @query.test_cases(test_plan_id: params[:test_plan_id],
                                             offset: @test_case_pages.offset,
                                             limit: @test_case_pages.per_page).visible
+            @title = html_title(l(:label_test_cases), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
             @csv_url = project_test_plan_test_cases_path(@project, test_plan_id: params[:test_plan_id], format: "csv")
           else
             @test_cases = @query.test_cases(offset: @test_case_pages.offset,
                                             limit: @test_case_pages.per_page).visible
+            @title = html_title(l(:label_test_cases))
             @csv_url = project_test_cases_path(@project, format: "csv")
           end
         end
@@ -66,8 +68,10 @@ class TestCasesController < ApplicationController
     @test_case = TestCase.new
     if params.permit(:test_plan_id)[:test_plan_id]
       @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
+      @title = html_title(l(:label_test_case_new), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
     else
       @test_plan = nil
+      @title = html_title(l(:label_test_case_new))
     end
   end
 
@@ -108,21 +112,23 @@ class TestCasesController < ApplicationController
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def show
     if @test_plan_given
-      @test_case_execution = TestCaseExecution.find_by(test_case: @test_case,
-                                                       test_plan: @test_plan)
-      if @test_case_execution
-        @test_case_executions = [@test_case_execution]
-      else
-        @test_case_executions = []
-      end
+      @test_case_executions = @test_case.test_case_executions_for(@test_plan)
+      @test_case_execution = @test_case.latest_effective_test_case_execution(@test_plan)
+      @title = html_title("##{@test_case.id} #{@test_case.name}", l(:label_test_cases), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
     else
       @test_case_executions = @test_case.test_case_executions
+      @title = html_title("##{@test_case.id} #{@test_case.name}", l(:label_test_cases))
     end
   end
 
   # GET /projects/:project_id/test_cases/:id/edit
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id/edit
   def edit
+    if @test_plan_given
+      @title = html_title("#{l(:label_test_case_edit)} ##{@test_case.id}", l(:label_test_cases), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
+    else
+      @title = html_title("#{l(:label_test_case_edit)} ##{@test_case.id}", l(:label_test_cases))
+    end
   end
 
   # PUT /projects/:project_id/test_cases/:id
