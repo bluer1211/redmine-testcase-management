@@ -108,6 +108,7 @@ class TestPlansTest < ApplicationSystemTestCase
     test_case = test_cases(:test_cases_003)
     assert_equal test_case.id.to_s, page.evaluate_script("$('#test_case_id').val()")
     page.execute_script "$('input[name=\"commit\"]').click()"
+    # FIXME: evaluate #related_test_cases
     assert_equal path, current_path
   end
 
