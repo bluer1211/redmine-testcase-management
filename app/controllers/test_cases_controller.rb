@@ -234,7 +234,6 @@ SQL
       select_query = <<-SQL
                       test_plans.user_id,
                       count(test_plans.user_id) AS count_assigned_test_cases,
-                      SUM(CASE WHEN test_plans.id IS NOT NULL THEN 1 ELSE 0 END) AS count_test_cases,
                       SUM(CASE WHEN test_case_executions.result IS NULL THEN 1 ELSE 0 END) AS count_not_executed,
                       SUM(CASE WHEN test_case_executions.result = '1' THEN 1 ELSE 0 END) AS count_succeeded,
                       SUM(CASE WHEN test_case_executions.result = '0' THEN 1 ELSE 0 END) AS count_failed,
@@ -247,6 +246,10 @@ SQL
         .group("test_plans.user_id")
         .select(select_query)
         .order("test_plans.user_id desc")
+      @count_test_cases = 0
+      @test_cases.each do |test_case|
+        @count_test_cases += test_case.count_assigned_test_cases
+      end
       render :statistics
     rescue
       render 'forbidden', status: 404

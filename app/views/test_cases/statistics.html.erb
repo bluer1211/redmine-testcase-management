@@ -27,8 +27,8 @@
           <td class="user"><%= link_to test_case.user.name, "/users/#{test_case.user.id}" %></td>
           <td class="test_cases"><%= test_case.count_assigned_test_cases %></td>
           <td class="assigned_rate">
-            <% if test_case.count_test_cases > 0 %>
-              <%= ((test_case.count_assigned_test_cases / test_case.count_test_cases.to_f) * 100).round %>
+            <% if @count_test_cases > 0 %>
+              <%= ((test_case.count_assigned_test_cases / @count_test_cases.to_f) * 100).round %>
             <% else %>
               -
             <% end %>
