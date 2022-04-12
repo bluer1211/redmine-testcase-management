@@ -49,7 +49,7 @@ class TestPlansTest < ApplicationSystemTestCase
   test "show test plan" do
     visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
 
-    assert_selector "h2", text: "#{I18n.t(:label_test_plans)} \##{@test_plan.id}"
+    assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name}"
     assert_selector "h3", text: @test_plan.name
 
     assert_selector "#status", text: @test_plan.issue_status.name
