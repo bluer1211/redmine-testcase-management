@@ -21,8 +21,7 @@ module TestCaseExecutionsHelper
         if @test_case_given and @test_case
           links << link_to("#{l(:label_test_cases)} ##{@test_case.id} #{@test_case.name}",
                            project_test_plan_test_case_path(test_plan_id: @test_plan.id,
-                                                            test_case_id: @test_case.id,
-                                                            id: @test_plan.id))
+                                                            id: @test_case.id))
           links << "&#187;"
         end
       end
