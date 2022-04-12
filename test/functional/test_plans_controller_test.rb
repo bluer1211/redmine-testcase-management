@@ -80,13 +80,13 @@ class TestPlansControllerTest < ActionController::TestCase
       assert_response :success
       assert_select "tbody tr", 1
       assert_select "h2.inline-flex" do |h2|
-        assert_equal "Test Plans \##{test_plan.id}", h2.text
+        assert_equal "#{I18n.t(:label_test_plans)} > \##{test_plan.id} #{test_plan.name}", h2.text
       end
       assert_select "div.subject div h3" do |h3|
         assert_equal test_plan.name, h3.text
       end
       assert_select "table#related_test_cases tbody tr td:first-child" do |td|
-        assert_equal test_cases(:test_cases_001).name, td.text
+        assert_equal "##{test_cases(:test_cases_001).id} #{test_cases(:test_cases_001).name}", td.text
       end
       assert_select "div#test_case_tree div.contextual a:first-child" do |a|
         assert_equal new_project_test_plan_test_case_path(test_plan_id: test_plan.id), a.first.attributes["href"].text
@@ -128,7 +128,7 @@ class TestPlansControllerTest < ActionController::TestCase
       test_plan = test_plans(:test_plans_002)
       get :edit, params: { project_id: test_plan.project.id, id: test_plan.id }
       assert_select "div#content h2" do |h2|
-        assert_equal "#{I18n.t(:permission_edit_test_plan)} #{test_plan.name}", h2.text
+        assert_equal "#{I18n.t(:label_test_plans)} > #{I18n.t(:label_test_plan_edit)} ##{test_plan.id}", h2.text
       end
       assert_select "input[name='test_plan[name]']" do |input|
         assert_equal test_plan.name, input.first.attributes["value"].value
