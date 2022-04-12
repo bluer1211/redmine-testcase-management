@@ -16,15 +16,17 @@ module TestCasesQueriesHelper
         end
       when :name
         if @test_plan_given and item.test_plan
-          link_to item.name,
+          link_to truncate(item.name),
                   project_test_plan_test_case_url(project_id: item.project.identifier,
                                                   test_plan_id: item.test_plan.id,
                                                   id: item.id)
         else
-          link_to item.name,
+          link_to truncate(item.name),
                   project_test_case_url(project_id: item.project.identifier,
                                         id: item.id)
         end
+      when :scenario, :expected
+        truncate(value)
       when :latest_result
         if value
           link_to value.result ? l(:label_succeed) : l(:label_failure),

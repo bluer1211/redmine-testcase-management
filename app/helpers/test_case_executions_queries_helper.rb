@@ -10,17 +10,19 @@ module TestCaseExecutionsQueriesHelper
                                                                     test_case_id: item.test_case.id,
                                                                     id: item.id)
       when :test_case
-        link_to item.test_case.name,
+        link_to truncate(item.test_case.name),
                 project_test_plan_test_case_url(project_id: item.project.identifier,
                                                 test_plan_id: item.test_plan.id,
                                                 test_case_id: item.test_case.id,
                                                 id: item.test_case.id)
       when :test_plan
-        link_to item.test_plan.name,
+        link_to truncate(item.test_plan.name),
                 project_test_plan_url(project_id: item.project.identifier,
                                       id: item.test_plan.id)
       when :result
         value ? l(:label_succeed) : l(:label_failure)
+      when :comment
+        truncate(value)
       else
         super
       end
