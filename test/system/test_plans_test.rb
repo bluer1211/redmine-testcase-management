@@ -12,7 +12,7 @@ end
 class TestPlansTest < ApplicationSystemTestCase
   fixtures :projects, :users, :issues, :members, :member_roles, :roles, :issue_statuses,
            :groups_users, :trackers, :projects_trackers, :enabled_modules
-  fixtures :test_plans
+  fixtures :test_plans, :test_cases, :test_case_test_plans
 
   include ApplicationsHelper
 
@@ -93,6 +93,21 @@ class TestPlansTest < ApplicationSystemTestCase
     page.accept_confirm I18n.t(:text_test_plan_destroy_confirmation)
     sleep 0.1
     path = "/projects/#{@project.identifier}/test_plans"
+    assert_equal path, current_path
+  end
+
+  test "assign test case" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
+
+    # show auto completion
+    page.execute_script "$('#assign-test-case-form').toggle()"
+    page.execute_script "$('#test_case_id').val('test').keydown();"
+    sleep 1 # wait request
+    page.execute_script "$('ul.ui-autocomplete li:first-child').trigger('mouseenter').click()"
+    test_case = test_cases(:test_cases_003)
+    assert_equal test_case.id.to_s, page.evaluate_script("$('#test_case_id').val()")
+    page.execute_script "$('input[name=\"commit\"]').click()"
     assert_equal path, current_path
   end
 
