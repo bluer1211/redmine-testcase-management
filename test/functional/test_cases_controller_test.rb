@@ -67,7 +67,7 @@ class TestCasesControllerTest < ActionController::TestCase
               test_plan_id: test_plan.id,
             }
         assert_select "div#content h2.inline-flex" do |h2|
-          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_cases)}", h2.text
+          assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_cases)}", h2.text
         end
       end
 
@@ -335,7 +335,7 @@ class TestCasesControllerTest < ActionController::TestCase
               test_plan_id: test_plan.id,
             }
         assert_select "div#content h2.inline-flex" do |h2|
-          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_case_new)}", h2.text
+          assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_case_new)}", h2.text
         end
       end
 
@@ -344,7 +344,7 @@ class TestCasesControllerTest < ActionController::TestCase
               project_id: projects(:projects_002).identifier,
             }
         assert_select "div#content h2" do |h2|
-          assert_equal "#{I18n.t(:label_test_cases)} > #{I18n.t(:label_test_case_new)}", h2.text
+          assert_equal "#{I18n.t(:label_test_cases)} » #{I18n.t(:label_test_case_new)}", h2.text
         end
       end
     end
@@ -455,7 +455,7 @@ class TestCasesControllerTest < ActionController::TestCase
               id: test_case.id,
             }
         assert_select "div#content h2.inline-flex" do |h2|
-          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > \##{test_case.id} #{test_case.name}", h2.text
+          assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » \##{test_case.id} #{test_case.name}", h2.text
         end
       end
 
@@ -466,7 +466,7 @@ class TestCasesControllerTest < ActionController::TestCase
               id: test_case.id,
             }
         assert_select "div#content h2.inline-flex" do |h2|
-          assert_equal "#{I18n.t(:label_test_cases)} > \##{test_case.id} #{test_case.name}", h2.text
+          assert_equal "#{I18n.t(:label_test_cases)} » \##{test_case.id} #{test_case.name}", h2.text
         end
       end
     end
@@ -529,7 +529,7 @@ class TestCasesControllerTest < ActionController::TestCase
               id: test_case.id
             }
         assert_select "div#content h2.inline-flex" do |h2|
-          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
+          assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
         end
       end
 
@@ -540,7 +540,7 @@ class TestCasesControllerTest < ActionController::TestCase
               id: test_case.id
             }
         assert_select "div#content h2" do |h2|
-          assert_equal "#{I18n.t(:label_test_cases)} > #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
+          assert_equal "#{I18n.t(:label_test_cases)} » #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
         end
       end
     end
@@ -1114,7 +1114,7 @@ class TestCasesControllerTest < ActionController::TestCase
             }
         assert_response :success
         assert_select "div#content h2.inline-flex" do |h2|
-          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > \##{test_case.id} #{test_case.name}", h2.text
+          assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » \##{test_case.id} #{test_case.name}", h2.text
         end
         assert_select "div.subject div h3" do |h3|
           assert_equal test_case.name, h3.text
@@ -1212,7 +1212,7 @@ class TestCasesControllerTest < ActionController::TestCase
             }
         assert_response :success
         assert_select "div#content h2" do |h2|
-          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
+          assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
         end
         assert_select "input[name='test_case[name]']" do |input|
           assert_equal test_case.name, input.first.attributes["value"].value

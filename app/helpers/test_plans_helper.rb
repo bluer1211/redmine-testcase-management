@@ -12,7 +12,7 @@ module TestPlansHelper
 
     links << link_to(l(:label_test_plans),
                      project_test_plans_path)
-    links << "&gt;"
+    links << "&#187;"
     links << ""
 
     links.join(" ").html_safe
