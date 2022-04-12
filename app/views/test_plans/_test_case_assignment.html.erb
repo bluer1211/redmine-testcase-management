@@ -1,6 +1,10 @@
 <p>
   <%= form.label :test_case %>
-  <%= form.text_field :test_case_id, size: 10, required: true, id: 'test_case_id' %>
+  <%= form.text_field :test_case_id,
+                      size: 10,
+                      required: true,
+                      id: 'test_case_id',
+                      title: l(:test_case_assignment_tooltip) %>
   <%= submit_tag l(:button_add) %>
   <%= link_to_function l(:button_cancel), '$("#assign-test-case-form").hide();' %>
 </p>

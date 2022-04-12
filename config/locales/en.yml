@@ -75,3 +75,5 @@ en:
   settings_test_cases_export_limit: "Maximum number of exported test cases at a time"
   settings_test_plans_export_limit: "Maximum number of exported test plans at a time"
   settings_test_case_executions_export_limit: "Maximum number of exported test case ececutions at a time"
+
+  test_case_assignment_tooltip: "Find test case by ID or name"
