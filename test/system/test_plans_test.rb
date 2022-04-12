@@ -112,6 +112,16 @@ class TestPlansTest < ApplicationSystemTestCase
     assert_equal path, current_path
   end
 
+  test "unassign test case" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
+
+    click_on I18n.t(:label_relation_delete)
+    page.accept_confirm I18n.t(:text_are_you_sure)
+    # FIXME: evaluate #related_test_cases
+    assert_equal path, current_path
+  end
+
   private
 
   def login_with_admin
