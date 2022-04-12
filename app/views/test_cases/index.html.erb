@@ -14,6 +14,9 @@
                   new_test_cases_import_path(:project_id => @project),
                   :class => "icon icon-import" %>
     <% end %>
+    <%= link_to l(:label_test_case_statistics),
+                project_test_case_statistics_path,
+                :class => "icon icon-stats" %>
   <% end %>
 </div>
 
