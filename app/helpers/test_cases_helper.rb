@@ -13,18 +13,20 @@ module TestCasesHelper
     if @test_plan_given
       links << link_to(l(:label_test_plans),
                        project_test_plans_path)
-      links << "&gt;\n"
+      links << "&gt;"
       if @test_plan
         links << link_to("##{@test_plan.id} #{@test_plan.name}",
                          project_test_plan_path(id: @test_plan.id))
-        links << "&gt;\n"
+        links << "&gt;"
       end
+      links << ""
     elsif params[:action] != "index"
       links << link_to(l(:label_test_cases),
                        project_test_cases_path)
-      links << "&gt;\n"
+      links << "&gt;"
+      links << ""
     end
 
-    links.join("\n").html_safe
+    links.join(" ").html_safe
   end
 end
