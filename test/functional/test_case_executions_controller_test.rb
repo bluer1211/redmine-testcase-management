@@ -410,7 +410,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                test_plan_id: test_plans(:test_plans_002).id,
                test_case_id: test_cases(:test_cases_001).id,
                test_case_execution: {
-                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 result: true, user: 1, issue_id: issues(:issues_001).id,
                  comment: "dummy", execution_date: "2022-01-01"
                }
              }
@@ -425,7 +425,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                project_id: projects(:projects_002).identifier,
                test_case_id: test_cases(:test_cases_001).id,
                test_case_execution: {
-                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 result: true, user: 1, issue_id: issues(:issues_001).id,
                  comment: "dummy", execution_date: "2022-01-01"
                }
              }
@@ -441,7 +441,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                test_plan_id: test_plans(:test_plans_002).id,
                test_case_id: test_cases(:test_cases_001).id,
                test_case_execution: {
-                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 result: true, user: 1, issue_id: issues(:issues_001).id,
                  comment: "dummy", execution_date: "2022-01-01"
                }
              }
@@ -457,7 +457,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                test_plan_id: NONEXISTENT_TEST_PLAN_ID,
                test_case_id: test_cases(:test_cases_001).id,
                test_case_execution: {
-                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 result: true, user: 1, issue_id: issues(:issues_001).id,
                  comment: "dummy", execution_date: "2022-01-01"
                }
              }
@@ -473,7 +473,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                test_plan_id: test_plans(:test_plans_002).id,
                test_case_id: NONEXISTENT_TEST_CASE_ID,
                test_case_execution: {
-                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 result: true, user: 1, issue_id: issues(:issues_001).id,
                  comment: "dummy", execution_date: "2022-01-01"
                }
              }
@@ -489,7 +489,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                test_plan_id: test_plans(:test_plans_002).id,
                test_case_id: test_cases(:test_cases_001).id,
                test_case_execution: {
-                 user: 2, issue_id: issues(:issues_001).id,
+                 user: 1, issue_id: issues(:issues_001).id,
                  comment: "dummy", execution_date: "2022-01-01"
                }
              }

@@ -245,7 +245,7 @@ class TestPlansControllerTest < ActionController::TestCase
     def test_create_test_plan
       assert_difference("TestPlan.count") do
         project_id = projects(:projects_002).id
-        post :create, params: { project_id: project_id, test_plan: { name: "test", user: 2, issue_status: 1 } }
+        post :create, params: { project_id: project_id, test_plan: { name: "test", user: 1, issue_status: 1 } }
       end
       assert_equal I18n.t(:notice_successful_create), flash[:notice]
       assert_redirected_to project_test_plan_path(:id => TestPlan.last.id)
@@ -254,7 +254,7 @@ class TestPlansControllerTest < ActionController::TestCase
     def test_create_without_test_plan_name
       assert_no_difference("TestPlan.count") do
         project_id = projects(:projects_002).id
-        post :create, params: { project_id: project_id, test_plan: { user: 2, issue_status: 1 } }
+        post :create, params: { project_id: project_id, test_plan: { user: 1, issue_status: 1 } }
       end
       assert_response :unprocessable_entity
     end
@@ -262,7 +262,7 @@ class TestPlansControllerTest < ActionController::TestCase
     def test_create_with_maximum_test_plan_name
       assert_no_difference("TestPlan.count") do
         project_id = projects(:projects_002).id
-        post :create, params: { project_id: project_id, test_plan: { name: "t" * 256, user: 2, issue_status: 1 } }
+        post :create, params: { project_id: project_id, test_plan: { name: "t" * 256, user: 1, issue_status: 1 } }
       end
       assert_response :unprocessable_entity
     end
