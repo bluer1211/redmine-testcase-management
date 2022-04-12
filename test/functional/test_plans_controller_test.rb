@@ -1,7 +1,8 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class TestPlansControllerTest < ActionController::TestCase
-  fixtures :projects, :users, :issues, :issue_statuses
+  fixtures :projects, :users, :issues, :issue_statuses, :roles, :members, :member_roles,
+           :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
   include ApplicationsHelper
@@ -254,7 +255,7 @@ class TestPlansControllerTest < ActionController::TestCase
     def test_create_without_test_plan_name
       assert_no_difference("TestPlan.count") do
         project_id = projects(:projects_002).id
-        post :create, params: { project_id: project_id, test_plan: { user: 1, issue_status: 1 } }
+        post :create, params: { project_id: project_id, test_plan: { user: 2, issue_status: 1 } }
       end
       assert_response :unprocessable_entity
     end
@@ -262,7 +263,7 @@ class TestPlansControllerTest < ActionController::TestCase
     def test_create_with_maximum_test_plan_name
       assert_no_difference("TestPlan.count") do
         project_id = projects(:projects_002).id
-        post :create, params: { project_id: project_id, test_plan: { name: "t" * 256, user: 1, issue_status: 1 } }
+        post :create, params: { project_id: project_id, test_plan: { name: "t" * 256, user: 2, issue_status: 1 } }
       end
       assert_response :unprocessable_entity
     end
