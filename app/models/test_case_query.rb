@@ -105,12 +105,14 @@ SQL
     if options[:test_plan_id]
       base_scope
         .joins(:test_plans)
+        .distinct
         .where(conditions.join(" AND "))
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
     else
       base_scope
+        .distinct
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
