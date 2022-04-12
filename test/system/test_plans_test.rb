@@ -27,12 +27,15 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "visiting the index" do
+    path = "/projects/#{@project.identifier}/test_plans"
     visit "/projects/#{@project.identifier}/test_plans"
     assert_selector "h2", text: I18n.t(:label_test_plans)
+    assert_equal path, current_path
   end
 
   test "add new test plan" do
-    visit "/projects/#{@project.identifier}/test_plans"
+    path = "/projects/#{@project.identifier}/test_plans"
+    visit path
 
     click_on I18n.t(:label_test_plan_new)
 
@@ -44,10 +47,13 @@ class TestPlansTest < ApplicationSystemTestCase
     select issue_statuses(:issue_statuses_002).name, from: 'test_plan[issue_status]'
 
     click_button I18n.t(:button_create)
+    # should be redirected to new test plan
+    assert_equal "#{path}/#{TestPlan.last.id}", current_path
   end
 
   test "show test plan" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
 
     assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name}"
     assert_selector "h3", text: @test_plan.name
@@ -57,10 +63,12 @@ class TestPlansTest < ApplicationSystemTestCase
     assert_selector "#user", text: @test_plan.user.name
     assert_selector "#begin_date", text: yyyymmdd_date(@test_plan.begin_date)
     assert_selector "#end_date", text: yyyymmdd_date(@test_plan.end_date)
+    assert_equal path, current_path
   end
 
   test "update test plan" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/edit"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/edit"
+    visit path
 
     fill_in 'name', with: "dummy"
     fill_in 'begin_date', with: "2022-01-01"
@@ -72,13 +80,20 @@ class TestPlansTest < ApplicationSystemTestCase
     select issue_statuses(:issue_statuses_002).name, from: 'test_plan[issue_status]'
 
     click_button I18n.t(:button_update)
+
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    assert_equal path, current_path
   end
 
   test "delete test plan" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
 
     click_on I18n.t(:button_delete)
-    page.accept_confirm /#{I18n.t(:text_test_plan_destroy_confirmation)}/
+    page.accept_confirm I18n.t(:text_test_plan_destroy_confirmation)
+    sleep 0.1
+    path = "/projects/#{@project.identifier}/test_plans"
+    assert_equal path, current_path
   end
 
   private
