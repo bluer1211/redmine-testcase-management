@@ -1940,6 +1940,42 @@ class TestCasesControllerTest < ActionController::TestCase
         # associated issues 3/3
         assert_equal [100], css_select("table#statistics tr td.fixed_rate").map(&:text).map(&:to_i)
       end
+    end
+
+    class MultipleUser < self
+      def setup
+        @project = projects(:projects_001)
+        @params = { project_id: @project.identifier }
+        @closed_issue = issues(:issues_008)
+        @closed_status = issue_statuses(:issue_statuses_005)
+        @jsmith = users(:users_002)
+        @dlopper = users(:users_003)
+        TestPlan.find(test_plans(:test_plans_001).id).update(user: @dlopper)
+        @test_plan = test_plans(:test_plans_001)
+        @user = @dlopper
+        add_test_case_with_test_case_execution(options={ result: false, issue: nil })
+      end
+
+      def test_statistics
+        login_with_permissions(@project, [:view_project, :view_issues])
+        get :statistics, params: @params
+        assert_response :success
+        expected = {
+          id: [@dlopper.id, @jsmith.id],
+          user: [@dlopper.name, @jsmith.name],
+          test_cases: [3, 1],
+          assigned_rate: [25, 75],
+          count_not_executed: [0, 0],
+          count_succeeded: [0, 2],
+          count_failed: [1, 1],
+          progress_rate: [100, 100],
+          detected_bug: [0, 2],
+          remained_bug: [0, 2],
+          fixed_rate: [0, 0],
+        }
+        assert_equal expected, actual_statistics
+      end
+
 
       def test_multiple_statistics
         @project = projects(:projects_003)
@@ -1969,17 +2005,9 @@ class TestCasesControllerTest < ActionController::TestCase
 
     private
 
-    def add_test_case_without_test_case_execution
-      test_case = TestCase.create(name: "dummy",
-                                  scenario: "dummy",
-                                  expected: "dummy",
-                                  environment: "dummy",
-                                  project: @project,
-                                  user: @user)
-      TestCaseTestPlan.create(test_plan: @test_plan,
-                              test_case: test_case)
-      test_case
     end
+
+    private
 
     def add_test_case_with_test_case_execution(options={ result: true, issue: nil })
       test_case = add_test_case_without_test_case_execution
@@ -1991,6 +2019,19 @@ class TestCasesControllerTest < ActionController::TestCase
                                issue: options[:issue],
                                execution_date: Time.now.strftime("%F"),
                                comment: "dummy")
+      test_case
+    end
+
+    def add_test_case_without_test_case_execution
+      test_case = TestCase.create(name: "dummy",
+                                  scenario: "dummy",
+                                  expected: "dummy",
+                                  environment: "dummy",
+                                  project: @project,
+                                  user: @user)
+      TestCaseTestPlan.create(test_plan: @test_plan,
+                              test_case: test_case)
+      test_case
     end
 
     def add_test_case_execution_for(test_case, options={ result: true, issue: nil })
