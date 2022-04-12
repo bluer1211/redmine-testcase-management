@@ -28,12 +28,16 @@ class TestCasesTest < ApplicationSystemTestCase
   end
 
   test "visiting the index" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
+    visit path
+
     assert_selector "h2", text: I18n.t(:label_test_cases)
+    assert_equal path, current_path
   end
 
   test "add new test case" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
+    visit path
 
     click_on I18n.t(:label_test_case_new)
 
@@ -44,10 +48,14 @@ class TestCasesTest < ApplicationSystemTestCase
     fill_in 'environment', with: "environment"
 
     click_button I18n.t(:button_create)
+    # test case is expected to be bound with test plan, then list test plans
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    assert_equal path, current_path
   end
 
   test "show test case" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}"
+    visit path
 
     assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name} » \##{@test_case.id} #{@test_case.name}"
     assert_selector "h3", text: @test_case.name
@@ -56,10 +64,12 @@ class TestCasesTest < ApplicationSystemTestCase
     assert_selector "#expected", text: @test_case.expected
     assert_selector "#user", text: @test_plan.user.name
     assert_selector "#environment", text: @test_case.environment
+    assert_equal path, current_path
   end
 
   test "update test case" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
+    visit path
 
     fill_in 'name', with: "name"
     select users(:users_001).name, from: 'test_case[user]'
@@ -68,13 +78,19 @@ class TestCasesTest < ApplicationSystemTestCase
     fill_in 'environment', with: "environment"
 
     click_button I18n.t(:button_update)
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    assert_equal path, current_path
   end
 
   test "delete test case" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}"
+    visit path
 
     click_on I18n.t(:button_delete)
-    accept_confirm /#{I18n.t(:text_test_case_destroy_confirmation)}/
+    page.accept_confirm I18n.t(:text_test_case_destroy_confirmation)
+    sleep 1 # wait destroying
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    assert_equal path, current_path
   end
 
   private
