@@ -1698,24 +1698,20 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_statistics
-        @project = projects(:projects_001)
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
-        @test_plan = test_plans(:test_plans_005)
-        # test plan 001 should be ignored
-        @user = users(:users_002)
         expected = {
-          id: [@user.id],
+          id: [@test_plan.user.id],
           user: [@test_plan.user.name],
           test_cases: [@test_plan.test_cases.size],
           assigned_rate: [100],
           count_not_executed: [0],
-          count_succeeded: [2],
-          count_failed: [1],
+          count_succeeded: [1],
+          count_failed: [0],
           progress_rate: [100],
-          detected_bug: [2],
-          remained_bug: [2],
+          detected_bug: [0],
+          remained_bug: [0],
           fixed_rate: [0],
         }
         assert_equal expected, actual_statistics
