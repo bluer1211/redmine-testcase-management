@@ -17,7 +17,7 @@
   <% end %>
 </div>
 
-<h2><%=l(:label_test_cases)%></h2>
+<h2><%= breadcrumb %><%=l(:label_test_cases)%></h2>
 
 <% if @test_plan_given %>
   <%= form_tag(project_test_plan_test_cases_path, :method => :get, :id => 'query_form') do %>

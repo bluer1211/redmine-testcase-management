@@ -1,6 +1,6 @@
 <%= render :partial => 'action_menu', :locals => {:project_id => @project.name } %>
 
-<h2 class="inline-flex"><%=l(:label_test_plans)%> #<%= @test_plan.id %></h2>
+<h2 class="inline-flex"><%= breadcrumb %>#<%= @test_plan.id %> <%= @test_plan.name %></h2>
 
 <div class="issue details">
   <div class="subject">
