@@ -58,6 +58,26 @@ SQL
          )
   }, class_name: :TestCaseExecution
 
+  def latest_effective_test_case_execution(test_plan=nil)
+    test_case_executions_for(test_plan)
+      .where.not(execution_date: nil)
+      .order("execution_date DESC")
+      .first
+  end
+
+  def test_case_executions_for(test_plan=nil)
+    conditions = {test_case: self}
+    if test_plan
+      if test_plan.is_a?(TestPlan)
+        conditions[:test_plan] = test_plan
+      else
+        conditions[:test_plan_id] = test_plan
+      end
+    end
+    TestCaseExecution
+      .where(conditions)
+  end
+
   def attachments_visible?(user=User.current)
     visible?(user)
   end
