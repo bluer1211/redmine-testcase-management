@@ -25,7 +25,9 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
         create_test_case_execution
       end
     end
-    assert_redirected_to :controller => 'test_case_executions', :action => 'show', :id => test_case_execution.id
+    assert_redirected_to controller: "test_plans",
+                         action: "show",
+                         id: @test_plan.id
   end
 
   test "edit test case execution" do
@@ -56,7 +58,10 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
             comment: "dummy"
           }
         }
-    assert_redirected_to :controller => 'test_case_executions', :action => 'show', :id => test_case_execution.id
+    assert_redirected_to controller: "test_cases",
+                         action: "show",
+                         test_plan_id: @test_plan.id,
+                         id: @test_case.id
   end
 
   test "delete test plan" do
