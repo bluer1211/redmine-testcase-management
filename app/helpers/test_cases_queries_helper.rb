@@ -28,8 +28,8 @@ module TestCasesQueriesHelper
       when :scenario, :expected
         truncate(value)
       when :latest_result
-        if value and item.latest_test_case_execution
-          link_to value.result ? l(:label_succeed) : l(:label_failure),
+        unless value.nil?
+          link_to value ? l(:label_succeed) : l(:label_failure),
                   project_test_plan_test_case_test_case_execution_url(project_id: item.project.identifier,
                                                                       test_plan_id: item.test_plan.id,
                                                                       test_case_id: item.id,
@@ -38,7 +38,7 @@ module TestCasesQueriesHelper
           l(:label_none)
         end
       when :execution_date
-        if value
+        unless value.nil?
           # value is TestCaseExecution
           link_to yyyymmdd_date(value.execution_date),
                   project_test_plan_test_case_test_case_execution_url(project_id: item.project.identifier,

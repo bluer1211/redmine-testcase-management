@@ -284,8 +284,8 @@ SQL
   def csv_value(column, test_case, value)
     case column.name
     when :latest_result
-      !value ? l(:label_succeed) :
-        value.result ? l(:label_succeed) :
+      value.nil? ? l(:label_none) :
+        value ? l(:label_succeed) :
         l(:label_failure)
     when :execution_date
       !value ? l(:label_none) :

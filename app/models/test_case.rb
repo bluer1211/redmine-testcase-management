@@ -35,6 +35,8 @@ class TestCase < ActiveRecord::Base
     where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
   end)
 
+=begin
+  # deactivate this way because duplicated record may appear in TestCaseQuery.test_cases...
   #self.test_case_executions.order("execution_date desc").first
   has_one :latest_result, -> {
     where(<<~SQL
@@ -59,6 +61,15 @@ SQL
 SQL
          )
   }, class_name: :TestCaseExecution
+=end
+
+  def latest_result
+    latest_test_case_execution && latest_test_case_execution.result
+  end
+
+  def execution_date
+    latest_test_case_execution && latest_test_case_execution.execution_date
+  end
 
   def latest_test_case_execution(test_plan=self.test_plan)
     test_case_executions_for(test_plan)

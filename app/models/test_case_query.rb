@@ -75,6 +75,9 @@ class TestCaseQuery < Query
 
   def base_scope
     TestCase.visible
+      .where(getTestCaseConditions)
+=begin
+      # deactivate this way because duplicated record may appear in TestCaseQuery.test_cases...
       .joins(<<-SQL
           LEFT JOIN (SELECT test_case_id, max(execution_date) as execution_date
           FROM test_case_executions GROUP BY test_case_id) AS latest_tce on latest_tce.test_case_id = test_cases.id
@@ -82,7 +85,7 @@ class TestCaseQuery < Query
           AND latest_tce.execution_date = test_case_executions.execution_date
 SQL
             )
-      .where(getTestCaseConditions)
+=end
   end
 
   # Specify selected columns by default
@@ -105,14 +108,12 @@ SQL
     if options[:test_plan_id]
       base_scope
         .joins(:test_plans)
-        .distinct
         .where(conditions.join(" AND "))
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
     else
       base_scope
-        .distinct
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
