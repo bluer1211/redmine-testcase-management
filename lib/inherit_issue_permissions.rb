@@ -63,6 +63,11 @@ module TestCaseManagement
       end
     end
 
+    def owned_only_by_visible_user
+      return true unless user
+      errors.add(:user, "Unownable User") unless visible?(user)
+    end
+
     module_function
 
     def self.visible_condition(user, options={})

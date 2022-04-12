@@ -20,6 +20,8 @@ class TestPlan < ActiveRecord::Base
 
   validates_length_of :name, :maximum => 255
 
+  validate :owned_only_by_visible_user
+
   safe_attributes(
     "project_id'",
     "name",

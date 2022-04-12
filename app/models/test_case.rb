@@ -19,6 +19,8 @@ class TestCase < ActiveRecord::Base
 
   validates_associated :test_case_executions
 
+  validate :owned_only_by_visible_user
+
   safe_attributes(
     "project_id'",
     "user_id",

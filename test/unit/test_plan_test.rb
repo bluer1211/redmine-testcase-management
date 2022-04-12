@@ -427,4 +427,46 @@ class TestPlanTest < ActiveSupport::TestCase
     user.reload
     assert test_plan.deletable?(user)
   end
+
+  def test_ownable_user
+    test_plan = test_plans(:test_plans_001)
+    validity = {}
+    visibility = {}
+    Role.non_member.remove_permission!(:view_issues)
+
+    test_plan.user = User.find(1) # admin
+    validity[:admin] = test_plan.valid?
+    visibility[:admin] = test_plan.visible?(test_plan.user)
+
+    permitted_role = Role.generate!
+    permitted_role.add_permission! :view_issues
+    permitted_role.save!
+    unpermitted_role = Role.generate!
+    unpermitted_role.remove_permission! :view_issues
+    unpermitted_role.save!
+
+    permitted_member = User.generate!
+    User.add_to_project(permitted_member, test_plan.project, [permitted_role, unpermitted_role])
+    test_plan.user = permitted_member
+    validity[:permitted_member] = test_plan.valid?
+    visibility[:permitted_member] = test_plan.visible?(test_plan.user)
+
+    unpermitted_member = User.generate!
+    User.add_to_project(unpermitted_member, test_plan.project, [unpermitted_role])
+    test_plan.user = unpermitted_member
+    validity[:unpermitted_member] = test_plan.valid?
+    visibility[:unpermitted_member] = test_plan.visible?(test_plan.user)
+
+    non_member = User.generate!
+    test_plan.user = non_member
+    validity[:non_member] = test_plan.valid?
+    visibility[:non_member] = test_plan.visible?(test_plan.user)
+
+    assert_equal visibility, validity
+    assert_equal({ admin: true,
+                   permitted_member: true,
+                   unpermitted_member: false,
+                   non_member: false },
+                 validity)
+  end
 end

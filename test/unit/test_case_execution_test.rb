@@ -24,6 +24,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
                                                 :result => true,
                                                 :execution_date => "2022-02-28",
                                                 :comment => "dummy",
+                                                :project => projects(:projects_001),
                                                 :user => users(:users_001),
                                                 :test_plan => test_plan,
                                                 :test_case => test_case,
@@ -78,6 +79,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
                                                 :result => true,
                                                 :comment => "dummy",
                                                 :execution_date => "2022-02-28",
+                                                :project => test_plan.project,
                                                 :user => users(:users_002),
                                                 :test_plan => test_plan,
                                                 :test_case => test_case,
@@ -101,18 +103,20 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_missing_result
     object = TestCaseExecution.new(:comment => "dummy",
+                                   :project => projects(:projects_001),
                                    :user => users(:users_001),
                                    :test_case => TestCase.new,
                                    :test_plan => TestPlan.new)
     # the default value of result is false
-    assert_equal false, object.result
-    assert_equal false, object.invalid?
+    assert_equal [false, false],
+                 [object.result, object.invalid?]
     assert_equal [], object.errors[:result]
   end
 
   def test_missing_user
     object = TestCaseExecution.new(:result => false,
                                    :comment => "dummy",
+                                   :project => projects(:projects_001),
                                    :test_case => TestCase.new,
                                    :test_plan => TestPlan.new)
     assert_equal true, object.invalid?
@@ -121,6 +125,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
   def test_missing_comment
     object = TestCaseExecution.new(:result => false,
+                                   :project => projects(:projects_001),
                                    :user => users(:users_001),
                                    :test_case => TestCase.new,
                                    :test_plan => TestPlan.new)
@@ -447,5 +452,47 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     test_case_execution.reload
     user.reload
     assert test_case_execution.attachments_deletable?(user)
+  end
+
+  def test_ownable_user
+    test_case_execution = test_case_executions(:test_case_executions_001)
+    validity = {}
+    visibility = {}
+    Role.non_member.remove_permission!(:view_issues)
+
+    test_case_execution.user = User.find(1) # admin
+    validity[:admin] = test_case_execution.valid?
+    visibility[:admin] = test_case_execution.visible?(test_case_execution.user)
+
+    permitted_role = Role.generate!
+    permitted_role.add_permission! :view_issues
+    permitted_role.save!
+    unpermitted_role = Role.generate!
+    unpermitted_role.remove_permission! :view_issues
+    unpermitted_role.save!
+
+    permitted_member = User.generate!
+    User.add_to_project(permitted_member, test_case_execution.project, [permitted_role, unpermitted_role])
+    test_case_execution.user = permitted_member
+    validity[:permitted_member] = test_case_execution.valid?
+    visibility[:permitted_member] = test_case_execution.visible?(test_case_execution.user)
+
+    unpermitted_member = User.generate!
+    User.add_to_project(unpermitted_member, test_case_execution.project, [unpermitted_role])
+    test_case_execution.user = unpermitted_member
+    validity[:unpermitted_member] = test_case_execution.valid?
+    visibility[:unpermitted_member] = test_case_execution.visible?(test_case_execution.user)
+
+    non_member = User.generate!
+    test_case_execution.user = non_member
+    validity[:non_member] = test_case_execution.valid?
+    visibility[:non_member] = test_case_execution.visible?(test_case_execution.user)
+
+    assert_equal visibility, validity
+    assert_equal({ admin: true,
+                   permitted_member: true,
+                   unpermitted_member: false,
+                   non_member: false },
+                 validity)
   end
 end

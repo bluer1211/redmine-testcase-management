@@ -185,6 +185,7 @@ class TestCaseTest < ActiveSupport::TestCase
   def test_incomplete_test_case_execution
     test_case = test_cases(:test_cases_001)
     test_case_execution = test_case.test_case_executions.new(:result => true,
+                                                             :project => test_case.project,
                                                              :user => users(:users_001))
     assert_equal true, test_case_execution.invalid?
     assert_equal true, test_case.invalid?
@@ -196,11 +197,12 @@ class TestCaseTest < ActiveSupport::TestCase
     test_case = test_cases(:test_cases_001)
     test_case_execution = test_case.test_case_executions.new(:result => true,
                                                              :comment => "dummy",
+                                                             :project => test_case.project,
                                                              :user => users(:users_001),
                                                              :test_case => test_case,
                                                              :test_plan => TestPlan.new)
-    assert_equal true, test_case_execution.valid?
-    assert_equal true, test_case.valid?
+    assert_equal [true, true],
+                 [test_case_execution.valid?, test_case.valid?]
     assert_save test_case
     assert_equal 1, test_cases(:test_cases_001).test_case_executions.size
   end
@@ -509,5 +511,47 @@ class TestCaseTest < ActiveSupport::TestCase
     test_case.reload
     user.reload
     assert test_case.attachments_deletable?(user)
+  end
+
+  def test_ownable_user
+    test_case = test_cases(:test_cases_001)
+    validity = {}
+    visibility = {}
+    Role.non_member.remove_permission!(:view_issues)
+
+    test_case.user = User.find(1) # admin
+    validity[:admin] = test_case.valid?
+    visibility[:admin] = test_case.visible?(test_case.user)
+
+    permitted_role = Role.generate!
+    permitted_role.add_permission! :view_issues
+    permitted_role.save!
+    unpermitted_role = Role.generate!
+    unpermitted_role.remove_permission! :view_issues
+    unpermitted_role.save!
+
+    permitted_member = User.generate!
+    User.add_to_project(permitted_member, test_case.project, [permitted_role, unpermitted_role])
+    test_case.user = permitted_member
+    validity[:permitted_member] = test_case.valid?
+    visibility[:permitted_member] = test_case.visible?(test_case.user)
+
+    unpermitted_member = User.generate!
+    User.add_to_project(unpermitted_member, test_case.project, [unpermitted_role])
+    test_case.user = unpermitted_member
+    validity[:unpermitted_member] = test_case.valid?
+    visibility[:unpermitted_member] = test_case.visible?(test_case.user)
+
+    non_member = User.generate!
+    test_case.user = non_member
+    validity[:non_member] = test_case.valid?
+    visibility[:non_member] = test_case.visible?(test_case.user)
+
+    assert_equal visibility, validity
+    assert_equal({ admin: true,
+                   permitted_member: true,
+                   unpermitted_member: false,
+                   non_member: false },
+                 validity)
   end
 end

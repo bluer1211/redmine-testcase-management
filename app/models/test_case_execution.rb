@@ -15,6 +15,8 @@ class TestCaseExecution < ActiveRecord::Base
   validates :test_plan, presence: true
   validates :test_case, presence: true
 
+  validate :owned_only_by_visible_user
+
   safe_attributes(
     "project_id'",
     "name",
