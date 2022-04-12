@@ -53,6 +53,9 @@ class TestPlansControllerTest < ActionController::TestCase
         assert_equal new_project_test_plan_path(project_id: projects(:projects_001).identifier), a.first.attributes["href"].text
         assert_equal I18n.t(:label_test_plan_new), a.text
       end
+      assert_select "div#content h2.inline-flex" do |h2|
+        assert_equal "#{I18n.t(:label_test_plans)}", h2.text
+      end
     end
 
     def test_index_with_nonexistent_project
@@ -214,6 +217,21 @@ class TestPlansControllerTest < ActionController::TestCase
         assert_difference("TestPlan.count", -1) do
           delete :destroy, params: { project_id: test_plan.project.id, id: test_plan.id }
         end
+      end
+    end
+  end
+
+  class New < self
+    def setup
+      super
+      login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :add_issues])
+    end
+
+    def test_breadcrumb
+      test_plan = test_plans(:test_plans_002)
+      get :new, params: { project_id: test_plan.project.id }
+      assert_select "div#content h2.inline-flex" do |h2|
+        assert_equal "#{I18n.t(:label_test_plans)} > #{I18n.t(:label_test_plan_new)}", h2.text
       end
     end
   end
@@ -656,6 +674,15 @@ class TestPlansControllerTest < ActionController::TestCase
         fixed_rate: [0, 100],
       }
       assert_equal expected, actual_statistics
+    end
+
+    def test_breadcrumb
+      @project = projects(:projects_003)
+      login_with_permissions(@project, [:view_project, :view_issues])
+      get :statistics, params: { project_id: @project.id }
+      assert_select "div#content h2.inline-flex" do |h2|
+        assert_equal "#{I18n.t(:label_test_plans)} > #{I18n.t(:label_test_plan_statistics)}", h2.text
+      end
     end
 
     private

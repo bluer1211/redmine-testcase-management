@@ -87,6 +87,50 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_back_to_lists_link(project_test_plan_test_cases_path)
     end
 
+    def test_breadcrumb
+      get :index, params: {
+            project_id: projects(:projects_002).identifier,
+          }
+      assert_select "div#content h2" do |h2|
+        assert_equal "#{I18n.t(:label_test_case_executions)}", h2.text
+      end
+    end
+
+    def test_breadcrumb_with_test_plan
+      test_plan = test_plans(:test_plans_001)
+      get :index, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plan.id,
+          }
+      assert_select "div#content h2.inline-flex" do |h2|
+        assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_case_executions)}", h2.text
+      end
+    end
+
+    def test_breadcrumb_with_test_case
+      test_case = test_cases(:test_cases_001)
+      get :index, params: {
+            project_id: projects(:projects_002).identifier,
+            test_case_id: test_case.id,
+          }
+      assert_select "div#content h2.inline-flex" do |h2|
+        assert_equal "#{I18n.t(:label_test_cases)} > ##{test_case.id} #{test_case.name} > #{I18n.t(:label_test_case_executions)}", h2.text
+      end
+    end
+
+    def test_breadcrumb_with_test_plan_and_test_case
+      test_plan = test_plans(:test_plans_001)
+      test_case = test_cases(:test_cases_001)
+      get :index, params: {
+            project_id: projects(:projects_002).identifier,
+            test_plan_id: test_plan.id,
+            test_case_id: test_case.id,
+          }
+      assert_select "div#content h2.inline-flex" do |h2|
+        assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_cases)} ##{test_case.id} #{test_case.name} > #{I18n.t(:label_test_case_executions)}", h2.text
+      end
+    end
+
     class Filter < self
       def test_index_with_invalid_filter
         get :index, params: {

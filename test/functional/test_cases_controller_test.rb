@@ -59,6 +59,26 @@ class TestCasesControllerTest < ActionController::TestCase
           end
         end
       end
+
+      def test_breadcrumb_with_test_plan
+        test_plan = test_plans(:test_plans_001)
+        get :index, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: test_plan.id,
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_cases)}", h2.text
+        end
+      end
+
+      def test_breadcrumb_without_test_plan
+        get :index, params: {
+              project_id: projects(:projects_003).identifier,
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_cases)}", h2.text
+        end
+      end
     end
 
     class Filter < self
@@ -307,6 +327,28 @@ class TestCasesControllerTest < ActionController::TestCase
       end
     end
 
+    class New < self
+      def test_breadcrumb_with_test_plan
+        test_plan = test_plans(:test_plans_001)
+        get :new, params: {
+              project_id: projects(:projects_002).identifier,
+              test_plan_id: test_plan.id,
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_case_new)}", h2.text
+        end
+      end
+
+      def test_breadcrumb_without_test_plan
+        get :new, params: {
+              project_id: projects(:projects_002).identifier,
+            }
+        assert_select "div#content h2" do |h2|
+          assert_equal "#{I18n.t(:label_test_cases)} > #{I18n.t(:label_test_case_new)}", h2.text
+        end
+      end
+    end
+
     class Create < self
       def setup
         login_with_permissions(projects(:projects_001), [:view_project, :view_issues, :add_issues])
@@ -365,9 +407,6 @@ class TestCasesControllerTest < ActionController::TestCase
               id: test_case.id
             }
         assert_response :success
-        assert_select "h2.inline-flex" do |h2|
-          assert_equal "#{I18n.t(:label_test_cases)} > \##{test_case.id} #{test_case.name}", h2.text
-        end
         assert_select "div.subject div h3" do |h3|
           assert_equal test_case.name, h3.text
         end
@@ -406,6 +445,30 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_response :missing
         assert_flash_error I18n.t(:error_test_case_not_found)
       end
+
+      def test_breadcrumb_with_test_plan
+        test_plan = test_plans(:test_plans_001)
+        test_case = test_cases(:test_cases_002)
+        get :show, params: {
+              project_id: projects(:projects_002).identifier,
+              test_plan_id: test_plan.id,
+              id: test_case.id,
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > \##{test_case.id} #{test_case.name}", h2.text
+        end
+      end
+
+      def test_breadcrumb_without_test_plan
+        test_case = test_cases(:test_cases_002)
+        get :show, params: {
+              project_id: projects(:projects_002).identifier,
+              id: test_case.id,
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_cases)} > \##{test_case.id} #{test_case.name}", h2.text
+        end
+      end
     end
 
     class Edit < self
@@ -420,9 +483,6 @@ class TestCasesControllerTest < ActionController::TestCase
               id: test_case.id
             }
         assert_response :success
-        assert_select "div#content h2" do |h2|
-          assert_equal "#{I18n.t(:label_test_cases)} > #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
-        end
         assert_select "input[name='test_case[name]']" do |input|
           assert_equal test_case.name, input.first.attributes["value"].value
         end
@@ -458,6 +518,30 @@ class TestCasesControllerTest < ActionController::TestCase
             }
         assert_response :missing
         assert_flash_error I18n.t(:error_test_case_not_found)
+      end
+
+      def test_breadcrumb_with_test_plan
+        test_plan = test_plans(:test_plans_001)
+        test_case = test_cases(:test_cases_001)
+        get :edit, params: {
+              project_id: projects(:projects_002).identifier,
+              test_plan_id: test_plan.id,
+              id: test_case.id
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_plans)} > ##{test_plan.id} #{test_plan.name} > #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
+        end
+      end
+
+      def test_breadcrumb_without_test_plan
+        test_case = test_cases(:test_cases_001)
+        get :edit, params: {
+              project_id: projects(:projects_002).identifier,
+              id: test_case.id
+            }
+        assert_select "div#content h2" do |h2|
+          assert_equal "#{I18n.t(:label_test_cases)} > #{I18n.t(:label_test_case_edit)} ##{test_case.id}", h2.text
+        end
       end
     end
 
