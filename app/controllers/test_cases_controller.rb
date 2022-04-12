@@ -250,7 +250,7 @@ SQL
         .where(project: @project)
         .group("test_plans.user_id")
         .select(select_query)
-        .order("test_plans.user_id desc")
+        .order("count_not_executed desc, count_failed desc, remained_bug desc")
       render :statistics
     rescue
       render 'forbidden', status: 404
