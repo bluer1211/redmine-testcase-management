@@ -15,6 +15,7 @@ en:
   label_import_test_cases: "Import Test Cases"
   label_import_test_plans: "Import Test Plans"
   label_import_test_case_executions: "Import Test Case Executions"
+  label_test_case_statistics: "Test Case Statistics"
 
   label_succeed: "Succeed"
   label_failure: "Failure"
@@ -58,6 +59,8 @@ en:
   field_scenario: "Scenario"
   field_expected: "Expected"
   field_latest_result: "Execution Result"
+
+  field_assigned_rate: "Assigned Rate"
 
   # TestCaseExecution
   field_test_case: "Test Case"

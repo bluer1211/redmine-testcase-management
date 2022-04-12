@@ -23,6 +23,13 @@
   <% end %>
 </ul>
 
+<h3><%= l(:label_statistics) %></h3>
+
+<ul>
+  <li><%= link_to l(:label_test_plan_statistics), project_test_plan_statistics_path, class: 'icon icon-stats' %></li>
+  <li><%= link_to l(:label_test_case_statistics), project_test_case_statistics_path, class: 'icon icon-stats' %></li>
+</ul>
+
 <%= call_hook(:view_test_cases_sidebar_bottom) %>
 
 <% if controller.action_name == "index" %>
