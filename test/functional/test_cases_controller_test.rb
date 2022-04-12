@@ -1961,17 +1961,18 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: @params
         assert_response :success
+        # In this case, order was determined by remained_bug
         expected = {
-          id: [@dlopper.id, @jsmith.id],
-          user: [@dlopper.name, @jsmith.name],
-          test_cases: [1, 3],
-          assigned_rate: [25, 75],
+          id: [@jsmith.id, @dlopper.id],
+          user: [@jsmith.name, @dlopper.name],
+          test_cases: [3, 1],
+          assigned_rate: [75, 25],
           count_not_executed: [0, 0],
-          count_succeeded: [0, 2],
+          count_succeeded: [2, 0],
           count_failed: [1, 1],
           progress_rate: [100, 100],
-          detected_bug: [0, 2],
-          remained_bug: [0, 2],
+          detected_bug: [2, 0],
+          remained_bug: [2, 0],
           fixed_rate: [0, 0],
         }
         assert_equal expected, actual_statistics
@@ -2010,7 +2011,8 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
-        assert_equal [n, 2], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
+        # In this case, order was determined by failed count
+        assert_equal [2, 3], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
       end
 
       def test_no_count_succeeded
@@ -2020,7 +2022,7 @@ class TestCasesControllerTest < ActionController::TestCase
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # latest failed test case execution should be counted
-        assert_equal [1, 2], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
+        assert_equal [2, 1], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
       end
 
       def test_count_failed
@@ -2038,7 +2040,7 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: @params
         assert_response :success
-        assert_equal [0, 1], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
+        assert_equal [1, 0], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
       end
 
       def test_no_progress_rate
@@ -2093,7 +2095,7 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: @params
         assert_response :success
-        assert_equal [1, 2], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
+        assert_equal [2, 1], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
       end
 
       def test_no_remained_bug
@@ -2101,7 +2103,7 @@ class TestCasesControllerTest < ActionController::TestCase
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: @params
         assert_response :success
-        assert_equal [0, 2], css_select("table#statistics tr td.remained_bug").map(&:text).map(&:to_i)
+        assert_equal [2, 0], css_select("table#statistics tr td.remained_bug").map(&:text).map(&:to_i)
       end
 
       def test_remained_bug
