@@ -122,6 +122,15 @@ class TestPlansTest < ApplicationSystemTestCase
     assert_equal path, current_path
   end
 
+  test "visit test plan via index" do
+    path = "/projects/#{@project.identifier}/test_plans"
+    visit path
+
+    click_on @test_plan.name
+    assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name}"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    assert_equal path, current_path
+  end
   private
 
   def login_with_admin
