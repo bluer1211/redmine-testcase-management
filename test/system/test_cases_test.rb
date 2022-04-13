@@ -27,6 +27,17 @@ class TestCasesTest < ApplicationSystemTestCase
     visit "/logout"
   end
 
+  test "visiting test case menu via project" do
+    path = "/projects/#{@project.identifier}"
+    visit path
+
+    click_on I18n.t(:label_testcase_management)
+
+    assert_selector "h2", text: I18n.t(:label_test_cases)
+    path = "/projects/#{@project.identifier}/test_cases"
+    assert_equal path, current_path
+  end
+
   test "visiting the index" do
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
     visit path
