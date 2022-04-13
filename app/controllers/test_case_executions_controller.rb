@@ -104,8 +104,9 @@ class TestCaseExecutionsController < ApplicationController
         @test_case_execution.save_attachments params.require(:attachments).permit!
       end
       if @test_case_execution.valid?
-        render_attachment_warning_if_needed @test_case_execution
         @test_case_execution.save
+        # FIXME: unsaved_attachments will not be cleared
+        # render_attachment_warning_if_needed @test_case_execution
         flash[:notice] = l(:notice_successful_create)
         redirect_to project_test_plan_path(id: @test_plan.id)
       else
