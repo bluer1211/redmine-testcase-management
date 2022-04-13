@@ -131,6 +131,18 @@ class TestPlansTest < ApplicationSystemTestCase
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     assert_equal path, current_path
   end
+
+  test "visit test case via test plan" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
+
+    @test_case = test_cases(:test_cases_001)
+    click_on @test_case.name
+
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}"
+    assert_equal path, current_path
+  end
+
   private
 
   def login_with_admin
