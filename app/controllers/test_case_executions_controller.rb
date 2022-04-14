@@ -43,11 +43,19 @@ class TestCaseExecutionsController < ApplicationController
           end
           @test_case_executions = @query.test_case_executions(test_case_executions_params).visible
           if @test_plan and @test_case
-            @title = html_title(l(:label_test_case_executions), "##{@test_case.id} #{@test_case.name}", l(:label_test_cases), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
+            @title = html_title(l(:label_test_case_executions),
+                                "##{@test_case.id} #{@test_case.name}",
+                                l(:label_test_cases),
+                                "##{@test_plan.id} #{@test_plan.name}",
+                                l(:label_test_plans))
           elsif @test_plan
-            @title = html_title(l(:label_test_case_executions), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
+            @title = html_title(l(:label_test_case_executions),
+                                "##{@test_plan.id} #{@test_plan.name}",
+                                l(:label_test_plans))
           elsif @test_case
-            @title = html_title(l(:label_test_case_executions), "##{@test_case.id} #{@test_case.name}", l(:label_test_cases))
+            @title = html_title(l(:label_test_case_executions),
+                                "##{@test_case.id} #{@test_case.name}",
+                                l(:label_test_cases))
           else
             @title = html_title(l(:label_test_case_executions))
           end
