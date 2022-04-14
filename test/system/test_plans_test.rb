@@ -91,7 +91,7 @@ class TestPlansTest < ApplicationSystemTestCase
 
     click_on I18n.t(:button_delete)
     page.accept_confirm I18n.t(:text_test_plan_destroy_confirmation)
-    sleep 0.1
+    sleep 0.5
     path = "/projects/#{@project.identifier}/test_plans"
     assert_equal path, current_path
   end
