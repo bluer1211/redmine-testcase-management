@@ -1868,6 +1868,16 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_detected_bug
         issue = Issue.generate!(project: @project)
+        add_test_case_execution_for(@test_case, { result: false, issue: issue })
+        login_with_permissions(@project, [:view_project, :view_issues])
+        get :statistics, params: @params
+        assert_response :success
+        assert_equal [1], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
+      end
+
+      def test_detected_bug_with_update
+        skip "assign issue for existing test case execution may fail"
+        issue = Issue.generate!(project: @project)
         @test_case_execution.update(issue: issue)
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: @params

@@ -233,12 +233,13 @@ class TestCasesController < ApplicationController
       subquery = <<-SQL
                    INNER JOIN issue_statuses AS TPIS ON test_plans.issue_status_id = TPIS.id
                      AND TPIS.is_closed = '0'
-                   LEFT JOIN (SELECT test_case_id, max(execution_date) AS execution_date
-                     FROM test_case_executions GROUP BY test_case_id) AS latest_tce
-                     ON latest_tce.test_case_id = test_cases.id
+                   LEFT JOIN (SELECT test_plan_id, test_case_id, max(execution_date) as execution_date
+                     FROM test_case_executions GROUP BY test_plan_id, test_case_id) AS LATEST_TCE
+                     ON LATEST_TCE.test_case_id = test_case_test_plans.test_case_id
+                     AND LATEST_TCE.test_plan_id = test_case_test_plans.test_plan_id
                    LEFT JOIN test_case_executions
-                     ON latest_tce.test_case_id = test_case_executions.test_case_id
-                     AND latest_tce.execution_date = test_case_executions.execution_date
+                     ON LATEST_TCE.test_case_id = test_case_executions.test_case_id
+                     AND LATEST_TCE.execution_date = test_case_executions.execution_date
                    LEFT JOIN issues ON test_case_executions.issue_id = issues.id
                    LEFT JOIN issue_statuses AS TCEIS ON issues.status_id = TCEIS.id
 SQL
