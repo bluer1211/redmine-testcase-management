@@ -90,7 +90,7 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
     click_on I18n.t(:button_delete)
     accept_confirm I18n.t(:text_test_case_execution_destroy_confirmation)
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions"
-    sleep 0.1 # wait until deleted
+    sleep 0.5 # wait until deleted
     assert_equal path, current_path
   end
 
