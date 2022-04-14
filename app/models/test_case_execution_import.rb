@@ -19,7 +19,7 @@ class TestCaseExecutionImport < Import
 
   def saved_objects
     object_ids = saved_items.pluck(:obj_id)
-    TestPlan.where(:id => object_ids).order(:id)
+    TestCaseExecution.where(:id => object_ids).order(:id)
   end
 
   def allowed_target_projects
