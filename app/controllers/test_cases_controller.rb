@@ -113,7 +113,6 @@ class TestCasesController < ApplicationController
   def show
     if @test_plan_given
       @test_case_executions = @test_case.test_case_executions_for(@test_plan)
-      @test_case_execution = @test_case.latest_effective_test_case_execution(@test_plan)
       @title = html_title("##{@test_case.id} #{@test_case.name}", l(:label_test_cases), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
     else
       @test_case_executions = @test_case.test_case_executions

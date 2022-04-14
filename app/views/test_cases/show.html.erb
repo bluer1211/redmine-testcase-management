@@ -61,11 +61,9 @@
 <div id="test_case_execution_tree">
   <% if @test_plan_given %>
     <div class="contextual">
-      <% unless @test_case_execution %>
-        <%= link_to l(:label_test_case_execution_new),
-                    new_project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id),
-                    class: "icon icon-add" %>
-      <% end %>
+      <%= link_to l(:label_test_case_execution_new),
+                  new_project_test_plan_test_case_test_case_execution_path(test_case_id: @test_case.id),
+                  class: "icon icon-add" %>
     </div>
   <% end %>
   <p><%=l(:label_test_case_executions)%></p>
