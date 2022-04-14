@@ -48,7 +48,7 @@
           </td>
           <td class="estimated_bug"><%= test_plan.estimated_bug %></td>
           <td class="detected_bug"><%= test_plan.detected_bug %></td>
-          <td class="remained_bug"><%= test_plan.detected_bug - test_plan.fixed_bug %></td>
+          <td class="remained_bug"><%= test_plan.remained_bug %></td>
           <td class="fixed_rate">
             <% if test_plan.detected_bug > 0 %>
               <%= ((test_plan.fixed_bug / test_plan.detected_bug.to_f) * 100).round %>

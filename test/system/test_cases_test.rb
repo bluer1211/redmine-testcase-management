@@ -33,6 +33,7 @@ class TestCasesTest < ApplicationSystemTestCase
 
     click_on I18n.t(:label_testcase_management)
 
+    sleep 0.5 # wait until switching
     assert_selector "h2", text: I18n.t(:label_test_cases)
     path = "/projects/#{@project.identifier}/test_cases"
     assert_equal path, current_path
