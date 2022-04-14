@@ -28,6 +28,7 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
     import.mapping["project_id"] = project_id.to_s
     import.save!
 
+    move_test_cases_to_project(project_id)
     test_case_executions = new_records(TestCaseExecution, 3) do
       import.run
       assert_successfully_imported(import)
@@ -97,6 +98,7 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
   end
 
   def generate_import_with_mapping(fixture_name="test_case_executions.csv")
+    move_test_cases_to_project(1)
     import = generate_import(fixture_name)
 
     import.settings = {

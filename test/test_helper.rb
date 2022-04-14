@@ -51,3 +51,14 @@ def assert_successfully_imported(import)
   assert_equal [], failures
 end
 
+def move_test_cases_to_project(project_id)
+  TestCaseExecution.all.each do |test_case_execution|
+    test_case_execution.update!(project_id: project_id)
+  end
+  TestCase.all.each do |test_case|
+    test_case.update!(project_id: project_id)
+  end
+  TestPlan.all.each do |test_plan|
+    test_plan.update!(project_id: project_id)
+  end
+end
