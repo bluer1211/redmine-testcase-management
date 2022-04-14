@@ -43,3 +43,11 @@ def assert_not_select(selector, options = {})
                 "unexpectedly exist something matching to the selector: ${selector}"
 end
 
+def assert_successfully_imported(import)
+  failures = []
+  import.unsaved_items.each_with_index do |item, index|
+    failures << "#{item.position}: #{item.message}"
+  end
+  assert_equal [], failures
+end
+

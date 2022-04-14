@@ -30,6 +30,7 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
 
     test_case_executions = new_records(TestCaseExecution, 3) do
       import.run
+      assert_successfully_imported(import)
     end
     assert_equal [project_id, project_id, project_id],
                  test_case_executions.collect(&:project_id)
@@ -43,6 +44,7 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
 
     test_case_executions = new_records(TestCaseExecution, 3) do
       import.run
+      assert_successfully_imported(import)
     end
     assert_equal [user.id, user.id, user.id],
                  test_case_executions.collect(&:user_id)
@@ -71,6 +73,7 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
     import = generate_import_with_mapping
     new_records(TestCaseExecution, 1) do
       import.run
+      assert_successfully_imported(import)
     end
   end
 
