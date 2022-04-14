@@ -41,11 +41,7 @@ class TestCaseExecutionImport < Import
     test_case_execution = TestCaseExecution.new
     test_case_execution.user = user
     test_case_execution.test_case = TestCase.find(row_value(row, "test_case"))
-
-    test_plan = TestPlan.find(row_value(row, "test_plan"))
-    existing_execution = TestCaseExecution.find_by(test_case: test_case_execution.test_case,
-                                                   test_plan: test_plan)
-    test_case_execution.test_plan = test_plan unless existing_execution
+    test_case_execution.test_plan = TestPlan.find(row_value(row, "test_plan"))
 
     attributes = {
       "project_id" => mapping["project_id"],
@@ -64,16 +60,6 @@ class TestCaseExecutionImport < Import
     end
 
     test_case_execution.send :safe_attributes=, attributes, user
-
-    if test_cases = row_date(row, "test_cases")
-      test_cases.scan(/[1-9][0-9]*/) do |test_case_id|
-        begin
-          test_case = TestCase.find(test_case_id.to_i)
-          test_case_execution.test_cases << test_case if test_case
-        rescue ActiveRecord::RecordNotFound
-        end
-      end
-    end
 
     test_case_execution
   end

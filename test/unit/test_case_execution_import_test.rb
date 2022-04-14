@@ -59,7 +59,7 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
     assert !File.exist?(file_path)
   end
 
-  def test_never_override_existing_executions
+  def test_accept_multiple_test_case_executions
     TestCaseExecution.create!(project_id: 1,
                               test_plan_id: 1,
                               test_case_id: 3,
@@ -71,7 +71,7 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
                               user_id: 1,
                               result: false)
     import = generate_import_with_mapping
-    new_records(TestCaseExecution, 1) do
+    new_records(TestCaseExecution, 3) do
       import.run
       assert_successfully_imported(import)
     end
