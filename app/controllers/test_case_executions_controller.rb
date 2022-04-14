@@ -83,7 +83,11 @@ class TestCaseExecutionsController < ApplicationController
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/new
   def new
     @test_case_execution = TestCaseExecution.new
-    @title = html_title(l(:label_test_case_executions_new), "##{@test_case.id} #{@test_case.name}", l(:label_test_cases), "##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
+    @title = html_title(l(:label_test_case_execution_new),
+                        "##{@test_case.id} #{@test_case.name}",
+                        l(:label_test_cases),
+                        "##{@test_plan.id} #{@test_plan.name}",
+                        l(:label_test_plans))
     # FIXME:
     # @test_plan = @test_case_execution.test_plan
     # @test_case = @test_case_execution.test_case
@@ -127,12 +131,22 @@ class TestCaseExecutionsController < ApplicationController
 
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id
   def show
+    @title = html_title("#{l(:label_test_case_executions)} ##{@test_case_execution.id}",
+                        "##{@test_case.id} #{@test_case.name}",
+                        l(:label_test_cases),
+                        "##{@test_plan.id} #{@test_plan.name}",
+                        l(:label_test_plans))
   end
 
   # GET /projects/:project_id/test_case_executions/:id/edit
   # GET /projects/:project_id/test_cases/:test_case_id:/test_case_executions/:id/edit
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id/edit
   def edit
+    @title = html_title("#{l(:label_test_case_execution_edit)} ##{@test_case_execution.id}",
+                        "##{@test_case.id} #{@test_case.name}",
+                        l(:label_test_cases),
+                        "##{@test_plan.id} #{@test_plan.name}",
+                        l(:label_test_plans))
   end
 
   # PUT /projects/:project_id/test_case_executions/:id
