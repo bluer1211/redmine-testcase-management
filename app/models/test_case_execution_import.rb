@@ -60,7 +60,7 @@ class TestCaseExecutionImport < Import
     attributes = {
       "project_id" => mapping["project_id"],
       "comment" => row_value(row, "comment"),
-      "result" => (row_value(row, "comment") == l(:label_succeed)),
+      "result" => (row_value(row, "result") == l(:label_succeed)),
     }
 
     if user_name = row_value(row, "user")
