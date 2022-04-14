@@ -39,7 +39,7 @@
     <div id="scenario" class="attribute">
       <div class="label"><%=l(:field_scenario)%></div>
       <div class="wiki">
-        <%= @test_case.scenario %>
+        <%= textilizable(@test_case.scenario) %>
       </div>
     </div>
   </div>
@@ -47,7 +47,7 @@
     <div id="expected" class="attribute">
       <div class="label"><%=l(:field_expected)%></div>
       <div class="wiki">
-        <%= @test_case.expected %>
+        <%= textilizable(@test_case.expected) %>
       </div>
     </div>
   </div>
