@@ -105,7 +105,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
         "user" => "4",
         "begin_date" => "5",
         "end_date" => "6",
-        "test_cases" => "7",
+        "test_case_ids" => "7",
       },
     }
     import.save!
