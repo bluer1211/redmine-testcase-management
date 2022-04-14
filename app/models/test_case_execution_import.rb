@@ -67,6 +67,13 @@ class TestCaseExecutionImport < Import
       attributes["execution_date"] = execution_date
     end
 
+    if issue_id = row_value(row, "issue")
+      issue = TestPlan.find(issue_id)
+      if issue and issue.project == project
+        test_case_execution.issue = issue
+      end
+    end
+
     test_case_execution.send :safe_attributes=, attributes, user
 
     test_case_execution
