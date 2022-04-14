@@ -184,14 +184,16 @@ class TestPlansController < ApplicationController
     begin
       @test_plans = TestPlan.joins(:test_cases)
                       .joins(<<-SQL
-                      LEFT JOIN (SELECT test_case_id, max(execution_date) AS execution_date
-                        FROM test_case_executions GROUP BY test_case_id) AS latest_tce
-                        ON latest_tce.test_case_id = test_cases.id
+                      LEFT JOIN (SELECT test_plan_id, test_case_id, max(execution_date) AS execution_date
+                        FROM test_case_executions GROUP BY test_plan_id, test_case_id) AS LATEST_TCE
+                        ON LATEST_TCE.test_case_id = test_cases.id
+                        AND LATEST_TCE.test_plan_id = test_plans.id
                       LEFT JOIN test_case_executions
-                        ON latest_tce.test_case_id = test_case_executions.test_case_id
-                        AND latest_tce.execution_date = test_case_executions.execution_date
+                        ON LATEST_TCE.test_plan_id = test_case_executions.test_plan_id
+                        AND LATEST_TCE.test_case_id = test_case_executions.test_case_id
+                        AND LATEST_TCE.execution_date = test_case_executions.execution_date
                       LEFT JOIN issues ON test_case_executions.issue_id = issues.id
-                      LEFT JOIN issue_statuses ON issues.status_id = issue_statuses.id
+                      LEFT JOIN issue_statuses AS TCEIS ON TCEIS.id = issues.status_id
 SQL
                             )
                       .where(project: @project)
@@ -202,7 +204,8 @@ SQL
                       SUM(CASE WHEN test_case_executions.result = '1' THEN 1 ELSE 0 END) AS count_succeeded,
                       SUM(CASE WHEN test_case_executions.result = '0' THEN 1 ELSE 0 END) AS count_failed,
                       SUM(CASE WHEN issues.id IS NOT NULL THEN 1 ELSE 0 END) AS detected_bug,
-                      SUM(CASE WHEN issue_statuses.is_closed = '1' THEN 1 ELSE 0 END) AS fixed_bug
+                      SUM(CASE WHEN TCEIS.is_closed = '1' THEN 1 ELSE 0 END) AS fixed_bug,
+                      SUM(CASE WHEN TCEIS.is_closed = '0' AND issues.id IS NOT NULL THEN 1 ELSE 0 END) AS remained_bug
 SQL
                              )
                       .order(id: :desc)
