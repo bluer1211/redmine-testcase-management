@@ -1,7 +1,6 @@
 # Redmine Plugin Testcase Management
 
-https://gitlab.com/clear-code/redmine-plugin-testcase-management に移動する予定のプラグインのリポジトリ
-
+https://gitlab.com/clear-code/redmine-plugin-testcase-management
 
 ## Install
 
@@ -22,3 +21,6 @@ $ cd /path/to/redmine
 $ cp -r plugins/testcase_management/test/fixtures/* test/fixtures/
 $ bin/rails redmine:plugins:test RAILS_ENV=test NAME=testcase_management
 ```
+## License
+
+GPL v2 or later. (same as Redmine)
