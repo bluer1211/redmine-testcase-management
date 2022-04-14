@@ -4,7 +4,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :member_roles, :roles, :issue_statuses,
            :groups_users, :enabled_modules
-  fixtures :test_cases, :test_plans
+  fixtures :test_cases, :test_plans, :test_case_test_plans, :test_case_executions
 
   include Redmine::I18n
 
@@ -28,6 +28,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
     import.mapping["project_id"] = project_id.to_s
     import.save!
 
+    move_test_cases_to_project(project_id)
     test_plans = new_records(TestPlan, 3) do
       import.run
       assert_successfully_imported(import)
@@ -67,7 +68,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
       assert_successfully_imported(import)
     end
     assert_equal [[1,2,3], [4,5], [6,7]],
-                 test_plans.collect{ |test_plan| test_plan.test_cases.collect(&:id) }
+                 test_plans.collect{ |test_plan| test_plan.test_cases.pluck(:id).sort }
   end
 
   private
@@ -90,6 +91,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
   end
 
   def generate_import_with_mapping(fixture_name="test_plans.csv")
+    move_test_cases_to_project(1)
     import = generate_import(fixture_name)
 
     import.settings = {
@@ -110,5 +112,14 @@ class TestPlanImportTest < ActiveSupport::TestCase
     }
     import.save!
     import
+  end
+
+  def move_test_cases_to_project(project_id)
+    TestCaseExecution.all.each do |test_case_execution|
+      test_case_execution.update!(project_id: project_id)
+    end
+    TestCase.all.each do |test_case|
+      test_case.update!(project_id: project_id)
+    end
   end
 end
