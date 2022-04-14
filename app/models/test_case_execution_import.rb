@@ -40,8 +40,16 @@ class TestCaseExecutionImport < Import
   def build_object(row, item)
     test_case_execution = TestCaseExecution.new
     test_case_execution.user = user
-    test_case_execution.test_case = TestCase.find(row_value(row, "test_case"))
-    test_case_execution.test_plan = TestPlan.find(row_value(row, "test_plan"))
+
+    test_case = TestCase.find(row_value(row, "test_case"))
+    if test_case and test_case.project == project
+      test_case_execution.test_case = test_case
+    end
+
+    test_plan = TestPlan.find(row_value(row, "test_plan"))
+    if test_plan and test_plan.project == project
+      test_case_execution.test_plan = test_plan
+    end
 
     attributes = {
       "project_id" => mapping["project_id"],

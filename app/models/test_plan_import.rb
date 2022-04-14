@@ -72,7 +72,9 @@ class TestPlanImport < Import
       test_case_ids.scan(/[1-9][0-9]*/) do |test_case_id|
         begin
           test_case = TestCase.find(test_case_id.to_i)
-          test_plan.test_cases << test_case if test_case
+          if test_case and test_case.project == project
+            test_plan.test_cases << test_case
+          end
         rescue ActiveRecord::RecordNotFound
         end
       end
