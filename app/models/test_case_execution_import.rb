@@ -41,9 +41,11 @@ class TestCaseExecutionImport < Import
     test_case_execution = TestCaseExecution.new
     test_case_execution.user = user
 
+    project_id = mapping["project_id"].to_i
+
     begin
       test_case = TestCase.find(row_value(row, "test_case"))
-      if test_case and test_case.project == project
+      if test_case and test_case.project_id == project_id
         test_case_execution.test_case = test_case
       end
     rescue ActiveRecord::RecordNotFound
@@ -51,7 +53,7 @@ class TestCaseExecutionImport < Import
 
     begin
       test_plan = TestPlan.find(row_value(row, "test_plan"))
-      if test_plan and test_plan.project == project
+      if test_plan and test_plan.project_id == project_id
         test_case_execution.test_plan = test_plan
       end
     rescue ActiveRecord::RecordNotFound
@@ -76,7 +78,7 @@ class TestCaseExecutionImport < Import
     if issue_id = row_value(row, "issue")
       begin
         issue = TestPlan.find(issue_id)
-        if issue and issue.project == project
+        if issue and issue.project_id == project_id
           test_case_execution.issue = issue
         end
       rescue ActiveRecord::RecordNotFound
