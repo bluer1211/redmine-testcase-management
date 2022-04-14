@@ -142,6 +142,8 @@ class TestCasesControllerTest < ActionController::TestCase
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
 
+=begin
+      # FIXME: deactivate unstable feature
       def test_index_with_succeeded_result_filter
         get :index, params: filter_params("latest_result", "=",
                                           { "latest_result": [true] })
@@ -170,6 +172,7 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_equal [test_cases(:test_cases_003).id],
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
+=end
 
       private
 
@@ -305,6 +308,8 @@ class TestCasesControllerTest < ActionController::TestCase
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
 
+=begin
+      # FIXME: deactivate unstable feature
       def test_result_order_by_desc
         ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
         ids.unshift(@test_case.id)
@@ -325,6 +330,7 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_equal ids,
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
+=end
     end
 
     class New < self
@@ -872,6 +878,8 @@ class TestCasesControllerTest < ActionController::TestCase
                        css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
         end
 
+=begin
+        # FIXME: deactivate unstable feature
         def test_index_with_result_filter
           get :index, params: filter_params("latest_result", "=",
                                             { "latest_result": [true] })
@@ -889,6 +897,7 @@ class TestCasesControllerTest < ActionController::TestCase
           assert_equal [test_cases(:test_cases_003).id],
                        css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
         end
+=end
 
         private
 
@@ -1002,6 +1011,7 @@ class TestCasesControllerTest < ActionController::TestCase
                        css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
         end
 
+=begin
         def test_result_order_by_desc
           ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
           get :index, params: @order_params.merge({ sort: "latest_result:desc" })
@@ -1017,6 +1027,7 @@ class TestCasesControllerTest < ActionController::TestCase
           assert_equal ids,
                        css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
         end
+=end
       end
     end
 
