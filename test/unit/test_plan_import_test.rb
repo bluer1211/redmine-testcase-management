@@ -67,7 +67,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
       assert_successfully_imported(import)
     end
     assert_equal [[1,2,3], [4,5], [6,7]],
-                 test_plans.collect{|test_plan|test_plan.test_cases.collect(&:id)}
+                 test_plans.collect{ |test_plan| test_plan.test_cases.collect(&:id) }
   end
 
   private

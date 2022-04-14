@@ -6,7 +6,7 @@ class TestPlanImport < Import
     "user" => "field_user",
     "begin_date" => "field_begin_date",
     "end_date" => "field_end_date",
-    "test_cases" => "field_test_cases",
+    "test_case_ids" => "field_test_case_ids",
   }
 
   def self.menu_item
@@ -68,8 +68,8 @@ class TestPlanImport < Import
 
     test_plan.send :safe_attributes=, attributes, user
 
-    if test_cases = row_date(row, "test_cases")
-      test_cases.scan(/[1-9][0-9]*/) do |test_case_id|
+    if test_case_ids = row_date(row, "test_case_ids")
+      test_case_ids.scan(/[1-9][0-9]*/) do |test_case_id|
         begin
           test_case = TestCase.find(test_case_id.to_i)
           test_plan.test_cases << test_case if test_case

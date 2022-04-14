@@ -22,6 +22,8 @@ class TestPlan < ActiveRecord::Base
 
   validate :owned_only_by_visible_user
 
+  attr_accessor :test_case_ids # for import
+
   safe_attributes(
     "project_id'",
     "name",
