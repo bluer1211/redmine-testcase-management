@@ -8,8 +8,13 @@ class TestCaseQuery < Query
     QueryColumn.new(:name, :sortable => "#{TestCase.table_name}.name"),
     QueryColumn.new(:user, :sortable => "#{TestCase.table_name}.user_id"),
     QueryColumn.new(:environment, :sortable => "#{TestCase.table_name}.environment"),
+=begin
+    # FIXME: deactivate unstable feature
     QueryColumn.new(:latest_result, :sortable => "#{TestCaseExecution.table_name}.result"),
     QueryColumn.new(:execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date"),
+=end
+    QueryColumn.new(:latest_result),
+    QueryColumn.new(:execution_date),
     QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
     QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected")
   ]
@@ -26,11 +31,14 @@ class TestCaseQuery < Query
       "user_id",
       :type => :list, :values => lambda { author_values }
     )
+=begin
+    # FIXME: deactivate unstable feature
     add_available_filter(
       "latest_result",
       :type => :list, :values => lambda { [[l(:label_succeed), true], [l(:label_failure), false]] }
     )
     add_available_filter "execution_date", :type => :date
+=end
     add_available_filter "scenario", :type => :text
     add_available_filter "expected", :type => :text
   end
@@ -64,12 +72,15 @@ class TestCaseQuery < Query
     unless filters["expected"].blank?
       conditions << sql_for_field("expected", filters["expected"][:operator], filters["expected"][:values], TestCase.table_name, "expected")
     end
+=begin
+    # FIXME: deactivate unstable feature
     unless filters["last_result"].blank?
       conditions << sql_for_last_result_field("result", filters["last_result"][:operator], filters["last_result"][:values], TestCaseExecution.table_name, "result")
     end
     unless filters["execution_date"].blank?
       conditions << sql_for_field("execution_date", filters["execution_date"][:operator], filters["execution_date"][:values], TestCaseExecution.table_name, "execution_date")
     end
+=end
     conditions.join(" AND ")
   end
 
