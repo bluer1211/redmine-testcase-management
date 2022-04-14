@@ -12,7 +12,7 @@ end
 class TestPlansTest < ApplicationSystemTestCase
   fixtures :projects, :users, :issues, :members, :member_roles, :roles, :issue_statuses,
            :groups_users, :trackers, :projects_trackers, :enabled_modules
-  fixtures :test_plans
+  fixtures :test_plans, :test_cases, :test_case_test_plans
 
   include ApplicationsHelper
 
@@ -27,12 +27,15 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "visiting the index" do
+    path = "/projects/#{@project.identifier}/test_plans"
     visit "/projects/#{@project.identifier}/test_plans"
     assert_selector "h2", text: I18n.t(:label_test_plans)
+    assert_equal path, current_path
   end
 
   test "add new test plan" do
-    visit "/projects/#{@project.identifier}/test_plans"
+    path = "/projects/#{@project.identifier}/test_plans"
+    visit path
 
     click_on I18n.t(:label_test_plan_new)
 
@@ -44,10 +47,13 @@ class TestPlansTest < ApplicationSystemTestCase
     select issue_statuses(:issue_statuses_002).name, from: 'test_plan[issue_status]'
 
     click_button I18n.t(:button_create)
+    # should be redirected to new test plan
+    assert_equal "#{path}/#{TestPlan.last.id}", current_path
   end
 
   test "show test plan" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
 
     assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name}"
     assert_selector "h3", text: @test_plan.name
@@ -57,10 +63,12 @@ class TestPlansTest < ApplicationSystemTestCase
     assert_selector "#user", text: @test_plan.user.name
     assert_selector "#begin_date", text: yyyymmdd_date(@test_plan.begin_date)
     assert_selector "#end_date", text: yyyymmdd_date(@test_plan.end_date)
+    assert_equal path, current_path
   end
 
   test "update test plan" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/edit"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/edit"
+    visit path
 
     fill_in 'name', with: "dummy"
     fill_in 'begin_date', with: "2022-01-01"
@@ -72,13 +80,67 @@ class TestPlansTest < ApplicationSystemTestCase
     select issue_statuses(:issue_statuses_002).name, from: 'test_plan[issue_status]'
 
     click_button I18n.t(:button_update)
+
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    assert_equal path, current_path
   end
 
   test "delete test plan" do
-    visit "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
 
     click_on I18n.t(:button_delete)
-    page.accept_confirm /#{I18n.t(:text_test_plan_destroy_confirmation)}/
+    page.accept_confirm I18n.t(:text_test_plan_destroy_confirmation)
+    sleep 0.1
+    path = "/projects/#{@project.identifier}/test_plans"
+    assert_equal path, current_path
+  end
+
+  test "assign test case" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
+
+    # show auto completion
+    page.execute_script "$('#assign-test-case-form').toggle()"
+    page.execute_script "$('#test_case_id').val('test').keydown();"
+    sleep 1 # wait request
+    page.execute_script "$('ul.ui-autocomplete li:first-child').trigger('mouseenter').click()"
+    test_case = test_cases(:test_cases_003)
+    assert_equal test_case.id.to_s, page.evaluate_script("$('#test_case_id').val()")
+    page.execute_script "$('input[name=\"commit\"]').click()"
+    # FIXME: evaluate #related_test_cases
+    assert_equal path, current_path
+  end
+
+  test "unassign test case" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
+
+    click_on I18n.t(:label_relation_delete)
+    page.accept_confirm I18n.t(:text_are_you_sure)
+    # FIXME: evaluate #related_test_cases
+    assert_equal path, current_path
+  end
+
+  test "visit test plan via index" do
+    path = "/projects/#{@project.identifier}/test_plans"
+    visit path
+
+    click_on @test_plan.name
+    assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name}"
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    assert_equal path, current_path
+  end
+
+  test "visit test case via test plan" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
+
+    @test_case = test_cases(:test_cases_001)
+    click_on @test_case.name
+
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}"
+    assert_equal path, current_path
   end
 
   private
