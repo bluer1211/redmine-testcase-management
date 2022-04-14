@@ -1162,7 +1162,11 @@ class TestCasesControllerTest < ActionController::TestCase
               id: test_case.id
             }
         assert_response :success
-        assert_select "div#test_case_execution_tree div.contextual a:first-child", 0
+        assert_select "div#test_case_execution_tree div.contextual a:first-child" do |a|
+          assert_equal new_project_test_plan_test_case_test_case_execution_path(test_plan_id: test_plan.id, test_case_id: test_case.id),
+                       a.first.attributes["href"].text
+          assert_equal I18n.t(:label_test_case_execution_new), a.text
+        end
         assert_select "div#test_case_execution_tree tbody tr", 1
       end
 
