@@ -200,7 +200,8 @@ class TestCaseTest < ActiveSupport::TestCase
                                                              :project => test_case.project,
                                                              :user => users(:users_001),
                                                              :test_case => test_case,
-                                                             :test_plan => TestPlan.new)
+                                                             :test_plan => TestPlan.new,
+                                                             :execution_date => Time.now.strftime("%F"))
     assert_equal [true, true],
                  [test_case_execution.valid?, test_case.valid?]
     assert_save test_case

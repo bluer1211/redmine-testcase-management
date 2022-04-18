@@ -14,6 +14,7 @@ class TestCaseExecution < ActiveRecord::Base
   validates :user, presence: true
   validates :test_plan, presence: true
   validates :test_case, presence: true
+  validates :execution_date, presence: true
 
   validate :owned_only_by_visible_user
 

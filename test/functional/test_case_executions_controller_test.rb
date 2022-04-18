@@ -339,6 +339,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                                                        user: users(:users_002),
                                                        issue: issues(:issues_002),
                                                        result: true,
+                                                       execution_date: Time.now.strftime("%F"),
                                                        comment: "dummy")
         get :index, params: @order_params.merge({ sort: "issue:desc" })
         assert_response :success
@@ -357,6 +358,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                                                        user: users(:users_002),
                                                        issue: issues(:issues_002),
                                                        result: true,
+                                                       execution_date: Time.now.strftime("%F"),
                                                        comment: "dummy")
         get :index, params: @order_params.merge({ sort: "issue:asc" })
         assert_response :success
@@ -394,6 +396,8 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_select "input[name='test_case_execution[execution_date]']", 1
         assert_select "input[name='test_case_execution[issue_id]']", 1
         assert_select "textarea[name='test_case_execution[comment]']", 1
+        assert_equal [Time.now.strftime("%F")],
+                     css_select("input[name='test_case_execution[execution_date]']").collect { |node| node.attributes["value"].text }
       end
     end
   end

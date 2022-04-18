@@ -25,7 +25,8 @@
   </p>
   <p>
     <%= form.label :execution_date %>
-    <%= form.date_field :execution_date %>
+    <%= form.date_field :execution_date,
+        value: (@test_case_execution.execution_date ? @test_case_execution.execution_date.strftime("%F") : Time.now.strftime("%F")), required: true %>
   </p>
   <p>
     <%= form.label :issue %>
