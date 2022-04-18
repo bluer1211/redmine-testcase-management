@@ -77,7 +77,7 @@ class TestCaseExecutionImport < Import
 
     if issue_id = row_value(row, "issue")
       begin
-        issue = TestPlan.find(issue_id)
+        issue = Issue.find(issue_id)
         if issue and issue.project_id == project_id
           test_case_execution.issue = issue
         end
