@@ -49,11 +49,11 @@
         } do |f| %>
       <%= render :partial => 'test_case_assignment', :locals => {:form => f}%>
     <% end %>
-    <% if @test_plan.test_cases.present? %>
+    <% if @test_cases.any? %>
       <%= form_tag({}) do %>
       <table id="related_test_cases" class="list issues odd-even">
         <tbody>
-          <% @test_plan.test_cases.each do |test_case| %>
+          <% @test_cases.each do |test_case| %>
             <tr class="issue">
               <td><%= link_to "##{test_case.id} #{test_case.name}",
                               project_test_plan_test_case_url(test_plan_id: @test_plan.id,
@@ -85,6 +85,7 @@
         </tbody>
       </table>
       <% end %>
+      <span class="pagination"><%= pagination_links_full @test_case_pages, @test_case_count %></span>
     <% end %>
   </div>
 </div>

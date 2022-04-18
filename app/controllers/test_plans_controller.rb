@@ -56,6 +56,11 @@ class TestPlansController < ApplicationController
   # GET /projects/:project_id/test_plans/:id
   def show
     @test_case_test_plan = TestCaseTestPlan.new
+
+    @test_case_count = @test_plan.test_cases.count
+    @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
+    @test_cases = @test_plan.test_cases.slice(@test_case_pages.offset, @test_case_pages.per_page)
+
     @title = html_title("##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
   end
 
