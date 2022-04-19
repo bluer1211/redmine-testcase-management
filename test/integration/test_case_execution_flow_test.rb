@@ -55,7 +55,8 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
           test_case_execution: {
             result: true,
             user: 1,
-            comment: "dummy"
+            comment: "dummy",
+            execution_date: "2022-01-01"
           }
         }
     assert_redirected_to controller: "test_cases",
@@ -84,7 +85,8 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
       test_case_execution: {
         user: 1,
         result: true,
-        comment: "dummy"
+        comment: "dummy",
+        execution_date: "2022-01-01"
       }
     }
     post_params.merge!(params)

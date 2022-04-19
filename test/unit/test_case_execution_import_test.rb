@@ -65,11 +65,13 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
                               test_plan_id: 1,
                               test_case_id: 3,
                               user_id: 1,
+                              execution_date: Time.now.strftime("%F"),
                               result: true)
     TestCaseExecution.create!(project_id: 1,
                               test_plan_id: 1,
                               test_case_id: 4,
                               user_id: 1,
+                              execution_date: Time.now.strftime("%F"),
                               result: false)
     import = generate_import_with_mapping
     new_records(TestCaseExecution, 3) do

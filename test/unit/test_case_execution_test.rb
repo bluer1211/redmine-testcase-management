@@ -106,6 +106,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
                                    :project => projects(:projects_001),
                                    :user => users(:users_001),
                                    :test_case => TestCase.new,
+                                   :execution_date => Time.now.strftime("%F"),
                                    :test_plan => TestPlan.new)
     # the default value of result is false
     assert_equal [false, false],
@@ -128,8 +129,20 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
                                    :project => projects(:projects_001),
                                    :user => users(:users_001),
                                    :test_case => TestCase.new,
+                                   :execution_date => Time.now.strftime("%F"),
                                    :test_plan => TestPlan.new)
     assert object.valid?
+  end
+
+  def test_missing_execution_date
+    object = TestCaseExecution.new(:result => false,
+                                   :project => projects(:projects_001),
+                                   :user => users(:users_001),
+                                   :test_case => TestCase.new,
+                                   :test_plan => TestPlan.new,
+                                   :comment => "dummy")
+    assert_equal true, object.invalid?
+    assert_equal ["cannot be blank"], object.errors[:execution_date]
   end
 
   # Test Relation
@@ -138,6 +151,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     assert_nil test_case_execution.user
     assert_nil test_case_execution.project
     assert_nil test_case_execution.issue
+    assert_nil test_case_execution.execution_date
     assert_nil test_case_execution.test_plan
     assert_nil test_case_execution.test_case
   end
