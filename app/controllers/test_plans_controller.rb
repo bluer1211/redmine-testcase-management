@@ -187,32 +187,42 @@ class TestPlansController < ApplicationController
   def statistics
     return unless authorize_with_issues_permission(params[:controller], :index)
     begin
-      @test_plans = TestPlan.joins(:test_cases)
-                      .joins(<<-SQL
-                      LEFT JOIN (SELECT test_plan_id, test_case_id, max(execution_date) AS execution_date
-                        FROM test_case_executions GROUP BY test_plan_id, test_case_id) AS LATEST_TCE
-                        ON LATEST_TCE.test_case_id = test_cases.id
-                        AND LATEST_TCE.test_plan_id = test_plans.id
-                      LEFT JOIN test_case_executions
-                        ON LATEST_TCE.test_plan_id = test_case_executions.test_plan_id
-                        AND LATEST_TCE.test_case_id = test_case_executions.test_case_id
-                        AND LATEST_TCE.execution_date = test_case_executions.execution_date
-                      LEFT JOIN issues ON test_case_executions.issue_id = issues.id
+      #
+      # 1. Generate every TP - TC - TCE set
+      # 2. Group by test plan id and test case id using PARTITION BY
+      # 3. Filter with row number, rownum = 1 means latest execution date
+      #    if same execution_date exists, larger test_case_executions.id is latest one.
+      #
+      join_query = <<-SQL
+                      LEFT JOIN (
+                        SELECT * FROM (
+                          SELECT *, row_number() OVER (
+                            PARTITION BY test_plan_id, test_case_id
+                            ORDER BY execution_date desc, id desc
+                          ) AS rownum
+                          FROM test_case_executions
+                        ) AS TCE
+                        WHERE TCE.rownum = 1
+                        ) AS TPTCTCE
+                          ON TPTCTCE.test_plan_id = test_case_test_plans.test_plan_id 
+                          AND TPTCTCE.test_case_id  = test_case_test_plans.test_case_id 
+                      LEFT JOIN issues ON TPTCTCE.issue_id = issues.id
                       LEFT JOIN issue_statuses AS TCEIS ON TCEIS.id = issues.status_id
 SQL
-                            )
-                      .where(project: @project)
-                      .group(:id)
-                      .select(<<-SQL
+      select_query = <<-SQL
                       test_plans.id, test_plans.name, test_plans.user_id, test_plans.estimated_bug,
-                      SUM(CASE WHEN test_case_executions.result IS NULL THEN 1 ELSE 0 END) AS count_not_executed,
-                      SUM(CASE WHEN test_case_executions.result = '1' THEN 1 ELSE 0 END) AS count_succeeded,
-                      SUM(CASE WHEN test_case_executions.result = '0' THEN 1 ELSE 0 END) AS count_failed,
+                      SUM(CASE WHEN TPTCTCE.result IS NULL THEN 1 ELSE 0 END) AS count_not_executed,
+                      SUM(CASE WHEN TPTCTCE.result = '1' THEN 1 ELSE 0 END) AS count_succeeded,
+                      SUM(CASE WHEN TPTCTCE.result = '0' THEN 1 ELSE 0 END) AS count_failed,
                       SUM(CASE WHEN issues.id IS NOT NULL THEN 1 ELSE 0 END) AS detected_bug,
                       SUM(CASE WHEN TCEIS.is_closed = '1' THEN 1 ELSE 0 END) AS fixed_bug,
                       SUM(CASE WHEN TCEIS.is_closed = '0' AND issues.id IS NOT NULL THEN 1 ELSE 0 END) AS remained_bug
 SQL
-                             )
+      @test_plans = TestPlan.joins(:test_cases)
+                      .joins(join_query)
+                      .where(project: @project)
+                      .group(:id)
+                      .select(select_query)
                       .order(id: :desc)
       @title = html_title(l(:label_test_plan_statistics))
       render :statistics
