@@ -412,6 +412,7 @@ class TestPlansControllerTest < ActionController::TestCase
       @closed_issue = issues(:issues_008)
     end
 
+    class NoTestCase < self
     def test_statistics
       @project = projects(:projects_001)
       login_with_permissions(@project, [:view_project, :view_issues])
@@ -436,7 +437,9 @@ class TestPlansControllerTest < ActionController::TestCase
       }
       assert_equal expected, actual_statistics
     end
+    end
 
+    class NoStatistics < self
     def test_no_statistics
       TestPlan.find(test_plans(:test_plans_005).id).destroy
       @project = projects(:projects_001)
@@ -445,7 +448,9 @@ class TestPlansControllerTest < ActionController::TestCase
       assert_response :success
       assert_select "p.nodata"
     end
+    end
 
+    class StatisticalItems < self
     def test_count_not_executed
       TestCaseExecution.find(test_case_executions(:test_case_executions_004).id).destroy
       login_with_permissions(@project, [:view_project, :view_issues])
@@ -656,6 +661,7 @@ class TestPlansControllerTest < ActionController::TestCase
       assert_response :success
       # associated issues 3/3
       assert_equal [100], css_select("table#statistics tr td.fixed_rate").map(&:text).map(&:to_i)
+    end
     end
 
     def test_multiple_statistics
