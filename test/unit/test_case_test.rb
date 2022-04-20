@@ -6,6 +6,7 @@ class TestCaseTest < ActiveSupport::TestCase
            :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
+  class BasicTest < self
   def test_initialize
     test_case = TestCase.new
 
@@ -554,5 +555,181 @@ class TestCaseTest < ActiveSupport::TestCase
                    unpermitted_member: false,
                    non_member: false },
                  validity)
+  end
+  end
+
+  class LatestExecutionTest < self
+    def setup
+      TestCaseExecution.destroy_all
+      TestCase.destroy_all
+      TestPlan.destroy_all
+
+      @test_case = TestCase.create!(common_test_case_params.merge({
+        name: "tc1",
+      }))
+      @another_test_case = TestCase.create!(common_test_case_params.merge({
+        name: "tc2",
+      }))
+
+      @test_plan = TestPlan.create!(common_test_plan_params.merge({
+        name: "tp1",
+      }))
+      @another_test_plan = TestPlan.create!(common_test_plan_params.merge({
+        name: "tp2",
+      }))
+
+      @test_plan.test_cases << @test_case
+      @test_plan.test_cases << @another_test_case
+      @another_test_plan.test_cases << @test_case
+      @another_test_plan.test_cases << @another_test_case
+    end
+
+    def test_find_with_latest_result
+      TestCaseExecution.create!(common_execution_params.merge({
+        result: true,
+        execution_date: "2022-04-20",
+        test_case: @test_case,
+        test_plan: @test_plan,
+      }))
+      latest_execution_in_plan = TestCaseExecution.create!(common_execution_params.merge({
+        result: false,
+        execution_date: "2022-04-21",
+        test_case: @test_case,
+        test_plan: @test_plan,
+      }))
+      latest_execution = TestCaseExecution.create!(common_execution_params.merge({
+        result: false,
+        execution_date: "2022-04-22",
+        test_case: @test_case,
+        test_plan: @another_test_plan,
+      }))
+
+      tc = TestCase.find_with_latest_result(@test_case.id)
+      assert_equal latest_execution.id, tc.latest_execution_id
+
+      tc = TestCase.find_with_latest_result(@test_case.id, test_plan: @test_plan)
+      assert_equal latest_execution_in_plan.id, tc.latest_execution_id
+    end
+
+    def test_count
+      TestCaseExecution.create!(common_execution_params.merge({
+        result: true,
+        execution_date: "2022-04-20",
+        test_case: @test_case,
+        test_plan: @test_plan,
+      }))
+      TestCaseExecution.create!(common_execution_params.merge({
+        result: false,
+        execution_date: "2022-04-21",
+        test_case: @test_case,
+        test_plan: @another_test_plan,
+      }))
+
+      # note: pluck(:id) may produce too many results with duplicated id. why?
+      assert_equal TestCase.all.collect(&:id).sort,
+                   TestCase.with_latest_result.collect(&:id).sort
+      assert_equal @test_plan.test_cases.collect(&:id).sort,
+                   TestCase.with_latest_result(@test_plan).collect(&:id).sort
+    end
+
+    def test_across_test_plans
+      execution = TestCaseExecution.create!(common_execution_params.merge({
+        result: true,
+        execution_date: "2022-04-20",
+        test_case: @test_case,
+        test_plan: @test_plan,
+      }))
+      TestCaseExecution.create!(common_execution_params.merge({
+        result: false,
+        execution_date: "2022-04-19",
+        test_case: @test_case,
+        test_plan: @test_plan,
+      }))
+
+      tc = TestCase.find_with_latest_result(@test_case.id)
+      assert_equal([true, Time.parse("2022-04-20"), execution.id],
+                   [tc.latest_result, tc.latest_execution_date, tc.latest_execution_id])
+
+      execution = TestCaseExecution.create!(common_execution_params.merge({
+        result: false,
+        execution_date: "2022-04-21",
+        test_case: @test_case,
+        test_plan: @another_test_plan,
+      }))
+      TestCaseExecution.create!(common_execution_params.merge({
+        result: true,
+        execution_date: "2022-04-20",
+        test_case: @test_case,
+        test_plan: @another_test_plan,
+      }))
+
+      tc = TestCase.find_with_latest_result(@test_case.id)
+      assert_equal([false, Time.parse("2022-04-21"), execution.id],
+                   [tc.latest_result, tc.latest_execution_date, tc.latest_execution_id])
+    end
+
+    def test_with_same_execution_date
+      TestCaseExecution.create!(common_execution_params.merge({
+        result: false,
+        execution_date: "2022-04-20",
+        test_case: @test_case,
+        test_plan: @test_plan,
+      }))
+      execution = TestCaseExecution.create!(common_execution_params.merge({
+        result: true,
+        execution_date: "2022-04-20",
+        test_case: @test_case,
+        test_plan: @test_plan,
+      }))
+
+      tc = TestCase.find_with_latest_result(@test_case.id)
+      assert_equal([true, Time.parse("2022-04-20"), execution.id],
+                   [tc.latest_result, tc.latest_execution_date, tc.latest_execution_id])
+    end
+
+    def test_with_test_plan
+      TestCaseExecution.create!(common_execution_params.merge({
+        result: false,
+        execution_date: "2022-04-21",
+        test_case: @test_case,
+        test_plan: @another_test_plan,
+      }))
+      execution = TestCaseExecution.create!(common_execution_params.merge({
+        result: true,
+        execution_date: "2022-04-20",
+        test_case: @test_case,
+        test_plan: @test_plan,
+      }))
+
+      tc = TestCase.find_with_latest_result(@test_case.id, test_plan: @test_plan)
+      assert_equal([true, Time.parse("2022-04-20"), execution.id],
+                   [tc.latest_result, tc.latest_execution_date, tc.latest_execution_id])
+    end
+
+    private
+    def common_test_case_params
+      return {
+        scenario: "scenario",
+        expected: "expected",
+        environment: "Debian GNU/Linux",
+        project: projects(:projects_001),
+        user: users(:users_001),
+      }
+    end
+
+    def common_test_plan_params
+      return {
+        project: projects(:projects_001),
+        user: users(:users_001),
+        issue_status: issue_statuses(:issue_statuses_001),
+      }
+    end
+
+    def common_execution_params
+      return {
+        project: projects(:projects_001),
+        user: users(:users_001),
+      }
+    end
   end
 end
