@@ -2038,13 +2038,15 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_no_count_succeeded
+        # P1 - TP1 - TC - TCE, TCE (false)
+        # P1 - TP5 - TC - TCE(true), TCE(true), TCE(false)
         test_case = add_test_case_with_test_case_execution(options={ result: true, issue: nil })
         add_test_case_execution_for(test_case, { result: false })
         login_with_permissions(@project, [:view_project, :view_issues])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # latest failed test case execution should be counted
-        assert_equal [2, 1], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
+        assert_equal [2, 0], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
       end
 
       def test_count_failed
