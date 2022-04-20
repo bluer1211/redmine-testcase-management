@@ -7,7 +7,11 @@ module TestCaseManagement
           when "all"
             true
           when "default"
-            project.is_public?
+            # NOTE: issues_visibility="default" means "allow only showing public (non private) issues.
+            # This property is meaningful for issues visibility because the behavior should be changed for "private" issue,
+            # but for test plan, test case, and test case execution, there are no such a state.
+            # Thus, it is no need to distinct this state.
+            true
           when "own"
             self.user == allowed_user
           else
