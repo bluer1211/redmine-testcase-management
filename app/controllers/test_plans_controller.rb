@@ -59,7 +59,7 @@ class TestPlansController < ApplicationController
 
     @test_case_count = @test_plan.test_cases.count
     @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
-    @test_cases = @test_plan.test_cases.slice(@test_case_pages.offset, @test_case_pages.per_page)
+    @test_cases = TestCase.visible.with_latest_result(@test_plan).offset(@test_case_pages.offset).limit(@test_case_pages.per_page)
 
     @title = html_title("##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
   end

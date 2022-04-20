@@ -33,17 +33,17 @@ module TestCasesQueriesHelper
                   project_test_plan_test_case_test_case_execution_url(project_id: item.project.identifier,
                                                                       test_plan_id: item.test_plan.id,
                                                                       test_case_id: item.id,
-                                                                      id: item.latest_test_case_execution.id)
+                                                                      id: item.latest_execution_id)
         else
           l(:label_none)
         end
-      when :execution_date
+      when :latest_execution_date
         unless value.nil?
           link_to yyyymmdd_date(value),
                   project_test_plan_test_case_test_case_execution_url(project_id: item.project.identifier,
                                                                       test_plan_id: item.test_plan.id,
                                                                       test_case_id: item.id,
-                                                                      id: item.latest_test_case_execution.id)
+                                                                      id: item.latest_execution_id)
         else
           l(:label_none)
         end

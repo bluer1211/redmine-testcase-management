@@ -58,6 +58,7 @@ ja:
   field_scenario: "シナリオ"
   field_expected: "期待する結果"
   field_latest_result: "テスト実行結果"
+  field_latest_execution_date: "実行日"
 
   field_assigned_rate: "担当率"
 

@@ -11,10 +11,10 @@ class TestCaseQuery < Query
 =begin
     # FIXME: deactivate unstable feature
     QueryColumn.new(:latest_result, :sortable => "#{TestCaseExecution.table_name}.result"),
-    QueryColumn.new(:execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date"),
+    QueryColumn.new(:latest_execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date"),
 =end
     QueryColumn.new(:latest_result),
-    QueryColumn.new(:execution_date),
+    QueryColumn.new(:latest_execution_date),
     QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
     QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected")
   ]
@@ -37,7 +37,7 @@ class TestCaseQuery < Query
       "latest_result",
       :type => :list, :values => lambda { [[l(:label_succeed), true], [l(:label_failure), false]] }
     )
-    add_available_filter "execution_date", :type => :date
+    add_available_filter "latest_execution_date", :type => :date
 =end
     add_available_filter "scenario", :type => :text
     add_available_filter "expected", :type => :text
@@ -74,8 +74,8 @@ class TestCaseQuery < Query
     end
 =begin
     # FIXME: deactivate unstable feature
-    unless filters["last_result"].blank?
-      conditions << sql_for_last_result_field("result", filters["last_result"][:operator], filters["last_result"][:values], TestCaseExecution.table_name, "result")
+    unless filters["latest_result"].blank?
+      conditions << sql_for_latest_result_field("result", filters["latest_result"][:operator], filters["latest_result"][:values], TestCaseExecution.table_name, "result")
     end
     unless filters["execution_date"].blank?
       conditions << sql_for_field("execution_date", filters["execution_date"][:operator], filters["execution_date"][:values], TestCaseExecution.table_name, "execution_date")
@@ -101,7 +101,7 @@ SQL
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :name, :environment, :user, :latest_result, :execution_date, :scenario, :expected]
+    [:id, :name, :environment, :user, :latest_result, :latest_execution_date, :scenario, :expected]
   end
 
   def default_sort_criteria
@@ -117,14 +117,18 @@ SQL
       sql_for_field("id", "=", [options[:test_plan_id]], TestPlan.table_name, 'id')
     ]
     if options[:test_plan_id]
-      base_scope
-        .joins(:test_plans)
-        .where(conditions.join(" AND "))
+      TestCase
+        .from("(#{base_scope
+                    .joins(:test_plans)
+                    .with_latest_result(options[:test_plan_id])
+                    .where(conditions.join(" AND ")).to_sql}) AS test_cases")
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
     else
-      base_scope
+      TestCase
+        .from("(#{base_scope
+                    .with_latest_result.to_sql}) AS test_cases")
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
