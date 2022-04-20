@@ -689,42 +689,91 @@ class TestPlansControllerTest < ActionController::TestCase
       end
     end
 
-    def test_multiple_statistics
-      @project = projects(:projects_003)
-      login_with_permissions(@project, [:view_project, :view_issues])
-      @test_plan = test_plans(:test_plans_002)
-      add_test_case_execution_for(test_cases(:test_cases_001), { result: false, issue: @closed_issue})
-      get :statistics, params: { project_id: @project.identifier }
-      assert_response :success
-      @first_test_plan = test_plans(:test_plans_002)
-      @second_test_plan = test_plans(:test_plans_003)
-      expected = {
-        id: [@second_test_plan.id, @first_test_plan.id],
-        name: [@second_test_plan.name, @first_test_plan.name],
-        user: [@second_test_plan.user.name, @first_test_plan.user.name],
-        test_cases: [@second_test_plan.test_cases.size, @first_test_plan.test_cases.size],
-        count_not_executed: [0, 0],
-        count_succeeded: [1, 0],
-        count_failed: [1, 1],
-        succeeded_rate: [
-          (1/@second_test_plan.test_cases.size.to_f * 100).round,
-          (0/@first_test_plan.test_cases.size.to_f * 100).round,
-        ],
-        progress_rate: [100, 100],
-        estimated_bug: [@second_test_plan.estimated_bug, @first_test_plan.estimated_bug],
-        detected_bug: [2, 1],
-        remained_bug: [2, 0],
-        fixed_rate: [0, 100],
-      }
-      assert_equal expected, actual_statistics
+    class MultipleTestPlan < self
+      def test_multiple_statistics
+        @project = projects(:projects_003)
+        @test_plan = test_plans(:test_plans_002)
+        add_test_case_execution_for(test_cases(:test_cases_001), { result: false,
+                                                                   execution_date: Time.now,
+                                                                   issue: @closed_issue})
+        login_with_permissions(@project, [:view_project, :view_issues])
+        get :statistics, params: { project_id: @project.identifier }
+        assert_response :success
+        @first_test_plan = test_plans(:test_plans_002)
+        @second_test_plan = test_plans(:test_plans_003)
+        expected = {
+          id: [@second_test_plan.id, @first_test_plan.id],
+          name: [@second_test_plan.name, @first_test_plan.name],
+          user: [@second_test_plan.user.name, @first_test_plan.user.name],
+          test_cases: [@second_test_plan.test_cases.size, @first_test_plan.test_cases.size],
+          count_not_executed: [0, 0],
+          count_succeeded: [1, 0],
+          count_failed: [1, 1],
+          succeeded_rate: [
+            (1/@second_test_plan.test_cases.size.to_f * 100).round,
+            (0/@first_test_plan.test_cases.size.to_f * 100).round,
+          ],
+          progress_rate: [100, 100],
+          estimated_bug: [@second_test_plan.estimated_bug, @first_test_plan.estimated_bug],
+          detected_bug: [2, 1],
+          remained_bug: [2, 0],
+          fixed_rate: [0, 100],
+        }
+        assert_equal expected, actual_statistics
+      end
     end
 
-    def test_breadcrumb
-      @project = projects(:projects_003)
-      login_with_permissions(@project, [:view_project, :view_issues])
-      get :statistics, params: { project_id: @project.id }
-      assert_select "div#content h2.inline-flex" do |h2|
-        assert_equal "#{I18n.t(:label_test_plans)} » #{I18n.t(:label_test_plan_statistics)}", h2.text
+    class ReassingedTestCase < self
+      def test_reassigned
+        @project = projects(:projects_003)
+        @test_case = test_cases(:test_cases_003)
+        @test_plan = test_plans(:test_plans_002)
+        # reassign TC=3 under TP=2
+        TestCaseTestPlan.create(test_plan: @test_plan,
+                                test_case: @test_case)
+        add_test_case_execution_for(@test_case, { result: false,
+                                                  execution_date: @test_case_execution.execution_date,
+                                                  issue: @new_issue })
+        add_test_case_execution_for(@test_case, { result: true,
+                                                  execution_date: @test_case_execution.execution_date,
+                                                  issue: nil })
+        get :statistics, params: { project_id: @project.id }
+        @first_test_plan = test_plans(:test_plans_002)
+        @second_test_plan = test_plans(:test_plans_003)
+        # TP2 - TC1
+        # TP2 - TC3 - TCE,TCE (true)
+        # TP3 - TC2 - TCE (true)
+        # TP3 - TC3 - TCE2,TCE3 (false)
+        expected = {
+          id: [@second_test_plan.id, @first_test_plan.id],
+          name: [@second_test_plan.name, @first_test_plan.name],
+          user: [@second_test_plan.user.name, @first_test_plan.user.name],
+          test_cases: [@second_test_plan.test_cases.size, @first_test_plan.test_cases.size],
+          count_not_executed: [0, 1],
+          count_succeeded: [1, 1],
+          count_failed: [1, 0],
+          succeeded_rate: [
+            (1/@second_test_plan.test_cases.size.to_f * 100).round,
+            (1/@first_test_plan.test_cases.size.to_f * 100).round,
+          ],
+          progress_rate: [100, 50],
+          estimated_bug: [@second_test_plan.estimated_bug, @first_test_plan.estimated_bug],
+          detected_bug: [2, 0],
+          remained_bug: [2, 0],
+          fixed_rate: [0, 0],
+        }
+        assert_equal expected, actual_statistics
+      end
+    end
+
+    class MenuItems < self
+      def test_breadcrumb
+        @project = projects(:projects_003)
+        login_with_permissions(@project, [:view_project, :view_issues])
+        get :statistics, params: { project_id: @project.id }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_plans)} » #{I18n.t(:label_test_plan_statistics)}", h2.text
+        end
       end
     end
 
