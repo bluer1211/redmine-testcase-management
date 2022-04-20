@@ -474,6 +474,18 @@ class TestPlansControllerTest < ActionController::TestCase
         assert_equal [1], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
       end
 
+      def test_count_succeeded_with_samedate
+        add_test_case_execution_for(@test_case, {
+                                      result: false,
+                                      execution_date: @test_case_execution.execution_date
+                                    })
+        login_with_permissions(@project, [:view_project, :view_issues])
+        get :statistics, params: { project_id: @project.identifier }
+        assert_response :success
+        # If execution_time of test case executions are same, greater id is referenced.
+        assert_equal [0], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
+      end
+
       def test_no_count_succeeded
         TestCaseExecution.create(project: @project,
                                  test_plan: @test_plan,
@@ -508,6 +520,18 @@ class TestPlansControllerTest < ActionController::TestCase
         get :statistics, params: @params
         assert_response :success
         assert_equal [0], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
+      end
+
+      def test_count_failed_with_samedate
+        add_test_case_execution_for(@test_case, {
+                                      result: false,
+                                      execution_date: @test_case_execution.execution_date
+                                    })
+        login_with_permissions(@project, [:view_project, :view_issues])
+        get :statistics, params: { project_id: @project.identifier }
+        assert_response :success
+        # If execution_time of test case executions are same, greater id is referenced.
+        assert_equal [1], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
       end
 
       def test_suceeded_rate
@@ -730,14 +754,14 @@ class TestPlansControllerTest < ActionController::TestCase
                                comment: "dummy")
     end
 
-    def add_test_case_execution_for(test_case, options={ result: true, issue: nil })
+    def add_test_case_execution_for(test_case, options={ result: true, issue: nil, execution_date: Time.now.strftime("%F")})
       TestCaseExecution.create(project: @project,
                                test_plan: @test_plan,
                                test_case: test_case,
                                user: @user,
                                result: options[:result],
                                issue: options[:issue],
-                               execution_date: Time.now.strftime("%F"),
+                               execution_date: options[:execution_date],
                                comment: "dummy")
     end
 
