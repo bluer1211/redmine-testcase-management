@@ -51,7 +51,7 @@ class TestCase < ActiveRecord::Base
     joins(<<-"SQL"
       LEFT JOIN (SELECT *
                    FROM test_case_executions
-                   ORDER BY execution_date DESC) AS tce
+                   ORDER BY execution_date DESC, id DESC) AS tce
         ON tce.test_case_id = test_cases.id
         #{ test_plan_id ? 'AND tce.test_plan_id = test_case_test_plans.test_plan_id' : '' }
 SQL
