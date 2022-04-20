@@ -44,14 +44,14 @@ class TestCase < ActiveRecord::Base
     if test_plan_id
       scope = scope.
         joins(:test_case_test_plans)
-      conditions["tce.test_plan_id"] = test_plan_id
+      conditions["test_case_test_plans.test_plan_id"] = test_plan_id
     end
 
     scope.
     joins(<<-"SQL"
-      LEFT JOIN (SELECT *
-                   FROM test_case_executions
-                   ORDER BY execution_date DESC, id DESC) AS tce
+      LEFT OUTER JOIN (SELECT *
+                         FROM test_case_executions
+                        ORDER BY execution_date DESC, id DESC) AS tce
         ON tce.test_case_id = test_cases.id
         #{ test_plan_id ? 'AND tce.test_plan_id = test_case_test_plans.test_plan_id' : '' }
 SQL
@@ -61,11 +61,18 @@ SQL
       test_cases.*,
       tce.id AS latest_execution_id,
       tce.result AS latest_result,
-      tce.execution_date AS latest_execution_date
+      tce.execution_date AS latest_execution_date,
+      tce.test_plan_id AS test_plan_id
 SQL
     ).
     where(conditions)
   end)
+
+  class << self
+    def find_with_latest_result(id, options={})
+      with_latest_result(options[:test_plan] || options[:test_plan_id]).find(id)
+    end
+  end
 
   def latest_test_case_execution
     if attributes["latest_execution_id"]
