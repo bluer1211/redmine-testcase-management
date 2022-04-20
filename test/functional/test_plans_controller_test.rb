@@ -409,6 +409,7 @@ class TestPlansControllerTest < ActionController::TestCase
       @test_case_execution = @test_case.test_case_executions.first
       @params = { project_id: @project.identifier }
       @user = users(:users_002)
+      @new_issue = issues(:issues_001)
       @closed_issue = issues(:issues_008)
     end
 
