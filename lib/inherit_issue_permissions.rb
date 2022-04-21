@@ -82,7 +82,9 @@ module TestCaseManagement
             when "all"
               "1=1"
             when "default"
-              "projects.is_public = (1=1)"
+              # NOTE: In test case management, the private state is not used.
+              # Thus it should be same as all. See visible? method in this module.
+              "1=1"
             when "own"
               "user_id = #{allowed_user.id}"
             else
