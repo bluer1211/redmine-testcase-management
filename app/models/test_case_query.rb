@@ -113,8 +113,9 @@ SQL
     if clause = sort_criteria.sort_clause(sortable_columns)
       clause.map {|c|
         nocase_sql = if ActiveRecord::Base.connection.adapter_name =~ /sqlite/i
-                       if ["name", "environment", "scenario", "expected"].any? {
-                            |column| column.include?("#{TestCase.table_name}.#{column}") }
+                       nocase_columns = ["name", "environment", "scenario", "expected"].select { |col| c.start_with?("#{TestCase.table_name}.#{col}") }
+                       unless nocase_columns.empty?
+                         column = nocase_columns.first
                          if c.end_with?("ASC")
                            Arel.sql "#{TestCase.table_name}.#{column} COLLATE NOCASE ASC"
                          else
