@@ -25,7 +25,7 @@ class TestPlan < ActiveRecord::Base
   attr_accessor :test_case_ids # for import
 
   safe_attributes(
-    "project_id'",
+    "project_id",
     "name",
     "issue_status_id",
     "user_id",
