@@ -27,6 +27,14 @@ class TestCaseExecution < ActiveRecord::Base
     "test_plan_id",
     :if => lambda {|test_case_execution, user| test_case_execution.new_record? || test_case_execution.attributes_editable?(user)})
 
+  def safe_attribute_names(user=nil)
+    names = super
+    if new_record?
+      names |= %w(project_id)
+    end
+    names
+  end
+
   scope :visible, (lambda do |*args|
     joins(:project).
     where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
