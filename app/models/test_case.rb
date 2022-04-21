@@ -28,7 +28,7 @@ class TestCase < ActiveRecord::Base
     "environment",
     "scenario",
     "expected",
-    :if => lambda {|test_case, user| test_case.new_record? || test_case.attributes_editable?(user)})
+    :if => lambda {|instance, user| instance.new_record? || instance.attributes_editable?(user)})
 
   def safe_attribute_names(user=nil)
     names = super

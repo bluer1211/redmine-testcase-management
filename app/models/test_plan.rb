@@ -32,7 +32,7 @@ class TestPlan < ActiveRecord::Base
     "estimated_bug",
     "begin_date",
     "end_date",
-    :if => lambda {|test_plan, user| test_plan.new_record? || test_plan.attributes_editable?(user)})
+    :if => lambda {|instance, user| instance.new_record? || instance.attributes_editable?(user)})
 
   def safe_attribute_names(user=nil)
     names = super

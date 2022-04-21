@@ -28,7 +28,7 @@ class TestCaseExecution < ActiveRecord::Base
     "result",
     "comment",
     "execution_date",
-    :if => lambda {|test_case_execution, user| test_case_execution.new_record? || test_case_execution.attributes_editable?(user)})
+    :if => lambda {|instance, user| instance.new_record? || instance.attributes_editable?(user)})
 
   def safe_attribute_names(user=nil)
     names = super
