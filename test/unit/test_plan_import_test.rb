@@ -36,6 +36,22 @@ class TestPlanImportTest < ActiveSupport::TestCase
                  test_plans.collect(&:project_id)
   end
 
+  def test_user_association
+    associated_user = prepare_authorized_user
+    associated_user.update!(firstname: "Test Plan", lastname: "Owner")
+
+    import = generate_import_with_mapping
+    import.user_id = @user.id
+    import.save!
+
+    test_plans = new_records(TestPlan, 3) do
+      import.run
+      assert_successfully_imported(import)
+    end
+    assert_equal [associated_user.id, associated_user.id, associated_user.id],
+                 test_plans.collect(&:user_id)
+  end
+
   def test_user_fallback_to_current_user
     import = generate_import_with_mapping
     import.user_id = @user.id
