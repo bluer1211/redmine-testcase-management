@@ -9,7 +9,7 @@ Redmine::Plugin.register :testcase_management do
   author 'ClearCode Inc.'
   description 'Manage test plans, test cases and execution result'
   version '1.0.0'
-  url 'https://gitlab.com/clear-code/redmine-plugin-testcase-management'
+  url 'https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management'
   author_url 'https://www.clear-code.com'
 
   project_module :testcase_management do
