@@ -9,7 +9,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
   include Redmine::I18n
 
   def setup
-    User.current = nil
+    @user = User.current = prepare_authorized_user
     set_language_if_valid 'en'
   end
 
@@ -17,14 +17,14 @@ class TestPlanImportTest < ActiveSupport::TestCase
     assert TestPlanImport.authorized?(User.find(1)) # admin
     assert !TestPlanImport.authorized?(User.find(3))
 
-    user = prepare_authorized_user
-    assert TestPlanImport.authorized?(user)
+    assert TestPlanImport.authorized?(@user)
   end
 
   def test_project_should_be_set
     project_id = projects(:projects_003).id
 
     import = generate_import_with_mapping
+    import.user_id = @user.id
     import.mapping["project_id"] = project_id.to_s
     import.save!
 
@@ -37,21 +37,22 @@ class TestPlanImportTest < ActiveSupport::TestCase
   end
 
   def test_user_fallback_to_current_user
-    user = prepare_authorized_user
     import = generate_import_with_mapping
-    import.user_id = user.id
+    import.user_id = @user.id
     import.save!
 
     test_plans = new_records(TestPlan, 3) do
       import.run
       assert_successfully_imported(import)
     end
-    assert_equal [user.id, user.id, user.id],
+    assert_equal [@user.id, @user.id, @user.id],
                  test_plans.collect(&:user_id)
   end
 
   def test_run_should_remove_the_file
     import = generate_import_with_mapping
+    import.user_id = @user.id
+
     file_path = import.filepath
     assert File.exist?(file_path)
 
@@ -61,6 +62,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
 
   def test_attach_test_cases
     import = generate_import_with_mapping
+    import.user_id = @user.id
     import.save!
     test_plans = new_records(TestPlan, 3) do
       import.run
@@ -73,10 +75,13 @@ class TestPlanImportTest < ActiveSupport::TestCase
   private
 
   def prepare_authorized_user
-    user = User.generate!
+    user = User.generate!(firstname: "Test Plan", lastname: "Importer")
     role = Role.generate!
     role.add_permission! :import_test_plans
+    role.add_permission! :view_issues
+    role.add_permission! :edit_issues
     role.save!
+    User.add_to_project(user, Project.find(1), [role])
     User.add_to_project(user, Project.find(3), [role])
     user
   end

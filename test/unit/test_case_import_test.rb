@@ -9,7 +9,7 @@ class TestCaseImportTest < ActiveSupport::TestCase
   include Redmine::I18n
 
   def setup
-    User.current = nil
+    @user = User.current = prepare_authorized_user
     set_language_if_valid 'en'
   end
 
@@ -17,14 +17,14 @@ class TestCaseImportTest < ActiveSupport::TestCase
     assert TestCaseImport.authorized?(User.find(1)) # admin
     assert !TestCaseImport.authorized?(User.find(3))
 
-    user = prepare_authorized_user
-    assert TestCaseImport.authorized?(user)
+    assert TestCaseImport.authorized?(@user)
   end
 
   def test_project_should_be_set
     project_id = projects(:projects_003).id
 
     import = generate_import_with_mapping
+    import.user_id = @user.id
     import.mapping["project_id"] = project_id.to_s
     import.save!
 
@@ -37,21 +37,22 @@ class TestCaseImportTest < ActiveSupport::TestCase
   end
 
   def test_user_fallback_to_current_user
-    user = prepare_authorized_user
     import = generate_import_with_mapping
-    import.user_id = user.id
+    import.user_id = @user.id
     import.save!
 
     test_cases = new_records(TestCase, 3) do
       import.run
       assert_successfully_imported(import)
     end
-    assert_equal [user.id, user.id, user.id],
+    assert_equal [@user.id, @user.id, @user.id],
                  test_cases.collect(&:user_id)
   end
 
   def test_run_should_remove_the_file
     import = generate_import_with_mapping
+    import.user_id = @user.id
+
     file_path = import.filepath
     assert File.exist?(file_path)
 
@@ -62,10 +63,13 @@ class TestCaseImportTest < ActiveSupport::TestCase
   private
 
   def prepare_authorized_user
-    user = User.generate!
+    user = User.generate!(firstname: "Test Case", lastname: "Importer")
     role = Role.generate!
     role.add_permission! :import_test_cases
+    role.add_permission! :view_issues
+    role.add_permission! :edit_issues
     role.save!
+    User.add_to_project(user, Project.find(1), [role])
     User.add_to_project(user, Project.find(3), [role])
     user
   end
