@@ -38,9 +38,9 @@ class TestCaseImport < Import
   def build_object(row, item)
     test_case = TestCase.new
     test_case.user = user
+    test_case.project_id = mapping["project_id"].to_i
 
     attributes = {
-      "project_id" => mapping["project_id"].to_i,
       "name" => row_value(row, "name"),
       "environment" => row_value(row, "environment"),
       "scenario" => row_value(row, "scenario"),

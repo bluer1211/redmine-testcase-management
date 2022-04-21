@@ -40,9 +40,9 @@ class TestPlanImport < Import
   def build_object(row, item)
     test_plan = TestPlan.new
     test_plan.user = user
+    test_plan.project_id = mapping["project_id"].to_i
 
     attributes = {
-      "project_id" => mapping["project_id"].to_i,
       "name" => row_value(row, "name"),
     }
 
@@ -69,11 +69,10 @@ class TestPlanImport < Import
     test_plan.send :safe_attributes=, attributes, user
 
     if test_case_ids = row_date(row, "test_case_ids")
-      project_id = mapping["project_id"].to_i
       test_case_ids.scan(/[1-9][0-9]*/) do |test_case_id|
         begin
           test_case = TestCase.find(test_case_id.to_i)
-          if test_case and test_case.project_id == project_id
+          if test_case and test_case.project_id == test_plan.project_id
             test_plan.test_cases << test_case
           end
         rescue ActiveRecord::RecordNotFound
