@@ -77,8 +77,7 @@ SQL
       test_cases.*,
       tce.id AS latest_execution_id,
       tce.result AS latest_result,
-      tce.execution_date AS latest_execution_date,
-      tce.test_plan_id AS test_plan_id
+      tce.execution_date AS latest_execution_date
 SQL
     ).
     where(conditions)
