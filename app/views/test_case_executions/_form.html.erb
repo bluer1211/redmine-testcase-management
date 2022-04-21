@@ -17,8 +17,8 @@
   </p>
   <p>
     <%= form.label :user %>
-    <% if @test_case and @test_case.user %>
-      <%= form.select :user, @user_candidates, selected: @test_case.user.id %>
+    <% if @test_case_execution and @test_case_execution.user %>
+      <%= form.select :user, @user_candidates, selected: @test_case_execution.user.id %>
     <% else %>
       <%= form.select :user, @user_candidates %>
     <% end %>
