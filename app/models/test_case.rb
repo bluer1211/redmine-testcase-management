@@ -89,6 +89,20 @@ SQL
     end
   end
 
+  # attributes based on most recently executed result
+  def latest_result
+    value = attributes["latest_result"]
+    if value.is_a?(Integer) # SQLite
+      value == 1
+    else # PostgreSQL and others
+      value
+    end
+  end
+
+  def latest_execution_date
+    attributes["latest_execution_date"]
+  end
+
   def latest_test_case_execution
     if attributes["latest_execution_id"]
       TestCaseExecution.find(attributes["latest_execution_id"])
@@ -110,6 +124,7 @@ SQL
       .where(conditions)
   end
 
+
   def attachments_visible?(user=User.current)
     visible?(user)
   end
@@ -121,6 +136,7 @@ SQL
   def attachments_deletable?(user=User.current)
     deletable?(user)
   end
+
 
   # Workaround for functional tests.
   # This should be removed after we completely migrate to test_plan-independent design.
