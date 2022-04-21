@@ -25,7 +25,8 @@ class TestPlansControllerTest < ActionController::TestCase
 
       assert_response :success
       # show all test plans including sub projects
-      assert_equal test_plans(:test_plans_005, :test_plans_003, :test_plans_002, :test_plans_001).pluck(:id),
+      assert_equal test_plans(:test_plans_103, :test_plans_102, :test_plans_101,
+                              :test_plans_005, :test_plans_003, :test_plans_002, :test_plans_001).pluck(:id),
                    css_select("table#test_plans_list tbody tr td.id").map(&:text).map(&:to_i)
       plans = []
       assert_select "table#test_plans_list tbody tr td.name" do |tds|
@@ -33,7 +34,8 @@ class TestPlansControllerTest < ActionController::TestCase
           plans << td.text
         end
       end
-      assert_equal test_plans(:test_plans_005, :test_plans_003, :test_plans_002, :test_plans_001).pluck(:name), plans
+      assert_equal test_plans(:test_plans_103, :test_plans_102, :test_plans_101,
+                              :test_plans_005, :test_plans_003, :test_plans_002, :test_plans_001).pluck(:name), plans
       # verify columns
       columns = []
       assert_select "table#test_plans_list thead tr:first-child th" do |ths|
