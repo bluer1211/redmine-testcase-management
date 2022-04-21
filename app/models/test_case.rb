@@ -22,7 +22,7 @@ class TestCase < ActiveRecord::Base
   validate :owned_only_by_visible_user
 
   safe_attributes(
-    "project_id'",
+    "project_id",
     "user_id",
     "name",
     "environment",
