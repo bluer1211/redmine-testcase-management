@@ -42,7 +42,7 @@ class TestPlanImport < Import
     test_plan.user = user
 
     attributes = {
-      "project_id" => mapping["project_id"],
+      "project_id" => mapping["project_id"].to_i,
       "name" => row_value(row, "name"),
     }
 

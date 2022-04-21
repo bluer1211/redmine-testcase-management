@@ -40,7 +40,7 @@ class TestCaseImport < Import
     test_case.user = user
 
     attributes = {
-      "project_id" => mapping["project_id"],
+      "project_id" => mapping["project_id"].to_i,
       "name" => row_value(row, "name"),
       "environment" => row_value(row, "environment"),
       "scenario" => row_value(row, "scenario"),

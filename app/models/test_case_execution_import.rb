@@ -60,7 +60,7 @@ class TestCaseExecutionImport < Import
     end
 
     attributes = {
-      "project_id" => mapping["project_id"],
+      "project_id" => mapping["project_id"].to_i,
       "comment" => row_value(row, "comment"),
       "result" => (row_value(row, "result") == l(:label_succeed)),
     }
