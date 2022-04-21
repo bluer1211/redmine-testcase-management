@@ -117,18 +117,16 @@ SQL
       sql_for_field("id", "=", [options[:test_plan_id]], TestPlan.table_name, 'id')
     ]
     if options[:test_plan_id]
-      TestCase
-        .from("(#{base_scope
-                    .joins(:test_plans)
-                    .with_latest_result(options[:test_plan_id])
-                    .where(conditions.join(" AND ")).to_sql}) AS test_cases")
+      base_scope
+        .joins(:test_plans)
+        .with_latest_result(options[:test_plan_id])
+        .where(conditions.join(" AND "))
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
     else
-      TestCase
-        .from("(#{base_scope
-                    .with_latest_result.to_sql}) AS test_cases")
+      base_scope
+        .with_latest_result
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])

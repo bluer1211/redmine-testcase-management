@@ -46,6 +46,7 @@ class TestCase < ActiveRecord::Base
   scope :with_latest_result, (lambda do |test_plan_or_id=nil|
     test_plan_id = test_plan_or_id
     test_plan_id = test_plan_or_id.id if test_plan_or_id.is_a?(TestPlan)
+    test_plan_id = nil unless test_plan_id.is_a?(Integer)
 
     scope = all
     conditions = {}
@@ -57,15 +58,22 @@ class TestCase < ActiveRecord::Base
 
     scope.
     joins(<<-"SQL"
-      LEFT OUTER JOIN (SELECT *
-                         FROM test_case_executions
-                        ORDER BY execution_date DESC, id DESC) AS tce
+      LEFT OUTER JOIN
+        (SELECT *
+           FROM (SELECT *,
+                        ROW_NUMBER()
+                          OVER (PARTITION BY test_case_id
+                                ORDER BY execution_date DESC, id DESC)
+                          AS row_number_per_test_case_id
+                   FROM test_case_executions
+                   #{ test_plan_id ? sanitize_sql_array(['WHERE test_plan_id = ?', test_plan_id]) : '' })
+                 AS tce_with_row_number
+          WHERE row_number_per_test_case_id = 1) AS tce
         ON tce.test_case_id = test_cases.id
         #{ test_plan_id ? 'AND tce.test_plan_id = test_case_test_plans.test_plan_id' : '' }
 SQL
     ).
     select(<<-SQL
-      DISTINCT ON (test_cases.id)
       test_cases.*,
       tce.id AS latest_execution_id,
       tce.result AS latest_result,
