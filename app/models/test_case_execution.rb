@@ -19,7 +19,7 @@ class TestCaseExecution < ActiveRecord::Base
   validate :owned_only_by_visible_user
 
   safe_attributes(
-    "project_id'",
+    "project_id",
     "name",
     "issue_id",
     "user_id",
