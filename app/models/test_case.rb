@@ -100,7 +100,12 @@ SQL
   end
 
   def latest_execution_date
-    attributes["latest_execution_date"]
+    value = attributes["latest_execution_date"]
+    if value.is_a?(String) # SQLite
+      Time.parse(value)
+    else # PostgreSQL and others
+      value
+    end
   end
 
   def latest_test_case_execution
