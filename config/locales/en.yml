@@ -59,6 +59,7 @@ en:
   field_scenario: "Scenario"
   field_expected: "Expected"
   field_latest_result: "Execution Result"
+  field_latest_execution_date: "Execution Date"
 
   field_assigned_rate: "Assigned Rate"
 

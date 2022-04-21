@@ -35,53 +35,51 @@ class TestCase < ActiveRecord::Base
     where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
   end)
 
-=begin
-  # deactivate this way because duplicated record may appear in TestCaseQuery.test_cases...
-  #self.test_case_executions.order("execution_date desc").first
-  has_one :latest_result, -> {
-    where(<<~SQL
-    NOT EXISTS (
-      SELECT 1 FROM test_case_executions AS tce
-      WHERE test_case_executions.execution_date < tce.execution_date
-      AND test_case_executions.test_case_id = tce.test_case_id
-      AND tce.execution_date IS NOT NULL
-    )
+  scope :with_latest_result, (lambda do |test_plan_or_id=nil|
+    test_plan_id = test_plan_or_id
+    test_plan_id = test_plan_or_id.id if test_plan_or_id.is_a?(TestPlan)
+
+    scope = all
+    conditions = {}
+    if test_plan_id
+      scope = scope.
+        joins(:test_case_test_plans)
+      conditions["test_case_test_plans.test_plan_id"] = test_plan_id
+    end
+
+    scope.
+    joins(<<-"SQL"
+      LEFT OUTER JOIN (SELECT *
+                         FROM test_case_executions
+                        ORDER BY execution_date DESC, id DESC) AS tce
+        ON tce.test_case_id = test_cases.id
+        #{ test_plan_id ? 'AND tce.test_plan_id = test_case_test_plans.test_plan_id' : '' }
 SQL
-         )
-  }, class_name: :TestCaseExecution
-
-  has_one :execution_date, -> {
-    where(<<~SQL
-    NOT EXISTS (
-      SELECT 1 FROM test_case_executions AS tce
-      WHERE test_case_executions.execution_date < tce.execution_date
-      AND test_case_executions.test_case_id = tce.test_case_id
-      AND tce.execution_date IS NOT NULL
-    )
+    ).
+    select(<<-SQL
+      DISTINCT ON (test_cases.id)
+      test_cases.*,
+      tce.id AS latest_execution_id,
+      tce.result AS latest_result,
+      tce.execution_date AS latest_execution_date,
+      tce.test_plan_id AS test_plan_id
 SQL
-         )
-  }, class_name: :TestCaseExecution
-=end
+    ).
+    where(conditions)
+  end)
 
-  def latest_result
-    latest_test_case_execution && latest_test_case_execution.result
+  class << self
+    def find_with_latest_result(id, options={})
+      with_latest_result(options[:test_plan] || options[:test_plan_id]).find(id)
+    end
   end
 
-  def execution_date
-    latest_test_case_execution && latest_test_case_execution.execution_date
-  end
-
-  def latest_test_case_execution(test_plan=self.test_plan)
-    test_case_executions_for(test_plan)
-      .order("execution_date DESC")
-      .first
-  end
-
-  def latest_effective_test_case_execution(test_plan=self.test_plan)
-    test_case_executions_for(test_plan)
-      .where.not(execution_date: nil)
-      .order("execution_date DESC")
-      .first
+  def latest_test_case_execution
+    if attributes["latest_execution_id"]
+      TestCaseExecution.find(attributes["latest_execution_id"])
+    else
+      nil
+    end
   end
 
   def test_case_executions_for(test_plan=self.test_plan)

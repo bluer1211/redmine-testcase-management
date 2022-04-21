@@ -310,7 +310,7 @@ SQL
       value.nil? ? l(:label_none) :
         value ? l(:label_succeed) :
         l(:label_failure)
-    when :execution_date
+    when :latest_execution_date
       !value ? l(:label_none) :
         yyyymmdd_date(value.execution_date)
     else
