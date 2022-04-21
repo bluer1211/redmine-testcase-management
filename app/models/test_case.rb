@@ -93,7 +93,7 @@ SQL
   def latest_result
     value = attributes["latest_result"]
     if value.is_a?(Integer) # SQLite
-      value == 1
+      attributes["latest_result"] = value == 1
     else # PostgreSQL and others
       value
     end
@@ -102,7 +102,7 @@ SQL
   def latest_execution_date
     value = attributes["latest_execution_date"]
     if value.is_a?(String) # SQLite
-      @latest_execution_date ||= Time.parse(value)
+      attributes["latest_execution_date"] = Time.parse(value)
     else # PostgreSQL and others
       value
     end
