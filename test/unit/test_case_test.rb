@@ -301,6 +301,21 @@ class TestCaseTest < ActiveSupport::TestCase
     assert_visibility_match user, test_cases
   end
 
+  def test_visible_scope_for_member_with_default_test_case_visibility
+    role = Role.generate!(:permissions => [:view_project, :view_issues],
+                          :issues_visibility => "default")
+    user = User.generate!
+    # Use private project
+    project = Project.find(5)
+    User.add_to_project(user, project, [role])
+    # user (default issues visibility) can see test case under private project
+    test_cases = TestCase.visible(user).to_a
+    assert_equal [true, test_cases(:test_cases_004)],
+                 [test_cases.any?,
+                  test_cases.detect {|test_case| test_case.project_id == project.id}]
+    assert_visibility_match user, test_cases
+  end
+
   def test_visible_scope_for_member_without_view_issues_permission_and_non_member_role_having_the_permission
     Role.non_member.add_permission!(:view_issues)
     Role.find(1).remove_permission!(:view_issues)

@@ -262,6 +262,21 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     assert_visibility_match user, test_case_executions
   end
 
+  def test_visible_scope_for_member_with_default_test_case_execution_visibility
+    role = Role.generate!(:permissions => [:view_project, :view_issues],
+                          :issues_visibility => "default")
+    user = User.generate!
+    # Use private project
+    project = Project.find(5)
+    User.add_to_project(user, project, [role])
+    # user (default issues visibility) can see test case execution under private project
+    test_case_executions = TestCaseExecution.visible(user).to_a
+    assert_equal [true, test_case_executions(:test_case_executions_004)],
+                 [test_case_executions.any?,
+                  test_case_executions.detect {|test_case_execution| test_case_execution.project_id == project.id}]
+    assert_visibility_match user, test_case_executions
+  end
+
   def test_visible_scope_for_member_without_view_issues_permission_and_non_member_role_having_the_permission
     Role.non_member.add_permission!(:view_issues)
     Role.find(1).remove_permission!(:view_issues)
