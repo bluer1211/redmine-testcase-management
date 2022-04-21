@@ -67,8 +67,8 @@ class TestPlanImportTest < ActiveSupport::TestCase
       import.run
       assert_successfully_imported(import)
     end
-    assert_equal [[1,2,3], [4,5], [6,7]],
-                 test_plans.collect{ |test_plan| test_plan.test_cases.pluck(:id).sort }
+    assert_equal [[101,102,103], [104,105], [106,107]],
+                 test_plans.collect{ |test_plan| test_plan.test_cases.collect(&:id).sort }
   end
 
   private
@@ -91,7 +91,6 @@ class TestPlanImportTest < ActiveSupport::TestCase
   end
 
   def generate_import_with_mapping(fixture_name="test_plans.csv")
-    move_test_cases_to_project(1)
     import = generate_import(fixture_name)
 
     import.settings = {

@@ -79,3 +79,66 @@ test_cases_007:
   environment: Debian GNU/Linux
   user_id: 2
   issue_status_id: 1
+test_cases_101:
+  id: 101
+  # project: projects_001
+  project_id: 1
+  name: Test Case 101
+  scenario: Scenario 101
+  expected: Expected 101
+  environment: Debian GNU/Linux
+  user_id: 1
+test_cases_102:
+  id: 102
+  # project: projects_001
+  project_id: 1
+  name: Test Case 102
+  scenario: Scenario 102
+  expected: Expected 102
+  environment: Debian GNU/Linux
+  user_id: 1
+test_cases_103:
+  id: 103
+  # project: projects_001
+  project_id: 1
+  name: Test Case 103
+  scenario: Scenario 103
+  expected: Expected 103
+  environment: Debian GNU/Linux
+  user_id: 1
+test_cases_104:
+  id: 104
+  # project: projects_001
+  project_id: 1
+  name: Test Case 104
+  scenario: Scenario 104
+  expected: Expected 104
+  environment: Debian GNU/Linux
+  user_id: 1
+test_cases_105:
+  id: 105
+  # project: projects_001
+  project_id: 1
+  name: Test Case 105
+  scenario: Scenario 105
+  expected: Expected 105
+  environment: Debian GNU/Linux
+  user_id: 1
+test_cases_106:
+  id: 106
+  # project: projects_001
+  project_id: 1
+  name: Test Case 106
+  scenario: Scenario 106
+  expected: Expected 106
+  environment: Debian GNU/Linux
+  user_id: 1
+test_cases_107:
+  id: 107
+  # project: projects_001
+  project_id: 1
+  name: Test Case 107
+  scenario: Scenario 107
+  expected: Expected 107
+  environment: Debian GNU/Linux
+  user_id: 1
