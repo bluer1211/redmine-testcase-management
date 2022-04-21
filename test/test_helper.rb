@@ -51,6 +51,54 @@ def assert_successfully_imported(import)
   assert_equal [], failures
 end
 
+def generate_test_cases(count, params={})
+  count.times.collect do |index|
+    TestCase.create!({
+      name: "tc#{index}",
+      scenario: "scenario",
+      expected: "expected",
+      environment: "Debian GNU/Linux",
+      project: projects(:projects_001),
+      user: users(:users_001),
+    }.merge(params))
+  end
+end
+
+def generate_test_case(params={})
+  generate_test_cases(1, params).first
+end
+
+def generate_test_plans(count, params={})
+  count.times.collect do |index|
+    TestPlan.create!({
+      name: "tp#{index}",
+      project: projects(:projects_001),
+      user: users(:users_001),
+      issue_status: issue_statuses(:issue_statuses_001),
+    }.merge(params))
+  end
+end
+
+def generate_test_plan(params={})
+  generate_test_plans(1, params).first
+end
+
+def generate_test_case_executions(count, params={})
+  count.times.collect do |index|
+    TestCaseExecution.create!({
+      comment: "tce#{index}",
+      project: projects(:projects_001),
+      user: users(:users_001),
+      result: true,
+      execution_date: "2022-04-21",
+    }.merge(params))
+  end
+end
+
+def generate_test_case_execution(params={})
+  generate_test_case_executions(1, params).first
+end
+
 def move_test_cases_to_project(project_id)
   TestCaseExecution.all.each do |test_case_execution|
     test_case_execution.update!(project_id: project_id)
