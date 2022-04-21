@@ -109,6 +109,28 @@ SQL
     [['id', 'desc']]
   end
 
+  def sort_clause
+    if clause = sort_criteria.sort_clause(sortable_columns)
+      clause.map {|c|
+        nocase_sql = if ActiveRecord::Base.connection.adapter_name =~ /sqlite/i
+                       if ["name", "environment", "scenario", "expected"].any? {
+                            |column| column.include?("#{TestCase.table_name}.#{column}") }
+                         if c.end_with?("ASC")
+                           Arel.sql "#{TestCase.table_name}.#{column} COLLATE NOCASE ASC"
+                         else
+                           Arel.sql "#{TestCase.table_name}.#{column} COLLATE NOCASE DESC"
+                         end
+                       else
+                         Arel.sql c
+                       end
+                     else
+                       Arel.sql c
+                     end
+        nocase_sql
+      }
+    end
+  end
+
   # Valid options:
   #   :test_plan_id :test_case_id :limit :offset
   def test_cases(options={})
