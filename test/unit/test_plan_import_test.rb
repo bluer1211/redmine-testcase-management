@@ -28,7 +28,6 @@ class TestPlanImportTest < ActiveSupport::TestCase
     import.mapping["project_id"] = project_id.to_s
     import.save!
 
-    move_test_cases_to_project(project_id)
     test_plans = new_records(TestPlan, 3) do
       import.run
       assert_successfully_imported(import)

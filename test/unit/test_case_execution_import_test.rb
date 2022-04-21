@@ -61,18 +61,15 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
   end
 
   def test_accept_multiple_test_case_executions
-    TestCaseExecution.create!(project_id: 1,
-                              test_plan_id: 1,
-                              test_case_id: 3,
-                              user_id: 1,
-                              execution_date: Time.now.strftime("%F"),
-                              result: true)
-    TestCaseExecution.create!(project_id: 1,
-                              test_plan_id: 1,
-                              test_case_id: 4,
-                              user_id: 1,
-                              execution_date: Time.now.strftime("%F"),
-                              result: false)
+    generate_test_case_execution(test_plan_id: 101,
+                                 test_case_id: 103,
+                                 execution_date: Time.now.strftime("%F"),
+                                 result: true)
+    generate_test_case_execution(test_plan_id: 101,
+                                 test_case_id: 104,
+                                 execution_date: Time.now.strftime("%F"),
+                                 result: false)
+
     import = generate_import_with_mapping
     new_records(TestCaseExecution, 3) do
       import.run
@@ -100,7 +97,6 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
   end
 
   def generate_import_with_mapping(fixture_name="test_case_executions.csv")
-    move_test_cases_to_project(1)
     import = generate_import(fixture_name)
 
     import.settings = {

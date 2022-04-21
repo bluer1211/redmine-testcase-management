@@ -52,3 +52,33 @@ test_plans_005:
   issue_status_id: 1
   # project: projects_001
   project_id: 1
+test_plans_101:
+  id: 101
+  name: Test Plan 101 (for import)
+  begin_date: 2022-04-21 00:00:00 +09:00
+  end_date: 2022-04-22 00:00:00 +09:00
+  user_id: 1
+  estimated_bug: 1
+  issue_status_id: 1
+  # project: projects_001
+  project_id: 1
+test_plans_102:
+  id: 102
+  name: Test Plan 102 (for import)
+  begin_date: 2022-04-21 00:00:00 +09:00
+  end_date: 2022-04-22 00:00:00 +09:00
+  user_id: 1
+  estimated_bug: 1
+  issue_status_id: 1
+  # project: projects_001
+  project_id: 1
+test_plans_103:
+  id: 103
+  name: Test Plan 103 (for import)
+  begin_date: 2022-04-21 00:00:00 +09:00
+  end_date: 2022-04-22 00:00:00 +09:00
+  user_id: 1
+  estimated_bug: 1
+  issue_status_id: 1
+  # project: projects_001
+  project_id: 1
