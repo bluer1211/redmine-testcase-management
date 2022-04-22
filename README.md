@@ -14,6 +14,13 @@ $ bin/rails redmine:plugins:migrate RAILS_ENV=production
 
 And then restart your Redmine.
 
+## Known Restrictions
+
+* Test Plan, Test Case, Test Case Execution inherits permission from issues. (view, edit, and so on)
+* After saving query, the page will not be redirected to the page which filter was executed. (Always redirected to test case list)
+* Test Plan, Test Case, Test Case Execution inherits permission from issues. (view, edit, and so on)
+* CSV import may fails when the localized value of column is not matched to stored in database.
+
 ## Tests
 
 ```console
