@@ -170,6 +170,42 @@ class TestCasesTest < ApplicationSystemTestCase
     end
   end
 
+  test "scenario/expected with newline" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
+    visit path
+
+    fill_in 'scenario', with: "1\n2\n3"
+    fill_in 'expected', with: "a\nb\nc"
+    click_button I18n.t(:button_update)
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
+    visit path
+
+    assert_selector "td.scenario" do |node|
+      assert_equal "<p>1\n</p><p>2\n</p><p>3</p>", node[:innerHTML]
+    end
+    assert_selector "td.expected" do |node|
+      assert_equal "<p>a\n</p><p>b\n</p><p>c</p>", node[:innerHTML]
+    end
+  end
+
+  test "scenario/expected with max newline" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
+    visit path
+
+    fill_in 'scenario', with: "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11"
+    fill_in 'expected', with: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk"
+    click_button I18n.t(:button_update)
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
+    visit path
+
+    assert_selector "td.scenario" do |node|
+      assert_equal "<p>1\n</p><p>2\n</p><p>3\n</p><p>4\n</p><p>5\n</p><p>6\n</p><p>7\n</p><p>8\n</p><p>9\n</p><p>10\n11</p>", node[:innerHTML]
+    end
+    assert_selector "td.expected" do |node|
+      assert_equal "<p>a\n</p><p>b\n</p><p>c\n</p><p>d\n</p><p>e\n</p><p>f\n</p><p>g\n</p><p>h\n</p><p>i\n</p><p>j\nk</p>", node[:innerHTML]
+    end
+  end
+
   private
 
   def login_with_admin

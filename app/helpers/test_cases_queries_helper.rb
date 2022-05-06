@@ -26,7 +26,15 @@ module TestCasesQueriesHelper
                                         id: item.id)
         end
       when :scenario, :expected
-        truncate(value)
+        contents = nil
+        value.split("\n", 10).each do |line|
+          unless contents
+            contents = content_tag("p", truncate(line))
+          else
+            contents += content_tag("p", truncate(line))
+          end
+        end
+        contents
       when :latest_result
         unless value.nil?
           link_to value ? l(:label_succeed) : l(:label_failure),
