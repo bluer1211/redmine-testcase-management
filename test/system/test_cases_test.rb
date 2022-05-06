@@ -94,6 +94,20 @@ class TestCasesTest < ApplicationSystemTestCase
     assert_equal path, current_path
   end
 
+  test "update with empty environment" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
+    visit path
+
+    fill_in 'name', with: "name"
+    select users(:users_001).name, from: 'test_case[user]'
+    fill_in 'scenario', with: "scenario"
+    fill_in 'expected', with: "expected"
+
+    click_button I18n.t(:button_update)
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    assert_equal path, current_path
+  end
+
   test "delete test case" do
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}"
     visit path

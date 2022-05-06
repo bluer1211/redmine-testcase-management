@@ -147,13 +147,14 @@ class TestCaseTest < ActiveSupport::TestCase
   end
 
   def test_missing_environment
+    # environment is optional
     object = TestCase.new(:project_id => 1,
                           :name => "dummy",
                           :scenario => "dummy",
                           :expected => "dummy",
                           :user => users(:users_001))
-    assert_equal true, object.invalid?
-    assert_equal ["cannot be blank"], object.errors[:environment]
+    assert_equal true, object.valid?
+    assert_equal [], object.errors[:environment]
   end
 
   # Test Relations
