@@ -105,6 +105,57 @@ class TestCasesTest < ApplicationSystemTestCase
     assert_equal path, current_path
   end
 
+  test "minimum scenario/expected rows" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
+    visit path
+
+    click_on I18n.t(:label_test_case_new)
+
+    # textarea < 500 => rows 10
+    assert_selector "#scenario" do |node|
+      assert_equal ["10", "60"], [node[:rows], node[:cols]]
+    end
+    assert_selector "#expected" do |node|
+      assert_equal ["10", "60"], [node[:rows], node[:cols]]
+    end
+  end
+
+  test "scenario/expected rows" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
+    visit path
+
+    fill_in 'scenario', with: "a" * 550
+    fill_in 'expected', with: "b" * 550
+    click_button I18n.t(:button_update)
+    visit path
+
+    # 500 < textarea <= 1000 => rows 11..20
+    assert_selector "#scenario" do |node|
+      assert_equal ["11", "60"], [node[:rows], node[:cols]]
+    end
+    assert_selector "#expected" do |node|
+      assert_equal ["11", "60"], [node[:rows], node[:cols]]
+    end
+  end
+
+  test "maximum scenario/expected rows" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
+    visit path
+
+    fill_in 'scenario', with: "a" * 1050
+    fill_in 'expected', with: "b" * 1050
+    click_button I18n.t(:button_update)
+    visit path
+
+    # 1000 < textarea => rows 20
+    assert_selector "#scenario" do |node|
+      assert_equal ["20", "60"], [node[:rows], node[:cols]]
+    end
+    assert_selector "#expected" do |node|
+      assert_equal ["20", "60"], [node[:rows], node[:cols]]
+    end
+  end
+
   private
 
   def login_with_admin
