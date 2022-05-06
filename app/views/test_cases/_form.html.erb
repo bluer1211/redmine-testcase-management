@@ -28,11 +28,11 @@
   </p>
   <p>
     <%= form.label :scenario %>
-    <%= form.text_area :scenario, required: true, id: "scenario" %>
+    <%= form.text_area :scenario, required: true, id: "scenario", cols: 60, rows: [[10, @test_case.scenario.to_s.length / 50].max, 20].min %>
   </p>
   <p>
     <%= form.label :expected %>
-    <%= form.text_area :expected, required: true, id: "expected" %>
+    <%= form.text_area :expected, required: true, id: "expected", cols: 60, rows: [[10, @test_case.expected.to_s.length / 50].max, 20].min %>
   </p>
 </div>
 
