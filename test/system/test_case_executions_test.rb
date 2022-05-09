@@ -54,6 +54,39 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
     assert_equal path, current_path
   end
 
+  test "issue template via new" do
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/new"
+    visit path
+
+    issue_window = window_opened_by { click_on I18n.t(:label_issue_new) }
+    sleep 1
+    within_window issue_window do
+      # FIXME: issue_subject can't be found
+      # assert_selector "#issue_subject", text: I18n.t(:label_succeed)
+      description =<<-EOS
+h1. #{@test_plan.name} #{@test_case.name}
+
+"#{@test_case.name}":#{project_test_plan_test_case_url(project_id: @project.identifier, test_plan_id: @test_plan.id, id: @test_case.id)}
+
+h2. #{I18n.t(:field_environment)}
+
+#{@test_case.environment}
+
+h2. #{I18n.t(:field_scenario)}
+
+#{@test_case.scenario}
+
+h2. #{I18n.t(:field_expected)}
+
+#{@test_case.expected}
+
+h2. #{I18n.t(:field_comment)}
+EOS
+      port = URI.parse(current_url).port
+      assert_selector "#issue_description", text: description.strip.gsub(/(127\.0\.0\.1)/, "\\1:#{port}")
+    end
+  end
+
   test "show test case execution" do
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{@test_case_execution.id}"
     visit path

@@ -91,6 +91,7 @@ class TestCaseExecutionsController < ApplicationController
     # FIXME:
     # @test_plan = @test_case_execution.test_plan
     # @test_case = @test_case_execution.test_case
+    set_issue_template_uri
   end
 
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions
@@ -147,6 +148,7 @@ class TestCaseExecutionsController < ApplicationController
                         l(:label_test_cases),
                         "##{@test_plan.id} #{@test_plan.name}",
                         l(:label_test_plans))
+    set_issue_template_uri
   end
 
   # PUT /projects/:project_id/test_case_executions/:id
@@ -230,6 +232,74 @@ class TestCaseExecutionsController < ApplicationController
 
   def permit_param(symbol)
     params.permit(symbol)[symbol]
+  end
+
+  def set_issue_template_uri
+    @issue_template_uri = new_project_issue_path(@project) + "?"
+    case Setting.text_formatting
+    when "markdown"
+      description =<<-EOS
+# #{@test_plan.name} #{@test_case.name}
+
+[#{@test_case.name}](#{project_test_plan_test_case_url(id: @test_case.id)})
+EOS
+      if @test_case_execution.id
+        description +=<<EOS
+[#{l(:label_test_case_executions)}](#{project_test_plan_test_case_test_case_execution_url(id: @test_case_execution.id)})
+
+EOS
+      end
+      description +=<<-EOS
+## #{l(:field_environment)}
+
+#{@test_case.environment}
+
+## #{l(:field_scenario)}
+
+#{@test_case.scenario}
+
+## #{l(:field_expected)}
+
+#{@test_case.expected}
+
+## #{l(:field_comment)}
+
+#{@test_case_execution.comment}
+EOS
+    else
+      description =<<-EOS
+h1. #{@test_plan.name} #{@test_case.name}
+
+"#{@test_case.name}":#{project_test_plan_test_case_url(id: @test_case.id)}
+EOS
+      if @test_case_execution.id
+        description +=<<EOS
+"#{l(:label_test_case_executions)}":#{project_test_plan_test_case_test_case_execution_url(id: @test_case_execution.id)}
+EOS
+      end
+      description +=<<-EOS
+
+h2. #{l(:field_environment)}
+
+#{@test_case.environment}
+
+h2. #{l(:field_scenario)}
+
+#{@test_case.scenario}
+
+h2. #{l(:field_expected)}
+
+#{@test_case.expected}
+
+h2. #{l(:field_comment)}
+
+#{@test_case_execution.comment}
+EOS
+    end
+    values = [["issue[assigned_to_id]", @test_case_execution.user ? @test_case_execution.user.id : User.current.id ],
+              ["issue[subject]", "#{@test_plan.name} #{@test_case.name}"],
+              ["issue[description]", description]]
+    @issue_template_uri << URI.encode_www_form(values)
   end
 
   def test_case_execution_params
