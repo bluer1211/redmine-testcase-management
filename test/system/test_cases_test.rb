@@ -177,9 +177,11 @@ class TestCasesTest < ApplicationSystemTestCase
     fill_in 'scenario', with: "1\n2\n3"
     fill_in 'expected', with: "a\nb\nc"
     click_button I18n.t(:button_update)
+    sleep 0.5
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
     visit path
 
+    sleep 0.5
     assert_selector "td.scenario" do |node|
       assert_equal "<p>1\n</p><p>2\n</p><p>3</p>", node[:innerHTML]
     end
@@ -195,9 +197,11 @@ class TestCasesTest < ApplicationSystemTestCase
     fill_in 'scenario', with: "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11"
     fill_in 'expected', with: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk"
     click_button I18n.t(:button_update)
+    sleep 0.5
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
     visit path
 
+    sleep 0.5
     assert_selector "td.scenario" do |node|
       assert_equal "<p>1\n</p><p>2\n</p><p>3\n</p><p>4\n</p><p>5\n</p><p>6\n</p><p>7\n</p><p>8\n</p><p>9\n</p><p>10\n11</p>", node[:innerHTML]
     end
