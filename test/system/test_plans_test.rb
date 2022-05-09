@@ -55,7 +55,7 @@ class TestPlansTest < ApplicationSystemTestCase
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
 
-    assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name}"
+    assert_selector "h2", text: "#{I18n.t(:label_test_plans)}\n» \##{@test_plan.id} #{@test_plan.name}"
     assert_selector "h3", text: @test_plan.name
 
     assert_selector "#status", text: @test_plan.issue_status.name
@@ -127,7 +127,7 @@ class TestPlansTest < ApplicationSystemTestCase
     visit path
 
     click_on @test_plan.name
-    assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name}"
+    assert_selector "h2", text: "#{I18n.t(:label_test_plans)}\n» \##{@test_plan.id} #{@test_plan.name}"
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     assert_equal path, current_path
   end

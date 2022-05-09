@@ -69,7 +69,7 @@ class TestCasesTest < ApplicationSystemTestCase
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}"
     visit path
 
-    assert_selector "h2", text: "#{I18n.t(:label_test_plans)} » \##{@test_plan.id} #{@test_plan.name} » \##{@test_case.id} #{@test_case.name}"
+    assert_selector "h2", text: "#{I18n.t(:label_test_plans)}\n»\n\##{@test_plan.id} #{@test_plan.name}\n» \##{@test_case.id} #{@test_case.name}"
     assert_selector "h3", text: @test_case.name
 
     assert_selector "#scenario", text: @test_case.scenario
