@@ -36,19 +36,19 @@
     </div>
   </div>
   <div class="attributes">
-    <div id="scenario" class="attribute">
+    <div class="attribute">
       <div class="label"><%=l(:field_scenario)%></div>
-      <div class="wiki">
-        <%= textilizable(@test_case.scenario) %>
-      </div>
+    </div>
+    <div id="scenario">
+      <%= textilizable(@test_case.scenario) %>
     </div>
   </div>
   <div class="attributes">
-    <div id="expected" class="attribute">
+    <div class="attribute">
       <div class="label"><%=l(:field_expected)%></div>
-      <div class="wiki">
-        <%= textilizable(@test_case.expected) %>
-      </div>
+    </div>
+    <div id="expected">
+      <%= textilizable(@test_case.expected) %>
     </div>
   </div>
   <% if @test_case.attachments.any? %>

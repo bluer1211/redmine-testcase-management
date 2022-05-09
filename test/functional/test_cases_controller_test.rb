@@ -423,10 +423,10 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_select "div#environment" do |div|
           assert_equal test_case.environment, div.text
         end
-        assert_select "div#scenario div.wiki" do |div|
+        assert_select "div#scenario" do |div|
           assert_equal test_case.scenario, div.text.strip
         end
-        assert_select "div#expected div.wiki" do |div|
+        assert_select "div#expected" do |div|
           assert_equal test_case.expected, div.text.strip
         end
         assert_not_select "div#test_case_execution_tree div.contextual a:first-child",
@@ -1139,10 +1139,10 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_select "div#environment" do |div|
           assert_equal test_case.environment, div.text
         end
-        assert_select "div#scenario div.wiki" do |div|
+        assert_select "div#scenario" do |div|
           assert_equal test_case.scenario, div.text.strip
         end
-        assert_select "div#expected div.wiki" do |div|
+        assert_select "div#expected" do |div|
           assert_equal test_case.expected, div.text.strip
         end
         assert_select "div#test_case_execution_tree div.contextual a:first-child" do |a|
