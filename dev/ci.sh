@@ -26,7 +26,7 @@ cd build
 
 git clone \
     --depth 1 \
-    --branch 4.1-stable \
+    --branch 4.2-stable \
     https://github.com/redmine/redmine.git \
     redmine
 cd redmine
