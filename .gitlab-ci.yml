@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 .template:
-  image: ruby:2.6
+  image: ruby:2.7
   parallel:
     matrix:
       - TESTS:
