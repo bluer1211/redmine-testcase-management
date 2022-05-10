@@ -100,6 +100,8 @@ class TestPlansTest < ApplicationSystemTestCase
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
 
+    # use longer wait time for async request
+    Capybara.default_max_wait_time = 5
     # show auto completion
     page.execute_script "$('#assign-test-case-form').toggle()"
     page.execute_script "$('#test_case_id').val('test').keydown();"
