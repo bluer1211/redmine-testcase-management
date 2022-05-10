@@ -49,11 +49,21 @@
         </div>
       </div>
     </div>
+    <div>
+      <p><%=l(:field_comment)%></p>
+      <div id="comment" class="wiki">
+        <%= @test_case_execution.comment %>
+      </div>
+    </div>
   </div>
-  <div id="comment">
-    <p><%=l(:field_comment)%></p>
-    <div id="comment" class="wiki">
-      <%= @test_case_execution.comment %>
+  <div class="attributes">
+    <div>
+      <p><%=l(:field_scenario)%></p>
+      <pre id="scenario" class="wiki"><%= @test_case.scenario %></pre>
+    </div>
+    <div>
+      <p><%=l(:field_expected)%></p>
+      <pre id="expected" class="wiki"><%= @test_case.expected %></pre>
     </div>
   </div>
   <% if @test_case_execution.attachments.any? %>

@@ -12,6 +12,18 @@
     <%= @test_case.environment %>
   </p>
   <p>
+    <%= form.label :scenario %>
+    <%= form.text_area :scenario, readonly: true, id: "scenario",
+        cols: 60, rows: [[10, @test_case.scenario.to_s.length / 50].max, 20].min,
+        value: @test_case.scenario %>
+  </p>
+  <p>
+    <%= form.label :expected %>
+    <%= form.text_area :expected, readonly: true, id: "expected",
+        cols: 60, rows: [[10, @test_case.expected.to_s.length / 50].max, 20].min,
+        value: @test_case.expected %>
+  </p>
+  <p>
     <%= form.label :result %>
     <%= form.select :result, { l(:label_failure) => false, l(:label_succeed) => true } %>
   </p>
@@ -38,7 +50,8 @@
   </p>
   <p>
     <%= form.label :comment %>
-    <%= form.text_area :comment %>
+    <%= form.text_area :comment,
+        cols: 60, rows: [[10, @test_case.expected.to_s.length / 50].max, 20].min %>
   </p>
 </div>
 

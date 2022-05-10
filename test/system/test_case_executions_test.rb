@@ -45,6 +45,8 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
 
     select I18n.t(:label_succeed), from: 'test_case_execution[result]'
     select users(:users_001).name, from: 'test_case_execution[user]'
+    assert_selector "#scenario", text: @test_case.scenario
+    assert_selector "#expected", text: @test_case.expected
     fill_in 'test_case_execution[execution_date]', with: "2022-03-03"
     fill_in 'test_case_execution[comment]', with: "comment"
     fill_in 'test_case_execution[issue_id]', with: "1"
@@ -98,6 +100,8 @@ EOS
     assert_selector "#user", text: @test_case_execution.user.name
     assert_selector "#execution_date", text: yyyymmdd_date(@test_case_execution.execution_date)
     assert_selector "#comment", text: @test_case_execution.comment
+    assert_selector "#scenario", text: @test_case.scenario
+    assert_selector "#expected", text: @test_case.expected
     assert_equal path, current_path
   end
 
