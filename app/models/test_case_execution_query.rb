@@ -76,7 +76,7 @@ class TestCaseExecutionQuery < Query
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :test_plan, :test_case, :result, :user, :execution_date, :comment, :issue]
+    [:id, :test_plan, :test_case, :scenario, :expected, :result, :user, :execution_date, :comment, :issue]
   end
 
   def default_sort_criteria
@@ -107,4 +107,13 @@ class TestCaseExecutionQuery < Query
     base_scope.count
   end
 
+  # override default statement for scenario
+  def sql_for_scenario_field(field, operator, value)
+    sql_for_field("scenario", filters["scenario"][:operator], filters["scenario"][:values], TestCase.table_name, 'scenario')
+  end
+
+  # override default statement for expected
+  def sql_for_expected_field(field, operator, value)
+    sql_for_field("expected", filters["expected"][:operator], filters["expected"][:values], TestCase.table_name, 'expected')
+  end
 end
