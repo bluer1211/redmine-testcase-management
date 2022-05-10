@@ -543,7 +543,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_equal @test_case_execution.issue.to_s, div.text.strip
       end
 
-      assert_select "div#comment div.wiki" do |div|
+      assert_select "div#comment" do |div|
         assert_equal @test_case_execution.comment, div.text.strip
       end
     end
