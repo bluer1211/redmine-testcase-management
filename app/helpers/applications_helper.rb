@@ -128,4 +128,16 @@ module ApplicationsHelper
       false
     end
   end
+
+  def column_truncated_text(text, limit=10)
+    contents = nil
+    text.split("\n", 10).each do |line|
+      unless contents
+        contents = content_tag("p", truncate(line))
+      else
+        contents += content_tag("p", truncate(line))
+      end
+    end
+    contents
+  end
 end

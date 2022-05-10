@@ -23,6 +23,10 @@ module TestCaseExecutionsQueriesHelper
         value ? l(:label_succeed) : l(:label_failure)
       when :comment
         truncate(value)
+      when :scenario
+        column_truncated_text(item.test_case.scenario)
+      when :expected
+        column_truncated_text(item.test_case.expected)
       else
         super
       end
