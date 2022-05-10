@@ -104,12 +104,12 @@ class TestPlansTest < ApplicationSystemTestCase
     page.execute_script "$('#assign-test-case-form').toggle()"
     page.execute_script "$('#test_case_id').val('test').keydown();"
     page.document.synchronize do
-      find("ul.ui-autocomplete li:first-child", visible: :all).visible?
+      find("ul.ui-autocomplete li.ui-menu-item:first-child", visible: :all).visible?
     end
     page.execute_script "$('ul.ui-autocomplete li:first-child').trigger('mouseenter').click()"
     test_case = test_cases(:test_cases_003)
     page.document.synchronize do
-      not find("ul.ui-autocomplete li:first-child", visible: :all).visible?
+      not find("ul.ui-autocomplete li.ui-menu-item:first-child", visible: :all).visible?
     end
     assert_equal test_case.id.to_s, page.evaluate_script("$('#test_case_id').val()")
     page.execute_script "$('input[name=\"commit\"]').click()"
