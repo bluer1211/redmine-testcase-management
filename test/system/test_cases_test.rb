@@ -179,7 +179,10 @@ class TestCasesTest < ApplicationSystemTestCase
     fill_in 'scenario', with: "1\n2\n3"
     fill_in 'expected', with: "a\nb\nc"
     click_button I18n.t(:button_update)
-    sleep 0.5
+    page.document.synchronize do
+      page.has_css?("#flash_notice")
+    end
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
     visit path
 
@@ -204,7 +207,10 @@ class TestCasesTest < ApplicationSystemTestCase
     fill_in 'scenario', with: "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11"
     fill_in 'expected', with: "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk"
     click_button I18n.t(:button_update)
-    sleep 0.5
+    page.document.synchronize do
+      page.has_css?("#flash_notice")
+    end
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
     visit path
 
