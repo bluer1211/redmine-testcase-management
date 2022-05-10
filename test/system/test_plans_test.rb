@@ -106,6 +106,7 @@ class TestPlansTest < ApplicationSystemTestCase
     sleep 1 # wait request
     page.execute_script "$('ul.ui-autocomplete li:first-child').trigger('mouseenter').click()"
     test_case = test_cases(:test_cases_003)
+    sleep 1 # wait request
     assert_equal test_case.id.to_s, page.evaluate_script("$('#test_case_id').val()")
     page.execute_script "$('input[name=\"commit\"]').click()"
     # FIXME: evaluate #related_test_cases
