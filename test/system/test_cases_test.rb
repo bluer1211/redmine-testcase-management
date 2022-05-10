@@ -33,7 +33,9 @@ class TestCasesTest < ApplicationSystemTestCase
 
     click_on I18n.t(:label_testcase_management)
 
-    sleep 0.5 # wait until switching
+    page.document.synchronize do
+      page.has_css?("h2")
+    end
     assert_selector "h2", text: I18n.t(:label_test_cases)
     path = "/projects/#{@project.identifier}/test_cases"
     assert_equal path, current_path
@@ -181,9 +183,14 @@ class TestCasesTest < ApplicationSystemTestCase
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
     visit path
 
-    sleep 0.5
+    page.document.synchronize do
+      page.has_css?("td.scenario")
+    end
     assert_selector "td.scenario" do |node|
       assert_equal "<p>1\n</p><p>2\n</p><p>3</p>", node[:innerHTML]
+    end
+    page.document.synchronize do
+      page.has_css?("td.expected")
     end
     assert_selector "td.expected" do |node|
       assert_equal "<p>a\n</p><p>b\n</p><p>c</p>", node[:innerHTML]
@@ -201,9 +208,14 @@ class TestCasesTest < ApplicationSystemTestCase
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
     visit path
 
-    sleep 0.5
+    page.document.synchronize do
+      page.has_css?("td.scenario")
+    end
     assert_selector "td.scenario" do |node|
       assert_equal "<p>1\n</p><p>2\n</p><p>3\n</p><p>4\n</p><p>5\n</p><p>6\n</p><p>7\n</p><p>8\n</p><p>9\n</p><p>10\n11</p>", node[:innerHTML]
+    end
+    page.document.synchronize do
+      page.has_css?("td.expected")
     end
     assert_selector "td.expected" do |node|
       assert_equal "<p>a\n</p><p>b\n</p><p>c\n</p><p>d\n</p><p>e\n</p><p>f\n</p><p>g\n</p><p>h\n</p><p>i\n</p><p>j\nk</p>", node[:innerHTML]
