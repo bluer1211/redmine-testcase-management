@@ -234,6 +234,114 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_equal [test_case_execution.id],
                      css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
       end
+
+      def test_index_with_scenario_contains_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        get :index, params: filter_params(@project.identifier, "scenario", "~",
+                                          {
+                                            'scenario': [test_cases(:test_cases_002).scenario]
+                                          },
+                                          ["result", "user", "execution_date", "comment", "issue", "scenario"])
+        assert_response :success
+        # test_case_executions_001 must be ignored
+        assert_equal [test_case_execution.id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_scenario_not_contains_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        get :index, params: filter_params(@project.identifier, "scenario", "!~",
+                                          {
+                                            'scenario': [test_cases(:test_cases_002).scenario]
+                                          },
+                                          ["result", "user", "execution_date", "comment", "issue", "scenario"])
+        assert_response :success
+        # test_case_executions_002,003 must be ignored
+        assert_equal [test_case_executions(:test_case_executions_003).id,
+                      test_case_executions(:test_case_executions_002).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_scenario_starts_with_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        get :index, params: filter_params(@project.identifier, "scenario", "^",
+                                          {
+                                            'scenario': ["Scenario"]
+                                          },
+                                          ["result", "user", "execution_date", "comment", "issue", "scenario"])
+        assert_response :success
+        assert_equal [test_case_executions(:test_case_executions_003).id,
+                      test_case_executions(:test_case_executions_002).id,
+                      test_case_executions(:test_case_executions_001).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_scenario_ends_with_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        get :index, params: filter_params(@project.identifier, "scenario", "$",
+                                          {
+                                            'scenario': ["2"]
+                                          },
+                                          ["result", "user", "execution_date", "comment", "issue", "scenario"])
+        assert_response :success
+        # test_case_executions_002,003 must be ignored
+        assert_equal [test_case_execution.id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_expected_contains_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        get :index, params: filter_params(@project.identifier, "expected", "~",
+                                          {
+                                            'expected': [test_cases(:test_cases_002).expected]
+                                          },
+                                          ["result", "user", "execution_date", "comment", "issue", "expected"])
+        assert_response :success
+        # test_case_executions_001 must be ignored
+        assert_equal [test_case_execution.id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_expected_not_contains_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        get :index, params: filter_params(@project.identifier, "expected", "!~",
+                                          {
+                                            'expected': [test_cases(:test_cases_002).expected]
+                                          },
+                                          ["result", "user", "execution_date", "comment", "issue", "expected"])
+        assert_response :success
+        # test_case_executions_002,003 must be ignored
+        assert_equal [test_case_executions(:test_case_executions_003).id,
+                      test_case_executions(:test_case_executions_002).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_expected_starts_with_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        get :index, params: filter_params(@project.identifier, "expected", "^",
+                                          {
+                                            'expected': ["Expected"]
+                                          },
+                                          ["result", "user", "execution_date", "comment", "issue", "expected"])
+        assert_response :success
+        assert_equal [test_case_executions(:test_case_executions_003).id,
+                      test_case_executions(:test_case_executions_002).id,
+                      test_case_executions(:test_case_executions_001).id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_expected_ends_with_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        get :index, params: filter_params(@project.identifier, "expected", "$",
+                                          {
+                                            'expected': ["2"]
+                                          },
+                                          ["result", "user", "execution_date", "comment", "issue", "expected"])
+        assert_response :success
+        # test_case_executions_002,003 must be ignored
+        assert_equal [test_case_execution.id],
+                     css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
     end
 
     class Order < self

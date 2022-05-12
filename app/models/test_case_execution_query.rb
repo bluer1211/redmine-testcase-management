@@ -11,6 +11,8 @@ class TestCaseExecutionQuery < Query
     QueryColumn.new(:user, :sortable => "#{TestCaseExecution.table_name}.user_id"),
     QueryColumn.new(:issue, :sortable => "#{TestCaseExecution.table_name}.issue_id"),
     QueryColumn.new(:comment, :sortable => "#{TestCaseExecution.table_name}.comment"),
+    QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
+    QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected"),
     TimestampQueryColumn.new(:execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date", :default_order => 'desc')
   ]
 
@@ -28,6 +30,8 @@ class TestCaseExecutionQuery < Query
     add_available_filter "comment", :type => :text
     add_available_filter "execution_date", :type => :date
     add_available_filter "issue_id", :type => :integer, :label => :label_issue
+    add_available_filter "scenario", :type => :text
+    add_available_filter "expected", :type => :text
   end
 
   def available_columns
@@ -72,7 +76,7 @@ class TestCaseExecutionQuery < Query
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :test_plan, :test_case, :result, :user, :execution_date, :comment, :issue]
+    [:id, :test_plan, :test_case, :scenario, :expected, :result, :user, :execution_date, :comment, :issue]
   end
 
   def default_sort_criteria
@@ -96,10 +100,20 @@ class TestCaseExecutionQuery < Query
       .order(order_option)
       .limit(options[:limit])
       .offset(options[:offset])
+      .select("test_case_executions.*, test_cases.scenario, test_cases.expected")
   end
 
   def test_case_execution_count
     base_scope.count
   end
 
+  # override default statement for scenario
+  def sql_for_scenario_field(field, operator, value)
+    sql_for_field("scenario", filters["scenario"][:operator], filters["scenario"][:values], TestCase.table_name, 'scenario')
+  end
+
+  # override default statement for expected
+  def sql_for_expected_field(field, operator, value)
+    sql_for_field("expected", filters["expected"][:operator], filters["expected"][:values], TestCase.table_name, 'expected')
+  end
 end
