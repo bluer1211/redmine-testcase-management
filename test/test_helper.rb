@@ -110,3 +110,17 @@ def move_test_cases_to_project(project_id)
     test_plan.update!(project_id: project_id)
   end
 end
+
+def filter_params(project_id, field, operation, values, columns)
+  filters = {
+    project_id: project_id,
+    set_filter: 1,
+    f: [field],
+    op: {
+      "#{field}" => operation
+    },
+    v: values,
+    c: columns
+  }
+  filters
+end
