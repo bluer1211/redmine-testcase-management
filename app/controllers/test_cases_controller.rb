@@ -312,7 +312,7 @@ SQL
         l(:label_failure)
     when :latest_execution_date
       !value ? l(:label_none) :
-        yyyymmdd_date(value.execution_date)
+        yyyymmdd_date(value)
     else
       super
     end
