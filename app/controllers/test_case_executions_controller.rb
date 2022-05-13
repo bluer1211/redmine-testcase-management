@@ -27,6 +27,7 @@ class TestCaseExecutionsController < ApplicationController
   def index
     retrieve_query(TestCaseExecutionQuery, false)
 
+    @toplevel_test_case_execution = toplevel_test_case_execution?
     if @query.valid?
       @test_case_executions_export_limit = Setting.plugin_testcase_management["test_case_executions_export_limit"].to_i
       respond_to do |format|
@@ -212,6 +213,11 @@ class TestCaseExecutionsController < ApplicationController
   end
 
   private
+
+  def toplevel_test_case_execution?
+    params[:test_plan_id].nil? and
+      params[:test_case_id].nil?
+  end
 
   def find_test_case_execution
     find_params = {

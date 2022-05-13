@@ -148,10 +148,35 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
               }
           assert_flash_error I18n.t(:error_index_failure)
           assert_response :unprocessable_entity
+          assert_back_to_lists_link(project_test_plan_test_case_test_case_executions_path)
         end
       end
 
       class TestPlan < self
+        def test_index_with_empty_test_plan_filter
+          get :index, params: filter_params(@project.identifier, "test_plan", "~",
+                                            {
+                                              "test_plan": [""]
+                                            },
+                                            ["result", "user", "execution_date", "comment", "issue", "expected"])
+                        .merge({test_plan_id: test_plans(:test_plans_003),
+                                test_case_id: test_cases(:test_cases_001)})
+          assert_flash_error I18n.t(:error_index_failure)
+          assert_response :unprocessable_entity
+          assert_back_to_lists_link(project_test_plan_test_case_test_case_executions_path)
+        end
+
+        def test_index_with_empty_test_plan_toplevel_filter
+          get :index, params: filter_params(@project.identifier, "test_plan", "~",
+                                            {
+                                              "test_plan": [""]
+                                            },
+                                            ["result", "user", "execution_date", "comment", "issue", "expected"])
+          assert_flash_error I18n.t(:error_index_failure)
+          assert_response :unprocessable_entity
+          assert_back_to_lists_link(project_test_case_executions_path)
+        end
+
         def test_index_with_test_plan_filter
           test_case_executions = test_case_executions(:test_case_executions_003,
                                                       :test_case_executions_002,
