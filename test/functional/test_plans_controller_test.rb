@@ -73,6 +73,77 @@ class TestPlansControllerTest < ActionController::TestCase
     end
   end
 
+  class Filter < self
+    def setup
+      @project = projects(:projects_003)
+      login_with_permissions(@project, [:view_project, :view_issues])
+    end
+
+    class IssueStatuses < self
+      def test_index_with_open_status_filter
+        get :index, params: { project_id: @project.identifier,
+                              f: ["issue_status_id"],
+                              op: { "issue_status_id" => "o"},
+                              c: ["issue_status"]
+                            }
+        assert_response :success
+        assert_equal test_plans(:test_plans_003,
+                                :test_plans_002).pluck(:id),
+                     css_select("table#test_plans_list tbody tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_closed_status_filter
+        @test_plan = TestPlan.create(project: @project,
+                                     name: "dummy",
+                                     user: users(:users_001),
+                                     issue_status: IssueStatus.named("Closed").first)
+        get :index, params: { project_id: @project.identifier,
+                              f: ["issue_status_id"],
+                              op: { "issue_status_id" => "c"},
+                            }
+        assert_response :success
+        assert_equal [@test_plan.id],
+                     css_select("table#test_plans_list tbody tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_status_equal_filter
+        @feedback = IssueStatus.named("Feedback").first
+        @test_plan = TestPlan.create(project: @project,
+                                     name: "dummy",
+                                     user: users(:users_001),
+                                     issue_status: @feedback)
+        get :index, params: filter_params(@project.identifier, "issue_status_id", "=",
+                                          { "issue_status_id" => [@feedback.id] }, ["name"])
+        assert_response :success
+        assert_equal [@test_plan.id],
+                     css_select("table#test_plans_list tbody tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_status_not_filter
+        @closed = IssueStatus.named("Closed").first
+        test_plans(:test_plans_003).update(issue_status: @closed)
+        get :index, params: filter_params(@project.identifier, "issue_status_id", "!",
+                                          { "issue_status_id" => [@closed.id] }, ["name"])
+        assert_response :success
+        # test_plans_003 must be ignored
+        assert_equal [test_plans(:test_plans_002).id],
+                     css_select("table#test_plans_list tbody tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_index_with_status_all_filter
+        get :index, params: { project_id: @project.identifier,
+                              f: ["issue_status_id"],
+                              op: { "issue_status_id" => "*" },
+                              c: ["name"]
+                            }
+        assert_response :success
+        assert_equal test_plans(:test_plans_003,
+                                :test_plans_002).pluck(:id),
+                     css_select("table#test_plans_list tbody tr td.id").map(&:text).map(&:to_i)
+      end
+    end
+  end
+
   class Show < self
     def setup
       super
