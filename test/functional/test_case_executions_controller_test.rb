@@ -151,6 +151,36 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         end
       end
 
+      class TestPlan < self
+        def test_index_with_test_plan_filter
+          test_case_executions = test_case_executions(:test_case_executions_003,
+                                                      :test_case_executions_002,
+                                                      :test_case_executions_001)
+          get :index, params: filter_params(@project.identifier, "test_plan", "~",
+                                            {
+                                              "test_plan": [test_plans(:test_plans_003).name]
+                                            },
+                                            ["result", "user", "execution_date", "comment", "issue", "expected"])
+          assert_response :success
+          assert_equal test_case_executions.pluck(:id),
+                       css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+        end
+      end
+
+      class TestCase < self
+        def test_index_with_test_case_filter
+          get :index, params: filter_params(@project.identifier, "test_case", "~",
+                                            {
+                                              "test_case": [test_cases(:test_cases_002).name]
+                                            },
+                                            ["result", "user", "execution_date", "comment", "issue", "expected"])
+          assert_response :success
+          # test_case_executions_002, 003  must be ignored
+          assert_equal [test_case_executions(:test_case_executions_001).id],
+                       css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+        end
+      end
+
       class Result < self
         def test_index_with_result_filter
           get :index, params: {
