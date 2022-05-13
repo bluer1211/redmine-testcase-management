@@ -22,6 +22,8 @@ class TestCaseExecutionQuery < Query
   end
 
   def initialize_available_filters
+    add_available_filter "test_plan", :type => :text
+    add_available_filter "test_case", :type => :text
     add_available_filter(
       "user_id",
       :type => :list, :values => lambda { author_values }
@@ -105,6 +107,16 @@ class TestCaseExecutionQuery < Query
 
   def test_case_execution_count
     base_scope.count
+  end
+
+  # override default statement for test_plan
+  def sql_for_test_plan_field(field, operator, value)
+    sql_for_field("test_plan", filters["test_plan"][:operator], filters["test_plan"][:values], TestPlan.table_name, 'name')
+  end
+
+  # override default statement for test_case
+  def sql_for_test_case_field(field, operator, value)
+    sql_for_field("test_case", filters["test_case"][:operator], filters["test_case"][:values], TestCase.table_name, 'name')
   end
 
   # override default statement for scenario
