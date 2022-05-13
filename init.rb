@@ -13,6 +13,9 @@ Redmine::Plugin.register :testcase_management do
   author_url 'https://www.clear-code.com'
 
   project_module :testcase_management do
+    permission :test_cases, {:test_cases => [:index]}
+    permission :test_plans, {:test_plans => [:index]}
+
     permission :import_test_cases, :test_cases => :imports
     permission :import_test_plans, :test_plans => :imports
     permission :import_test_case_executions, :test_case_executions => :imports
@@ -34,9 +37,6 @@ Redmine::Plugin.register :testcase_management do
     permission :delete_test_case_executions, :test_case_executions => :destroy
 =end
   end
-
-  permission :test_cases, {:test_cases => [:index]}, :public => true
-  permission :test_plans, {:test_plans => [:index]}, :public => true
 
   menu :project_menu,
        :testcase_management,
