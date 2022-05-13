@@ -132,6 +132,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     end
 
     class Filter < self
+      class Invalid < self
       def test_index_with_invalid_filter
         get :index, params: {
               project_id: @project.identifier,
@@ -148,7 +149,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_flash_error I18n.t(:error_index_failure)
         assert_response :unprocessable_entity
       end
+      end
 
+      class Result < self
       def test_index_with_result_filter
         get :index, params: {
               project_id: @project.identifier,
@@ -169,7 +172,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_equal [test_case_executions(:test_case_executions_002).id],
                      css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
       end
+      end
 
+      class User < self
       def test_index_with_user_filter
         get :index, params: {
               project_id: @project.identifier,
@@ -190,7 +195,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_equal [test_case_executions(:test_case_executions_002).id],
                      css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
       end
+      end
 
+      class Issue < self
       def test_index_with_issue_filter
         get :index, params: {
               project_id: @project.identifier,
@@ -211,7 +218,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_equal [test_case_executions(:test_case_executions_003).id],
                      css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
       end
+      end
 
+      class ExecutionDate < self
       def test_index_with_execution_date_filter
         ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
@@ -234,7 +243,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_equal [test_case_execution.id],
                      css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
       end
+      end
 
+      class Scenario < self
       def test_index_with_scenario_contains_filter
         test_case_execution = test_case_executions(:test_case_executions_001)
         get :index, params: filter_params(@project.identifier, "scenario", "~",
@@ -288,7 +299,9 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         assert_equal [test_case_execution.id],
                      css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
       end
+      end
 
+      class Expected < self
       def test_index_with_expected_contains_filter
         test_case_execution = test_case_executions(:test_case_executions_001)
         get :index, params: filter_params(@project.identifier, "expected", "~",
@@ -341,6 +354,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
         # test_case_executions_002,003 must be ignored
         assert_equal [test_case_execution.id],
                      css_select("table#test_case_executions_list tr td.id").map(&:text).map(&:to_i)
+      end
       end
     end
 
