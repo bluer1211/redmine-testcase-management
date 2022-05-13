@@ -23,7 +23,12 @@ module ApplicationsHelper
 
   def prepare_user_candidates
     @user_candidates = {}
-    User.all.each do |user|
+    if @project
+      users = @project.users
+    else
+      users = User.all
+    end
+    users.each do |user|
       @user_candidates[user.name] = user.id
     end
   end
