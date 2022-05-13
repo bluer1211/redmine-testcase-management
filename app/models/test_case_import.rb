@@ -5,6 +5,7 @@ class TestCaseImport < Import
     "environment" => "field_environment",
     "scenario" => "field_scenario",
     "expected" => "field_expected",
+    "test_plan" => "field_test_plan"
   }
 
   def self.menu_item
@@ -54,6 +55,19 @@ class TestCaseImport < Import
     end
 
     test_case.send :safe_attributes=, attributes, user
+
+    if test_plan = row_value(row, "test_plan")
+      found_test_plan = if TestPlan.where(name: test_plan).first
+                          TestPlan.where(name: test_plan).first
+                        elsif TestPlan.where(id: test_plan).first
+                          TestPlan.where(id: test_plan).first
+                        else
+                          nil
+                        end
+      if found_test_plan and found_test_plan.project_id == test_case.project_id
+        found_test_plan.test_cases << test_case
+      end
+    end
 
     test_case
   end

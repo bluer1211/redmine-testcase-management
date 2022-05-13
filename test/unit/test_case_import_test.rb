@@ -4,7 +4,7 @@ class TestCaseImportTest < ActiveSupport::TestCase
 
   fixtures :projects, :users, :members, :member_roles, :roles, :issue_statuses,
            :groups_users, :enabled_modules
-  fixtures :test_cases
+  fixtures :test_cases, :test_plans, :test_case_test_plans
 
   include Redmine::I18n
 
@@ -74,6 +74,34 @@ class TestCaseImportTest < ActiveSupport::TestCase
 
     import.run
     assert !File.exist?(file_path)
+  end
+
+  def test_with_test_plan
+    import = generate_import("test_cases_with_test_plan.csv")
+    import.settings = {
+      "separator" => ",",
+      "wrapper" => '"',
+      "encoding" => "UTF-8",
+      "mapping" => {
+        "test_plan" => "0",
+        "project_id" => "3",
+        "name" => "1",
+        "environment" => "2",
+        "user" => "3",
+        "scenario" => "5",
+        "expected" => "6",
+      },
+    }
+    import.save!
+    import.user_id = @user.id
+
+    test_cases = new_records(TestCase, 3) do
+      import.run
+      assert_successfully_imported(import)
+    end
+    # imported to test_plans_002 (with existing 1 child test case)
+    related_test_cases = test_plans(:test_plans_002).test_cases.pluck(:id) - [test_cases(:test_cases_001).id]
+    assert_equal related_test_cases, test_cases.pluck(:id)
   end
 
   private

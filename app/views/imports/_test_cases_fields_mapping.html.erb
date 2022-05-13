@@ -5,6 +5,10 @@
         :id => 'import_mapping_project_id' %>
 </p>
 <p>
+  <label for="import_mapping_test_plan"><%= l(:field_test_plan) %></label>
+  <%= mapping_select_tag @import, 'test_plan', :required => false %>
+</p>
+<p>
   <label for="import_mapping_name"><%= l(:field_name) %></label>
   <%= mapping_select_tag @import, 'name', :required => true %>
 </p>
