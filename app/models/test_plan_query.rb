@@ -65,10 +65,6 @@ class TestPlanQuery < Query
       end
       conditions << sql_for_field("user", filters["user_id"][:operator], user_ids, TestPlan.table_name, "user_id")
     end
-    unless filters["issue_status_id"].blank?
-      issue_status_ids = filters["issue_status_id"][:values]
-      conditions << sql_for_field("issue_status", filters["issue_status_id"][:operator], issue_status_ids, TestPlan.table_name, "issue_status_id")
-    end
     conditions.join(" AND ")
   end
 
@@ -99,5 +95,22 @@ class TestPlanQuery < Query
 
   def test_plan_count
     base_scope.count
+  end
+
+  # override issue_status_id
+  def sql_for_issue_status_id_field(field, operator, value)
+    case operator
+    when "o"
+      open_status_ids = IssueStatus.where(is_closed: false).pluck(:id)
+      sql_for_field(field, "=", open_status_ids, TestPlan.table_name, "issue_status_id")
+    when "c"
+      closed_status_ids = IssueStatus.where(is_closed: true).pluck(:id)
+      sql_for_field(field, "=", closed_status_ids, TestPlan.table_name, "issue_status_id")
+    when "*"
+      all_status_ids = IssueStatus.all.pluck(:id)
+      sql_for_field(field, "=", all_status_ids, TestPlan.table_name, "issue_status_id")
+    else
+      sql_for_field(field, operator, value, TestPlan.table_name, "issue_status_id")
+    end
   end
 end
