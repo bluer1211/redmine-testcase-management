@@ -142,13 +142,10 @@ class TestCasesControllerTest < ActionController::TestCase
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
 
-=begin
-      # FIXME: deactivate unstable feature
       def test_index_with_succeeded_result_filter
         get :index, params: filter_params("latest_result", "=",
                                           { "latest_result": [true] })
         assert_response :success
-        # @test_case should not listed
         assert_equal [test_cases(:test_cases_002).id],
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
@@ -157,7 +154,6 @@ class TestCasesControllerTest < ActionController::TestCase
         get :index, params: filter_params("latest_result", "=",
                                           { "latest_result": [false] })
         assert_response :success
-        # @test_case is not associated test case execution
         assert_equal [test_cases(:test_cases_003).id],
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
@@ -172,7 +168,6 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_equal [test_cases(:test_cases_003).id],
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
-=end
 
       def test_index_with_execution_date_equals_filter
         test_case_execution = test_case_executions(:test_case_executions_003)

@@ -13,7 +13,7 @@ class TestCaseQuery < Query
     QueryColumn.new(:latest_result, :sortable => "#{TestCaseExecution.table_name}.result"),
     QueryColumn.new(:latest_execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date"),
 =end
-    QueryColumn.new(:latest_result),
+    QueryColumn.new(:latest_result, :sortable => "latest_result"),
     QueryColumn.new(:latest_execution_date, :sortable => "latest_execution_date"),
     QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
     QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected")
