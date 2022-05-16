@@ -42,7 +42,7 @@ class TestCase < ActiveRecord::Base
     where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
   end)
 
-  scope :with_latest_result, (lambda do |test_plan_or_id=nil|
+  scope :with_latest_result, (lambda do |test_plan_or_id=nil, for_count=false|
     test_plan_id = test_plan_or_id
     test_plan_id = test_plan_or_id.id if test_plan_or_id.is_a?(TestPlan)
     test_plan_id = nil unless test_plan_id.is_a?(Integer)
@@ -55,7 +55,7 @@ class TestCase < ActiveRecord::Base
       conditions["test_case_test_plans.test_plan_id"] = test_plan_id
     end
 
-    scope.
+    scope = scope.
     joins(<<-"SQL"
       LEFT OUTER JOIN
         (SELECT *
@@ -72,14 +72,19 @@ class TestCase < ActiveRecord::Base
         #{ test_plan_id ? 'AND tce.test_plan_id = test_case_test_plans.test_plan_id' : '' }
 SQL
     ).
-    select(<<-SQL
-      test_cases.*,
-      tce.id AS latest_execution_id,
-      tce.result AS latest_result,
-      tce.execution_date AS latest_execution_date
-SQL
-    ).
     where(conditions)
+    # Avoid syntax error with count()
+    if for_count
+      scope.select("test_cases.*")
+    else
+      scope.select(<<-SQL
+        test_cases.*,
+        tce.id AS latest_execution_id,
+        tce.result AS latest_result,
+        tce.execution_date AS latest_execution_date
+SQL
+    )
+    end
   end)
 
   class << self

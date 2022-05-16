@@ -30,9 +30,9 @@ class TestCasesController < ApplicationController
       respond_to do |format|
         @test_cases_export_limit = Setting.plugin_testcase_management["test_cases_export_limit"].to_i
         format.html do
-          @test_case_count = @query.test_case_count
-          @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
           if @test_plan_given
+            @test_case_count = @query.test_case_count(params[:test_plan_id], true)
+            @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
             @test_cases = @query.test_cases(test_plan_id: params[:test_plan_id],
                                             offset: @test_case_pages.offset,
                                             limit: @test_case_pages.per_page).visible
@@ -41,6 +41,8 @@ class TestCasesController < ApplicationController
                                 l(:label_test_plans))
             @csv_url = project_test_plan_test_cases_path(@project, test_plan_id: params[:test_plan_id], format: "csv")
           else
+            @test_case_count = @query.test_case_count(nil, true)
+            @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
             @test_cases = @query.test_cases(offset: @test_case_pages.offset,
                                             limit: @test_case_pages.per_page).visible
             @title = html_title(l(:label_test_cases))
