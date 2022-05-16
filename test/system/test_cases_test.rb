@@ -22,8 +22,10 @@ class TestCasesTest < ApplicationSystemTestCase
     @test_plan = test_plans(:test_plans_002)
     @test_case = test_cases(:test_cases_001)
     generate_user_with_permissions(@project, [:view_project, :view_issues,
-                                              :add_issues, :edit_issues, :delete_issues])
+                                              :add_issues, :edit_issues, :delete_issues,
+                                              :test_plans, :test_cases])
     log_user(@user.login, "password")
+    EnabledModule.create(name: "testcase_management", project: @project)
   end
 
   def teardown
