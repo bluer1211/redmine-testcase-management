@@ -1,5 +1,6 @@
 require "application_system_test_case"
 require "test_helper"
+require File.expand_path('../../test_helper', __FILE__)
 
 class ApplicationSystemTestCase
   options = {
@@ -20,7 +21,11 @@ class TestCasesTest < ApplicationSystemTestCase
     @project = projects(:projects_003)
     @test_plan = test_plans(:test_plans_002)
     @test_case = test_cases(:test_cases_001)
-    login_with_admin
+    generate_user_with_permissions(@project, [:view_project, :view_issues,
+                                              :add_issues, :edit_issues, :delete_issues,
+                                              :test_plans, :test_cases])
+    log_user(@user.login, "password")
+    EnabledModule.create(name: "testcase_management", project: @project)
   end
 
   def teardown
@@ -56,7 +61,7 @@ class TestCasesTest < ApplicationSystemTestCase
     click_on I18n.t(:label_test_case_new)
 
     fill_in 'name', with: "name"
-    select users(:users_001).name, from: 'test_case[user]'
+    select @user.name, from: 'test_case[user]'
     fill_in 'scenario', with: "scenario"
     fill_in 'expected', with: "expected"
     fill_in 'environment', with: "environment"
@@ -86,7 +91,7 @@ class TestCasesTest < ApplicationSystemTestCase
     visit path
 
     fill_in 'name', with: "name"
-    select users(:users_001).name, from: 'test_case[user]'
+    select @user.name, from: 'test_case[user]'
     fill_in 'scenario', with: "scenario"
     fill_in 'expected', with: "expected"
     fill_in 'environment', with: "environment"
@@ -101,7 +106,7 @@ class TestCasesTest < ApplicationSystemTestCase
     visit path
 
     fill_in 'name', with: "name"
-    select users(:users_001).name, from: 'test_case[user]'
+    select @user.name, from: 'test_case[user]'
     fill_in 'scenario', with: "scenario"
     fill_in 'expected', with: "expected"
 
