@@ -1,5 +1,6 @@
 require "application_system_test_case"
 require "test_helper"
+require File.expand_path('../../test_helper', __FILE__)
 
 class ApplicationSystemTestCase
   options = {
@@ -19,7 +20,8 @@ class TestPlansTest < ApplicationSystemTestCase
   def setup
     @project = projects(:projects_003)
     @test_plan = test_plans(:test_plans_002)
-    login_with_admin
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
+    log_user(@user.login, "password")
   end
 
   def teardown
@@ -42,7 +44,7 @@ class TestPlansTest < ApplicationSystemTestCase
     fill_in 'name', with: "dummy"
     fill_in 'begin_date', with: "2022-01-01"
     fill_in 'end_date', with: "2022-01-01"
-    select users(:users_001).name, from: 'test_plan[user]'
+    select @user.name, from: 'test_plan[user]'
     fill_in 'estimated_bug', with: 1000
     select issue_statuses(:issue_statuses_002).name, from: 'test_plan[issue_status]'
 
@@ -73,8 +75,7 @@ class TestPlansTest < ApplicationSystemTestCase
     fill_in 'name', with: "dummy"
     fill_in 'begin_date', with: "2022-01-01"
     fill_in 'end_date', with: "2022-01-01"
-    # select Admin
-    select users(:users_001).name, from: 'test_plan[user]'
+    select @user.name, from: 'test_plan[user]'
     fill_in 'estimated_bug', with: 1000
     # select In Progress
     select issue_statuses(:issue_statuses_002).name, from: 'test_plan[issue_status]'
