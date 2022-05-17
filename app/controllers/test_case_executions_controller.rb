@@ -8,7 +8,7 @@ class TestCaseExecutionsController < ApplicationController
   before_action :find_test_case_id, :only => [:show, :new, :create, :edit, :update, :destroy]
   before_action :find_test_case_id_if_given, :only => [:index]
   before_action :find_test_case_execution, :except => [:index, :new, :create]
-  before_action :authorize_with_issues_permission, :except => [:index, :new, :create]
+  before_action :authorize_with_issues_permission
 
   before_action do
     prepare_user_candidates

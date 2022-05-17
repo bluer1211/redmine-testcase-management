@@ -127,13 +127,14 @@ module ApplicationsHelper
   # mainly copied from Rails's ApplicationController#authorize
   def authorize_with_issues_permission(controller = params[:controller], action = params[:action], global = false)
     allowed = User.current.allowed_to?({controller: "issues", action: action}, @project || @projects, :global => global)
-    if allowed
+    activated = !@project || @project.allows_to?(controller: controller, action: action)
+    if allowed and activated
       true
     else
       if @project && @project.archived?
         @archived_project = @project
         render_403 :message => :notice_not_authorized_archived_project
-      elsif @project && !@project.allows_to?(controller: controller, action: action)
+      elsif !activated
         # Project module is disabled
         render_403
       else

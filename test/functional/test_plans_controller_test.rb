@@ -11,6 +11,7 @@ class TestPlansControllerTest < ActionController::TestCase
   NONEXISTENT_TEST_PLAN_ID = 404
 
   def setup
+    activate_module_for_projects
     @project_id = projects(:projects_002).id
   end
 
@@ -500,6 +501,7 @@ class TestPlansControllerTest < ActionController::TestCase
 
   class Statistics < self
     def setup
+      activate_module_for_projects
       @test_case = test_cases(:test_cases_004)
       @project = @test_case.project
       @test_plan = @test_case.test_plan

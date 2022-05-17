@@ -11,9 +11,14 @@ class TestCasesControllerTest < ActionController::TestCase
   NONEXISTENT_TEST_PLAN_ID = 404
   NONEXISTENT_TEST_CASE_ID = 404
 
+  def setup
+    activate_module_for_projects
+  end
+
   class Independent < self
     class Index < self
       def setup
+        super
         login_with_permissions(projects(:projects_003), [:view_project, :view_issues])
       end
 
@@ -83,6 +88,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Filter < self
       def setup
+        super
         ActiveRecord::Base.default_timezone = :utc
         @project = projects(:projects_003)
         login_with_permissions(@project, [:view_project, :view_issues])
@@ -422,6 +428,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Order < self
       def setup
+        super
         @project = projects(:projects_003)
         login_with_permissions(@project, [:view_project, :view_issues])
         @test_case = TestCase.create(name: "dummy",
@@ -603,6 +610,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Create < self
       def setup
+        super
         login_with_permissions(projects(:projects_001), [:view_project, :view_issues, :add_issues])
       end
 
@@ -649,6 +657,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Show < self
       def setup
+        super
         login_with_permissions(projects(:projects_002), [:view_project, :view_issues])
       end
 
@@ -725,6 +734,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Edit < self
       def setup
+        super
         login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :edit_issues])
       end
 
@@ -799,6 +809,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Update < self
       def setup
+        super
         login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
       end
 
@@ -855,6 +866,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Destroy < self
       def setup
+        super
         login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues])
       end
 
@@ -908,6 +920,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class AutoComplete < self
       class Authorized < self
         def setup
+          super
           @project = projects(:projects_003)
           login_with_permissions(@project, [:view_project, :view_issues])
           @params = {
@@ -978,6 +991,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       class Unauthorized < self
         def setup
+          super
           @project = projects(:projects_003)
           @params = {
             project_id: @project.identifier
@@ -1001,6 +1015,7 @@ class TestCasesControllerTest < ActionController::TestCase
   class AssociatedWithTestPlan < self
     class Index < self
       def setup
+        super
         login_with_permissions(projects(:projects_003), [:view_project, :view_issues])
       end
 
@@ -1065,6 +1080,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       class Filter < self
         def setup
+          super
           @project = projects(:projects_003)
           @test_plan = test_plans(:test_plans_003)
           login_with_permissions(@project, [:view_project, :view_issues])
@@ -1165,6 +1181,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       class Order < self
         def setup
+          super
           @project = projects(:projects_003)
           login_with_permissions(@project, [:view_project, :view_issues])
           @order_params = {
@@ -1279,6 +1296,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Create < self
       def setup
+        super
         login_with_permissions(projects(:projects_001), [:view_project, :view_issues, :add_issues])
       end
 
@@ -1356,6 +1374,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Show < self
       def setup
+        super
         login_with_permissions(projects(:projects_002), [:view_project, :view_issues])
       end
 
@@ -1460,6 +1479,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Edit < self
       def setup
+        super
         login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :edit_issues])
       end
 
@@ -1527,6 +1547,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Update < self
       def setup
+        super
         login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
       end
 
@@ -1617,6 +1638,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Destroy < self
       def setup
+        super
         login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues])
       end
 
@@ -1697,6 +1719,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
   class ViewWithoutPermissions < self
     def setup
+      super
       login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project])
     end
 
@@ -1840,6 +1863,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
   class ModifyWithoutPermissions < self
     def setup
+      super
       login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
     end
 
@@ -1948,6 +1972,7 @@ class TestCasesControllerTest < ActionController::TestCase
   class Statistics < self
     class SingleUser < self
       def setup
+        super
         @test_case = test_cases(:test_cases_004)
         @project = @test_case.project
         @test_plan = @test_case.test_plan
@@ -2212,6 +2237,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class MultipleUser < self
       def setup
+        super
         @project = projects(:projects_001)
         @params = { project_id: @project.identifier }
         @closed_issue = issues(:issues_008)

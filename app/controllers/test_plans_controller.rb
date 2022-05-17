@@ -5,8 +5,8 @@ class TestPlansController < ApplicationController
   before_action :find_project_id
   before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
-  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case, :statistics, :context_menu]
-  before_action :find_test_cases, :only => [:context_menu, :unassign_test_case]
+  before_action :find_test_case_id, :only => [:context_menu, :unassign_test_case]
+  before_action :authorize_with_issues_permission, :except => [:assign_test_case, :unassign_test_case, :statistics, :context_menu]
 
   before_action do
     prepare_issue_status_candidates

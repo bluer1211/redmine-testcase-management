@@ -32,6 +32,13 @@ def generate_user_with_permissions(projects, permissions=[:view_project, :view_i
   end
 end
 
+def activate_module_for_projects(projects = Project.all)
+  projects.each do |project|
+    project.enabled_module_names += ["testcase_management"]
+    project.save!
+  end
+end
+
 def login_with_permissions(projects, permissions)
   generate_user_with_permissions(projects, permissions)
   @request.session[:user_id] = @user.id

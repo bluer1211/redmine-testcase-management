@@ -12,8 +12,13 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   NONEXISTENT_TEST_CASE_ID = 404
   NONEXISTENT_TEST_CASE_EXECUTION_ID = 404
 
+  def setup
+    activate_module_for_projects
+  end
+
   class Index < self
     def setup
+      super
       @project = projects(:projects_003)
       login_with_permissions(@project, [:view_project, :view_issues])
     end
@@ -415,6 +420,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     class Order < self
       def setup
+        super
         @project = projects(:projects_003)
         login_with_permissions(@project, [:view_project, :view_issues])
         @order_params = {
@@ -550,6 +556,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
   class New < self
     def setup
+      super
       @project = projects(:projects_002)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
@@ -581,6 +588,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
   class Create < self
     def setup
+      super
       login_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :add_issues])
     end
 
@@ -681,6 +689,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
   class Show < self
     def setup
+      super
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -777,6 +786,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class Edit < self
 
     def setup
+      super
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -867,6 +877,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class Update < self
 
     def setup
+      super
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -977,6 +988,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
   class Destroy < self
     def setup
+      super
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -1071,6 +1083,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
   class ViewWithoutPermission < self
     def setup
+      super
       @project = projects(:projects_003)
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
@@ -1165,6 +1178,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
   class ModifyWithoutPermission < self
     def setup
+      super
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
