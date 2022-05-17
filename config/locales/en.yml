@@ -1,5 +1,7 @@
 # English strings go here for Rails i18n
 en:
+  project_module_testcase_management: "TestCase Management"
+
   label_testcase_management: "TestCase Management"
   label_test_plans: "Test Plans"
   label_test_cases: "Test Cases"
@@ -21,9 +23,14 @@ en:
   label_failure: "Failure"
   label_none: "(N/A)"
 
+  permission_test_plans: "Test Plans"
+  permission_test_cases: "Test Cases"
   permission_edit_test_plan: "Edit Test Plan"
   permission_edit_test_case: "Edit Test Case"
   permission_edit_test_case_execution: "Edit Test Case Execution"
+  permission_import_test_plans: "Import Test Plan"
+  permission_import_test_cases: "Import Test Case"
+  permission_import_test_case_executions: "Import Test Case Execution"
 
   error_create_failure: "Failed to create"
   error_update_failure: "Failed to update"

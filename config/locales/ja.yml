@@ -1,4 +1,6 @@
 ja:
+  project_module_testcase_management: "テストケース管理"
+
   label_testcase_management: "テストケース管理"
   label_test_plans: "テスト計画"
   label_test_cases: "テストケース"
@@ -20,9 +22,14 @@ ja:
   label_failure: "失敗"
   label_none: "(未実行)"
 
+  permission_test_plans: "テスト計画"
+  permission_test_cases: "テストケース"
   permission_edit_test_plan: "テスト計画の編集"
   permission_edit_test_case: "テストケースの編集"
   permission_edit_test_case_execution: "テスト実行結果の編集"
+  permission_import_test_plans: "テスト計画のインポート"
+  permission_import_test_cases: "テストケースのインポート"
+  permission_import_test_case_executions: "テスト実行結果のインポート"
 
   error_create_failure: "作成に失敗しました"
   error_update_failure: "更新に失敗しました"
