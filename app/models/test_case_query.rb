@@ -13,8 +13,8 @@ class TestCaseQuery < Query
     QueryColumn.new(:latest_result, :sortable => "#{TestCaseExecution.table_name}.result"),
     QueryColumn.new(:latest_execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date"),
 =end
-    QueryColumn.new(:latest_result),
-    QueryColumn.new(:latest_execution_date),
+    QueryColumn.new(:latest_result, :sortable => "latest_result"),
+    QueryColumn.new(:latest_execution_date, :sortable => "latest_execution_date"),
     QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
     QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected")
   ]
@@ -31,14 +31,11 @@ class TestCaseQuery < Query
       "user_id",
       :type => :list, :values => lambda { author_values }
     )
-=begin
-    # FIXME: deactivate unstable feature
     add_available_filter(
       "latest_result",
       :type => :list, :values => lambda { [[l(:label_succeed), true], [l(:label_failure), false]] }
     )
     add_available_filter "latest_execution_date", :type => :date
-=end
     add_available_filter "scenario", :type => :text
     add_available_filter "expected", :type => :text
   end
@@ -156,8 +153,17 @@ SQL
     end
   end
 
-  def test_case_count
-    base_scope.count
+  def test_case_count(test_plan_id=nil, for_count=false)
+    if test_plan_id
+      base_scope
+        .joins(:test_plans)
+        .with_latest_result(test_plan_id, for_count)
+        .count
+    else
+      base_scope
+        .with_latest_result(nil, for_count)
+        .count
+    end
   end
 
   # override default statement for .result
@@ -181,8 +187,133 @@ SQL
   end
 
   # override default statement for .execution_date
-  def sql_for_execution_date_field(field, operator, value)
-    "1=1"
+  def sql_for_latest_execution_date_field(field, operator, value)
+    is_custom_filter = false
+    db_table = "tce"
+    db_field = "execution_date"
+    # See Redmine's query.
+    case operator
+    when "="
+      sql = date_clause(db_table, db_field, parse_date(value.first), parse_date(value.first), is_custom_filter)
+    when ">="
+      sql = date_clause(db_table, db_field, parse_date(value.first), nil, is_custom_filter)
+    when "<="
+      sql = date_clause(db_table, db_field, nil, parse_date(value.first), is_custom_filter)
+    when "><"
+      sql = date_clause(db_table, db_field, parse_date(value.first), parse_date(value.last), is_custom_filter)
+    when "><t-"
+      # between today - n days and today
+      sql = relative_date_clause(db_table, db_field, - value.first.to_i, 0, is_custom_filter)
+    when ">t-"
+      # >= today - n days
+      sql = relative_date_clause(db_table, db_field, - value.first.to_i, nil, is_custom_filter)
+    when "<t-"
+      # <= today - n days
+      sql = relative_date_clause(db_table, db_field, nil, - value.first.to_i, is_custom_filter)
+    when "t-"
+      # = n days in past
+      sql = relative_date_clause(db_table, db_field, - value.first.to_i, - value.first.to_i, is_custom_filter)
+    when "><t+"
+      # between today and today + n days
+      sql = relative_date_clause(db_table, db_field, 0, value.first.to_i, is_custom_filter)
+    when ">t+"
+      # >= today + n days
+      sql = relative_date_clause(db_table, db_field, value.first.to_i, nil, is_custom_filter)
+    when "<t+"
+      # <= today + n days
+      sql = relative_date_clause(db_table, db_field, nil, value.first.to_i, is_custom_filter)
+    when "t+"
+      # = today + n days
+      sql = relative_date_clause(db_table, db_field, value.first.to_i, value.first.to_i, is_custom_filter)
+    when "t"
+      # = today
+      sql = relative_date_clause(db_table, db_field, 0, 0, is_custom_filter)
+    when "ld"
+      # = yesterday
+      sql = relative_date_clause(db_table, db_field, -1, -1, is_custom_filter)
+    when "nd"
+      # = tomorrow
+      sql = relative_date_clause(db_table, db_field, 1, 1, is_custom_filter)
+    when "w"
+      # = this week
+      first_day_of_week = l(:general_first_day_of_week).to_i
+      day_of_week = User.current.today.cwday
+      days_ago =
+        if day_of_week >= first_day_of_week
+          day_of_week - first_day_of_week
+        else
+          day_of_week + 7 - first_day_of_week
+        end
+      sql = relative_date_clause(db_table, db_field, - days_ago, - days_ago + 6, is_custom_filter)
+    when "lw"
+      # = last week
+      first_day_of_week = l(:general_first_day_of_week).to_i
+      day_of_week = User.current.today.cwday
+      days_ago =
+        if day_of_week >= first_day_of_week
+          day_of_week - first_day_of_week
+        else
+          day_of_week + 7 - first_day_of_week
+        end
+      sql = relative_date_clause(db_table, db_field, - days_ago - 7, - days_ago - 1, is_custom_filter)
+    when "l2w"
+      # = last 2 weeks
+      first_day_of_week = l(:general_first_day_of_week).to_i
+      day_of_week = User.current.today.cwday
+      days_ago =
+        if day_of_week >= first_day_of_week
+          day_of_week - first_day_of_week
+        else
+          day_of_week + 7 - first_day_of_week
+        end
+      sql = relative_date_clause(db_table, db_field, - days_ago - 14, - days_ago - 1, is_custom_filter)
+    when "nw"
+      # = next week
+      first_day_of_week = l(:general_first_day_of_week).to_i
+      day_of_week = User.current.today.cwday
+      from =
+        -(
+        if day_of_week >= first_day_of_week
+          day_of_week - first_day_of_week
+        else
+          day_of_week + 7 - first_day_of_week
+        end
+      ) + 7
+      sql = relative_date_clause(db_table, db_field, from, from + 6, is_custom_filter)
+    when "m"
+      # = this month
+      date = User.current.today
+      sql = date_clause(db_table, db_field,
+                        date.beginning_of_month, date.end_of_month,
+                        is_custom_filter)
+    when "lm"
+      # = last month
+      date = User.current.today.prev_month
+      sql = date_clause(db_table, db_field,
+                        date.beginning_of_month, date.end_of_month,
+                        is_custom_filter)
+    when "nm"
+      # = next month
+      date = User.current.today.next_month
+      sql = date_clause(db_table, db_field,
+                        date.beginning_of_month, date.end_of_month,
+                        is_custom_filter)
+    when "y"
+      # = this year
+      date = User.current.today
+      sql = date_clause(db_table, db_field,
+                        date.beginning_of_year, date.end_of_year,
+                        is_custom_filter)
+    when "!*"
+      # not executed
+      sql = "#{db_table}.#{db_field} IS NULL"
+    when "*"
+      # all
+      sql = "1=1"
+    else
+      sql = sql_for_field(db_table, db_field, parse_date(value.first), parse_date(value.last), is_custom_filter)
+    end
+    sql
   end
 end
 
