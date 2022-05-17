@@ -57,11 +57,16 @@ class TestPlansController < ApplicationController
   def show
     @test_case_test_plan = TestCaseTestPlan.new
 
-    @test_case_count = @test_plan.test_cases.count
-    @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
-    @test_cases = TestCase.visible.with_latest_result(@test_plan).offset(@test_case_pages.offset).limit(@test_case_pages.per_page)
-
     @title = html_title("##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
+
+    retrieve_query(TestCaseQuery, false)
+    if @query.valid?
+      @test_case_count = @query.test_case_count(params[:id], true)
+      @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
+      @test_cases = @query.test_cases(test_plan_id: params[:id],
+                                      offset: @test_case_pages.offset,
+                                      limit: @test_case_pages.per_page).visible
+    end
   end
 
   # GET /projects/:project_id/test_plans/:id/edit
