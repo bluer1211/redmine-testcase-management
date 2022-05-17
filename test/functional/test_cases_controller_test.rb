@@ -537,8 +537,6 @@ class TestCasesControllerTest < ActionController::TestCase
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
 
-=begin
-      # FIXME: deactivate unstable feature
       def test_result_order_by_desc
         ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
         ids.unshift(@test_case.id)
@@ -550,16 +548,35 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_result_order_by_asc
-        ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+        ids = test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id)
         ids.push(@test_case.id)
-        ids.push(test_cases(:test_cases_001).id)
         # should be listed in false, true, none (desc)
         get :index, params: @order_params.merge({ sort: "latest_result:asc, id:asc" })
         assert_response :success
         assert_equal ids,
                      css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
       end
-=end
+
+      def test_execution_date_order_by_desc
+        ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+        ids.unshift(@test_case.id)
+        ids.unshift(test_cases(:test_cases_001).id)
+        # should be listed in none, execution_date
+        get :index, params: @order_params.merge({ sort: "latest_execution_date:desc" })
+        assert_response :success
+        assert_equal ids,
+                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+      end
+
+      def test_execution_date_order_by_asc
+        ids = test_cases(:test_cases_002, :test_cases_003, :test_cases_001).pluck(:id)
+        ids.push(@test_case.id)
+        # should be listed in execution_date, none
+        get :index, params: @order_params.merge({ sort: "latest_execution_date:asc" })
+        assert_response :success
+        assert_equal ids,
+                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+      end
     end
 
     class New < self
