@@ -83,6 +83,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
     class Filter < self
       def setup
+        ActiveRecord::Base.default_timezone = :utc
         @project = projects(:projects_003)
         login_with_permissions(@project, [:view_project, :view_issues])
         @test_case = TestCase.create(name: "dummy",
@@ -159,7 +160,6 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_index_with_execution_date_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         test_case_execution.update(execution_date: Time.now.strftime("%F"))
         get :index, params: filter_params("latest_execution_date", "=",
@@ -171,37 +171,32 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_index_with_execution_date_equals_filter
         test_case_execution = test_case_executions(:test_case_executions_003)
-        test_case_execution.update(execution_date: Time.now.strftime("%F"))
+        timestamp =Time.now.strftime("%F")
+        test_case_execution.update(execution_date: timestamp)
         get :index, params: filter_params("latest_execution_date", "=",
-                                          { "latest_execution_date": [test_case_execution.execution_date.strftime("%F")] })
+                                          { "latest_execution_date": [timestamp] })
         assert_response :success
         # test_cases_002 should not listed
-        assert_equal [test_cases(:test_cases_003).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
       end
 
       def test_index_with_execution_date_greater_or_equal_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         get :index, params: filter_params("latest_execution_date", ">=",
                                           { "latest_execution_date": [test_case_execution.execution_date.strftime("%F")] })
         assert_response :success
-        assert_equal [test_cases(:test_cases_003).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
       end
 
       def test_index_with_execution_date_less_or_equal_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_002)
         get :index, params: filter_params("latest_execution_date", "<=",
                                           { "latest_execution_date": [test_case_execution.execution_date.strftime("%F")] })
         assert_response :success
-        assert_equal [test_cases(:test_cases_002).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_002).id]
       end
 
       def test_index_with_execution_date_between_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         get :index, params: filter_params("latest_execution_date", "><",
                                           { "latest_execution_date":
@@ -209,87 +204,188 @@ class TestCasesControllerTest < ActionController::TestCase
                                                test_case_execution.execution_date.strftime("%F")],
                                           })
         assert_response :success
-        assert_equal test_cases(:test_cases_003,
-                                :test_cases_002).pluck(:id),
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids test_cases(:test_cases_003,
+                                             :test_cases_002).pluck(:id)
+      end
+
+      def test_index_with_execution_date_in_less_than_filter
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        timestamp = Time.now + 3.days
+        test_case_execution.update(execution_date: timestamp)
+        get :index, params: filter_params("latest_execution_date", "<t+",
+                                          { "latest_execution_date": [1] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_002).id]
+      end
+
+      def test_index_with_execution_date_in_more_than_filter
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        timestamp = Time.now + 3.days
+        test_case_execution.update(execution_date: timestamp)
+        get :index, params: filter_params("latest_execution_date", ">t+",
+                                          { "latest_execution_date": [1] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_in_the_next_days_filter
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        timestamp = Time.now + 3.days
+        test_case_execution.update(execution_date: timestamp)
+        get :index, params: filter_params("latest_execution_date", "><t+",
+                                          { "latest_execution_date": [3] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_in_filter
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        timestamp = Time.now + 3.days
+        test_case_execution.update(execution_date: timestamp)
+        get :index, params: filter_params("latest_execution_date", "t+",
+                                          { "latest_execution_date": [3] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
       end
 
       def test_index_with_execution_date_tomorrow_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         test_case_execution.update(execution_date: Time.now.tomorrow)
         get :index, params: filter_params("latest_execution_date", "nd",
                                           { "latest_execution_date": [] })
         assert_response :success
-        assert_equal [test_cases(:test_cases_003).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
       end
 
       def test_index_with_execution_date_today_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         test_case_execution.update(execution_date: Time.now)
         get :index, params: filter_params("latest_execution_date", "t",
                                           { "latest_execution_date": []})
         assert_response :success
-        assert_equal [test_cases(:test_cases_003).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
       end
 
       def test_index_with_execution_date_yesterday_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         test_case_execution.update(execution_date: Time.now.yesterday)
         get :index, params: filter_params("latest_execution_date", "ld",
                                           { "latest_execution_date": [] })
         assert_response :success
-        assert_equal [test_cases(:test_cases_003).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
       end
 
       def test_index_with_execution_date_next_week_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         test_case_execution.update(execution_date: Time.now.next_week)
         get :index, params: filter_params("latest_execution_date", "nw",
                                           { "latest_execution_date": [] })
         assert_response :success
-        assert_equal [test_cases(:test_cases_003).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
       end
 
       def test_index_with_execution_date_this_week_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         test_case_execution.update(execution_date: Time.now)
         get :index, params: filter_params("latest_execution_date", "w",
                                           { "latest_execution_date": [] })
         assert_response :success
-        assert_equal [test_cases(:test_cases_003).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
       end
 
       def test_index_with_execution_date_last_week_filter
-        ActiveRecord::Base.default_timezone = :utc
         test_case_execution = test_case_executions(:test_case_executions_003)
         test_case_execution.update(execution_date: Time.now.prev_week)
         get :index, params: filter_params("latest_execution_date", "lw",
                                           { "latest_execution_date": [] })
         assert_response :success
-        assert_equal [test_cases(:test_cases_003).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_last_n_weeks_filter
+        ActiveRecord::Base.default_timezone = :utc
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        test_case_execution.update(execution_date: 2.weeks.ago)
+        get :index, params: filter_params("latest_execution_date", "l2w",
+                                          { "latest_execution_date": [] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_next_month_filter
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        test_case_execution.update(execution_date: Time.now.next_month)
+        get :index, params: filter_params("latest_execution_date", "nm",
+                                          { "latest_execution_date": [] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_this_month_filter
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        test_case_execution.update(execution_date: Time.now)
+        get :index, params: filter_params("latest_execution_date", "m",
+                                          { "latest_execution_date": [] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_last_month_filter
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        test_case_execution.update(execution_date: Time.now.prev_month)
+        get :index, params: filter_params("latest_execution_date", "lm",
+                                          { "latest_execution_date": [] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_this_year_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        test_case_execution.update(execution_date: 1.year.ago)
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        test_case_execution.update(execution_date: Time.now)
+        get :index, params: filter_params("latest_execution_date", "y",
+                                          { "latest_execution_date": [] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_less_than_ago_filter
+        test_case_execution = test_case_executions(:test_case_executions_003)
+        test_case_execution.update(execution_date: Time.now)
+        get :index, params: filter_params("latest_execution_date", ">t-",
+                                          { "latest_execution_date": [1] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_more_than_ago_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        test_case_execution.update(execution_date: Time.now)
+        get :index, params: filter_params("latest_execution_date", "<t-",
+                                          { "latest_execution_date": [1] })
+        assert_response :success
+        # test_case_002 must be ignored
+        assert_equal_expected_ids [test_cases(:test_cases_003).id]
+      end
+
+      def test_index_with_execution_date_ago_filter
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        test_case_execution.update(execution_date: 3.days.ago)
+        get :index, params: filter_params("latest_execution_date", "t-",
+                                          { "latest_execution_date": [3] })
+        assert_response :success
+        assert_equal_expected_ids [test_cases(:test_cases_002).id]
       end
 
       def test_index_with_execution_date_all_filter
-        ActiveRecord::Base.default_timezone = :utc
         get :index, params: filter_params("latest_execution_date", "*",
                                           { "latest_execution_date": [] })
         assert_response :success
-        assert_equal [@test_case.id,
-                      test_cases(:test_cases_003,
-                                 :test_cases_002,
-                                 :test_cases_001).pluck(:id)].flatten,
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [@test_case.id,
+                                   test_cases(:test_cases_003,
+                                              :test_cases_002,
+                                              :test_cases_001).pluck(:id)].flatten
       end
 
       def test_index_with_execution_date_not_executed_filter
@@ -298,12 +394,16 @@ class TestCasesControllerTest < ActionController::TestCase
         get :index, params: filter_params("latest_execution_date", "!*",
                                           { "latest_execution_date": [] })
         assert_response :success
-        assert_equal [@test_case.id,
-                      test_cases(:test_cases_001).id],
-                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+        assert_equal_expected_ids [@test_case.id,
+                                   test_cases(:test_cases_001).id]
       end
 
       private
+
+      def assert_equal_expected_ids(ids, selector="table#test_cases_list tr td.id")
+        assert_equal ids,
+                     css_select("table#test_cases_list tr td.id").map(&:text).map(&:to_i)
+      end
 
       def filter_params(field, operation, values)
         filters = {
