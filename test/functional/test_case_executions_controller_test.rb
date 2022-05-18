@@ -1,7 +1,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class TestCaseExecutionsControllerTest < ActionController::TestCase
-  fixtures :projects, :users, :issues, :issue_statuses, :roles, :members, :member_roles,
+  fixtures :projects, :users, :issues, :issue_statuses, :enumerations, :roles, :members, :member_roles,
            :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
@@ -20,7 +20,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def setup
       super
       @project = projects(:projects_003)
-      login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
     end
 
     def test_index
@@ -104,7 +104,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_breadcrumb_with_test_plan
       test_plan = test_plans(:test_plans_001)
       get :index, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: test_plan.project.identifier,
             test_plan_id: test_plan.id,
           }
       assert_select "div#content h2.inline-flex" do |h2|
@@ -115,7 +115,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_breadcrumb_with_test_case
       test_case = test_cases(:test_cases_001)
       get :index, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: test_case.project.identifier,
             test_case_id: test_case.id,
           }
       assert_select "div#content h2.inline-flex" do |h2|
@@ -127,7 +127,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       test_plan = test_plans(:test_plans_001)
       test_case = test_cases(:test_cases_001)
       get :index, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: test_plan.project.identifier,
             test_plan_id: test_plan.id,
             test_case_id: test_case.id,
           }
@@ -881,13 +881,13 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
-      login_as_allowed_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :edit_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
     end
 
     def test_update
       assert_no_difference("TestCase.count") do
         put :update, params: {
-              project_id: projects(:projects_003).identifier,
+              project_id: @test_plan.project.identifier,
               test_plan_id: @test_plan.id,
               test_case_id: @test_case.id,
               id: @test_case_execution.id,
@@ -904,7 +904,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_unassign_issue
       assert_no_difference("TestCase.count") do
         put :update, params: {
-              project_id: projects(:projects_003).identifier,
+              project_id: @test_plan.project.identifier,
               test_plan_id: @test_plan.id,
               test_case_id: @test_case.id,
               id: @test_case_execution.id,
@@ -934,7 +934,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_update_with_nonexistent_test_plan
       put :update, params: {
-            project_id: projects(:projects_003).identifier,
+            project_id: @test_plan.project.identifier,
             test_plan_id: NONEXISTENT_TEST_PLAN_ID,
             test_case_id: @test_case.id,
             id: @test_case_execution.id
@@ -946,7 +946,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_update_with_nonexistent_test_case
       put :update, params: {
-            project_id: projects(:projects_003).identifier,
+            project_id: @test_plan.project.identifier,
             test_plan_id: @test_plan.id,
             test_case_id: NONEXISTENT_TEST_CASE_ID,
             id: @test_case_execution.id
@@ -958,7 +958,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_update_with_nonexistent_test_case_execution
       put :update, params: {
-            project_id: projects(:projects_003).identifier,
+            project_id: @test_plan.project.identifier,
             test_plan_id: @test_plan.id,
             test_case_id: @test_case.id,
             id: NONEXISTENT_TEST_CASE_EXECUTION_ID
@@ -971,7 +971,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     def test_update_with_missing_params
       assert_no_difference("TestCaseExecution.count") do
         put :update, params: {
-              project_id: projects(:projects_003).identifier,
+              project_id: @test_plan.project.identifier,
               test_plan_id: @test_plan.id,
               test_case_id: @test_case.id,
               id: @test_case_execution.id,

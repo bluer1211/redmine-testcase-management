@@ -91,7 +91,7 @@ class TestCasesControllerTest < ActionController::TestCase
         super
         ActiveRecord::Base.default_timezone = :utc
         @project = projects(:projects_003)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
         @test_case = TestCase.create(name: "dummy",
                                      scenario: "dummy",
                                      expected: "dummy",
@@ -587,10 +587,15 @@ class TestCasesControllerTest < ActionController::TestCase
     end
 
     class New < self
+      def setup
+        super
+        login_as_allowed_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :add_issues])
+      end
+
       def test_breadcrumb_with_test_plan
         test_plan = test_plans(:test_plans_001)
         get :new, params: {
-              project_id: projects(:projects_002).identifier,
+              project_id: test_plan.project.identifier,
               test_plan_id: test_plan.id,
             }
         assert_select "div#content h2.inline-flex" do |h2|

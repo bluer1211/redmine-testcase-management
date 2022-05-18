@@ -39,7 +39,7 @@ def activate_module_for_projects(projects = Project.all)
   end
 end
 
-def login_as_allowed_with_permissions(projects, permissions)
+def login_as_allowed_with_permissions(projects, permissions = [])
   generate_user_with_permissions(projects, (permissions + [:test_cases, :test_plans, :test_case_executions]).uniq)
   @request.session[:user_id] = @user.id
 end

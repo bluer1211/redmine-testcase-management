@@ -77,7 +77,7 @@ class TestPlansControllerTest < ActionController::TestCase
   class Filter < self
     def setup
       @project = projects(:projects_003)
-      login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
     end
 
     class IssueStatuses < self
@@ -507,7 +507,7 @@ class TestPlansControllerTest < ActionController::TestCase
       @test_plan = @test_case.test_plan
       @test_case_execution = @test_case.test_case_executions.first
       @params = { project_id: @project.identifier }
-      @user = users(:users_002)
+      login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
       @new_issue = issues(:issues_001)
       @closed_issue = issues(:issues_008)
     end
