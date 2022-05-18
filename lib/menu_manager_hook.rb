@@ -1,3 +1,6 @@
+# This provides ability to highlight "TestCase Management" menu for Test Cases, Test Plans and Test Case Executions pages.
+# We should do this with more safer way...
+
 module Redmine::MenuManager::MenuHelper
   alias_method :__testcase_magagement__current_menu_item, :current_menu_item
 
