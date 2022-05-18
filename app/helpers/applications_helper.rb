@@ -126,10 +126,10 @@ module ApplicationsHelper
 
   # mainly copied from Rails's ApplicationController#authorize
   def authorize_with_issues_permission(controller = params[:controller], action = params[:action], global = false)
-    allowed = User.current.allowed_to?({controller: "issues", action: action}, @project || @projects, :global => global) &&
-              User.current.allowed_to?({controller: controller, action: action}, @project || @projects, :global => global)
+    issue_allowed = User.current.allowed_to?({controller: "issues", action: related_issues_action(action)}, @project || @projects, :global => global)
+    testcase_allowed = User.current.allowed_to?({controller: controller, action: action}, @project || @projects, :global => global)
     activated = !@project || @project.allows_to?(controller: controller, action: action)
-    if allowed and activated
+    if issue_allowed and testcase_allowed and activated
       true
     else
       if @project && @project.archived?
@@ -142,6 +142,17 @@ module ApplicationsHelper
         deny_access
       end
       false
+    end
+  end
+
+  def related_issues_action(action)
+    case action.to_sym
+    when :auto_complete, :statistics
+      :index
+    when :assign_test_case, :unassign_test_case
+      :edit
+    else
+      action
     end
   end
 
