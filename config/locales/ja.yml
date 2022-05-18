@@ -26,6 +26,7 @@ ja:
 
   permission_test_plans: "テスト計画"
   permission_test_cases: "テストケース"
+  permission_test_case_executions: "テスト実行結果"
   permission_edit_test_plan: "テスト計画の編集"
   permission_edit_test_case: "テストケースの編集"
   permission_edit_test_case_execution: "テスト実行結果の編集"
