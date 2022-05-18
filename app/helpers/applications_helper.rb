@@ -126,7 +126,8 @@ module ApplicationsHelper
 
   # mainly copied from Rails's ApplicationController#authorize
   def authorize_with_issues_permission(controller = params[:controller], action = params[:action], global = false)
-    allowed = User.current.allowed_to?({controller: "issues", action: action}, @project || @projects, :global => global)
+    allowed = User.current.allowed_to?({controller: "issues", action: action}, @project || @projects, :global => global) &&
+              User.current.allowed_to?({controller: controller, action: action}, @project || @projects, :global => global)
     activated = !@project || @project.allows_to?(controller: controller, action: action)
     if allowed and activated
       true
