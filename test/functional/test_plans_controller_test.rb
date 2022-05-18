@@ -824,9 +824,10 @@ class TestPlansControllerTest < ActionController::TestCase
 
     class ReassingedTestCase < self
       def test_reassigned
-        @project = projects(:projects_003)
         @test_case = test_cases(:test_cases_003)
         @test_plan = test_plans(:test_plans_002)
+        @project = @test_plan.project
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
         # reassign TC=3 under TP=2
         TestCaseTestPlan.create(test_plan: @test_plan,
                                 test_case: @test_case)

@@ -81,10 +81,11 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
     end
 
     def test_index_with_nonexistent_test_case
-      project = projects(:projects_002)
+      test_plan = test_plans(:test_plans_003)
+      project = test_plan.project
       get :index, params: {
             project_id: project.identifier,
-            test_plan_id: test_plans(:test_plans_003).id,
+            test_plan_id: test_plan.id,
             test_case_id: NONEXISTENT_TEST_CASE_ID
           }
       assert_response :missing
@@ -94,7 +95,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_breadcrumb
       get :index, params: {
-            project_id: projects(:projects_002).identifier,
+            project_id: @project.identifier,
           }
       assert_select "div#content h2" do |h2|
         assert_equal "#{I18n.t(:label_test_case_executions)}", h2.text
@@ -422,7 +423,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       def setup
         super
         @project = projects(:projects_003)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
         @order_params = {
           project_id: @project.identifier,
           test_plan_id: test_plans(:test_plans_003),
@@ -560,7 +561,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @project = projects(:projects_002)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
-      login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :add_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :add_issues])
     end
 
     def test_new
@@ -589,7 +590,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class Create < self
     def setup
       super
-      login_as_allowed_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :add_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :add_issues])
     end
 
     def test_create_with_test_plan
@@ -693,7 +694,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
-      login_as_allowed_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
     end
 
     def test_show
@@ -790,7 +791,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
-      login_as_allowed_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
     end
 
     def test_edit
@@ -992,7 +993,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
-      login_as_allowed_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :delete_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :delete_issues])
     end
 
 
