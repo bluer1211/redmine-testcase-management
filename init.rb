@@ -53,6 +53,7 @@ Redmine::Plugin.register :testcase_management do
 end
 
 Rails.configuration.to_prepare do
+  require_dependency "menu_manager_hook"
   require_dependency "inherit_issue_permissions"
   require_dependency "safe_attributes"
 end
