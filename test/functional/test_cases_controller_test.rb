@@ -1009,9 +1009,7 @@ class TestCasesControllerTest < ActionController::TestCase
           @request.session[:user_id] = @user.id
           get :auto_complete, params: @params.merge({term: "test",
                                                      test_plan_id: test_plans(:test_plans_003).id})
-          assert_response :success
-          assert_equal [],
-                       JSON.parse(@response.body)
+          assert_response :forbidden
         end
       end
     end
@@ -1732,8 +1730,7 @@ class TestCasesControllerTest < ActionController::TestCase
       get :index, params: {
             project_id: projects(:projects_003).identifier,
           }
-      assert_response :success
-      assert_select "tbody tr", 0
+      assert_response :forbidden
     end
 
     def test_index_with_test_plan

@@ -76,6 +76,7 @@ class TestPlansControllerTest < ActionController::TestCase
 
   class Filter < self
     def setup
+      super
       @project = projects(:projects_003)
       login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
     end
@@ -323,7 +324,7 @@ class TestPlansControllerTest < ActionController::TestCase
   class New < self
     def setup
       super
-      login_as_allowed_with_permissions(projects(:projects_002), [:view_project, :view_issues, :add_issues])
+      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :add_issues])
     end
 
     def test_breadcrumb
@@ -370,10 +371,10 @@ class TestPlansControllerTest < ActionController::TestCase
   class Assign < self
     def setup
       super
-      @project = projects(:projects_003)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
-      login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :add_issues, :delete_issues])
+      @project = @test_plan.project
+      login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :add_issues, :delete_issues])
     end
 
     def test_assign_test_case
@@ -412,8 +413,7 @@ class TestPlansControllerTest < ActionController::TestCase
     def test_index
       get :index, params: { project_id: projects(:projects_001).identifier }
 
-      assert_response :success
-      assert_select "tbody tr", 0
+      assert_response :forbidden
     end
 
     def test_show

@@ -25,7 +25,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def test_index
       get :index, params: {
-            project_id: @project.identifier,
+            project_id: test_plans(:test_plans_003).project.identifier,
             test_plan_id: test_plans(:test_plans_003).id,
             test_case_id: test_cases(:test_cases_002).id,
             c: ["result", "user", "execution_date", "comment", "issue"]
