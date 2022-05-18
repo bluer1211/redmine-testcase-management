@@ -23,7 +23,7 @@ class TestCasesTest < ApplicationSystemTestCase
     @test_case = test_cases(:test_cases_001)
     generate_user_with_permissions(@project, [:view_project, :view_issues,
                                               :add_issues, :edit_issues, :delete_issues,
-                                              :test_plans, :test_cases])
+                                              :test_plans, :test_cases, :test_case_executions])
     log_user(@user.login, "password")
     EnabledModule.create(name: "testcase_management", project: @project)
   end

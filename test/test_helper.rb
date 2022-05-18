@@ -22,10 +22,9 @@ def assert_back_to_lists_link(path)
   end
 end
 
-def generate_user_with_permissions(projects, permissions=[:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
+def generate_user_with_permissions(projects, permissions=[:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :test_cases, :test_plans, :test_case_executions])
   projects = [projects] if projects.is_a?(Project)
   permissions = [permissions] unless permissions.is_a?(Array)
-  permissions += [:test_cases, :test_plans, :test_case_executions]
   @role = Role.generate!(permissions: permissions.uniq)
   @user = User.generate!(login: "temp_user_#{User.count + 1}", password: "password")
   projects.each do |project|
@@ -38,6 +37,11 @@ def activate_module_for_projects(projects = Project.all)
     project.enabled_module_names += ["testcase_management"]
     project.save!
   end
+end
+
+def login_as_allowed_with_permissions(projects, permissions)
+  generate_user_with_permissions(projects, (permissions + [:test_cases, :test_plans, :test_case_executions]).uniq)
+  @request.session[:user_id] = @user.id
 end
 
 def login_with_permissions(projects, permissions)

@@ -9,7 +9,7 @@ class TestCaseFlowTest < Redmine::IntegrationTest
   def setup
     @project = projects(:projects_003)
     @test_plan = test_plans(:test_plans_002)
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :test_cases, :test_plans, :test_case_executions])
     log_user(@user.login, "password")
     @base_url = "/projects/#{@project.identifier}"
   end
