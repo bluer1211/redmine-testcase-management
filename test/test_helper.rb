@@ -25,8 +25,9 @@ end
 def generate_user_with_permissions(projects, permissions=[:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
   projects = [projects] if projects.is_a?(Project)
   permissions = [permissions] unless permissions.is_a?(Array)
-  @role = Role.generate!(permissions: permissions)
-  @user = User.generate!(login: "temp_user", password: "password")
+  permissions += [:test_cases, :test_plans, :test_case_executions]
+  @role = Role.generate!(permissions: permissions.uniq)
+  @user = User.generate!(login: "temp_user_#{User.count + 1}", password: "password")
   projects.each do |project|
     User.add_to_project(@user, project, @role)
   end
