@@ -2,6 +2,14 @@
   <% if @test_case -%>
     <li><%= context_menu_link l(:button_edit), edit_project_test_plan_test_case_path(id: @test_case.id),
             :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
+    <% if @test_case.test_plan %>
+      <li><%= link_to l(:label_relation_delete),
+              "/projects/#{@project.identifier}/test_plans/#{@test_case.test_plan.id}/assign_test_case/#{@test_case.id}",
+              method: :delete,
+              data: { confirm: l(:text_are_you_sure) },
+              title: l(:label_relation_delete),
+              class: 'icon icon-link-break', disabled: !@can[:edit] %></li>
+    <% end %>
   <% else %>
     <li><%= context_menu_link l(:button_edit), bulk_edit_project_test_cases_path(:ids => @test_case_ids),
             :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
