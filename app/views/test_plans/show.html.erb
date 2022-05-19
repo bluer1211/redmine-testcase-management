@@ -68,7 +68,7 @@
   <% query_options = nil unless defined?(query_options) %>
   <% query_options ||= {} %>
 
-  <%= form_tag({}) do -%>
+  <%= form_tag({}, :data => {:cm_url => project_test_plan_context_menu_path(test_plan_id: @test_plan.id)}) do -%>
     <div class="autoscroll">
       <table id="related_test_cases" class="list test_case odd-even <%= @query.css_classes %>">
         <thead>

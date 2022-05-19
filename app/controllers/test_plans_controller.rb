@@ -6,7 +6,8 @@ class TestPlansController < ApplicationController
   before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
   before_action :find_test_case_id, :only => [:unassign_test_case]
-  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case, :statistics]
+  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case, :statistics, :context_menu]
+  before_action :find_test_cases, :only => [:context_menu]
 
   before_action do
     prepare_issue_status_candidates
@@ -234,6 +235,20 @@ SQL
     rescue
       render 'forbidden', status: 404
     end
+  end
+
+  # GET /projects/:project_id/test_plans/:id/context_menu
+  def context_menu
+    if @test_cases.size == 1
+      @test_case = @test_cases.first
+    end
+    @test_case_ids = @test_cases.map(&:id).sort
+
+    edit_allowed = @test_cases.all? {|t| t.editable?(User.current)}
+    @can = {:edit => edit_allowed, :delete => edit_allowed}
+    @back = back_url
+
+    render :layout => false
   end
 
   private
