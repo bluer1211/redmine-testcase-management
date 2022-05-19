@@ -14,6 +14,10 @@ class TestCasesImportTest < ApplicationSystemTestCase
            :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases
 
+  def setup
+    activate_module_for_projects
+  end
+
   def test_import_test_cases_without_failures
     return true # FIX ME!!
     login_with_admin

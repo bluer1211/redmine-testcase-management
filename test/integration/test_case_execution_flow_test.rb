@@ -7,6 +7,7 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
   fixtures :test_plans, :test_cases, :test_case_executions
 
   def setup
+    activate_module_for_projects
     @project = projects(:projects_003)
     @test_plan = test_plans(:test_plans_003)
     @test_case = test_cases(:test_cases_002)

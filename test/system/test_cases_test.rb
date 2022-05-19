@@ -18,6 +18,7 @@ class TestCasesTest < ApplicationSystemTestCase
   include ApplicationsHelper
 
   def setup
+    activate_module_for_projects
     @project = projects(:projects_003)
     @test_plan = test_plans(:test_plans_002)
     @test_case = test_cases(:test_cases_001)

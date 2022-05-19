@@ -7,6 +7,7 @@ class TestPlanFlowTest < Redmine::IntegrationTest
   fixtures :test_plans
 
   def setup
+    activate_module_for_projects
     @project = projects(:projects_001)
     generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :test_cases, :test_plans, :test_case_executions])
     log_user(@user.login, "password")
