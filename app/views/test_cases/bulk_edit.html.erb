@@ -1,0 +1,55 @@
+<h2><%= l(:label_bulk_edit_selected_test_cases) %></h2>
+
+<% if @saved_test_cases && @unsaved_test_cases.present? %>
+<div id="errorExplanation">
+  <span>
+    <%= l(:notice_failed_to_save_issues,
+        :count => @unsaved_test_cases.size,
+        :total => @saved_test_cases.size,
+        :ids => @unsaved_test_cases.map {|i| "##{i.id}"}.join(', ')) %>
+  </span>
+  <ul>
+  <% bulk_edit_error_messages(@unsaved_test_cases).each do |message| %>
+    <li><%= message %></li>
+  <% end %>
+  </ul>
+</div>
+<% end %>
+
+<ul id="bulk-selection">
+  <% @test_cases.each do |test_case| %>
+    <%= content_tag 'li', link_to(test_case.name, project_test_plan_test_case_path(test_plan_id: test_case.test_plan.id, id: test_case.id)) %>
+  <% end %>
+</ul>
+
+<%= form_tag(bulk_edit_project_test_cases_path, :id => 'bulk_edit_form') do %>
+  <%= @test_cases.collect {|i| hidden_field_tag('ids[]', i.id, :id => nil)}.join("\n").html_safe %>
+  <div class="box tabular">
+    <fieldset class="attributes">
+      <legend><%= l(:label_change_properties) %></legend>
+
+      <div class="splitcontent">
+        <div class="splitcontentleft">
+        </div>
+
+        <div class="splitcontentright">
+        </div>
+      </div>
+    </fieldset>
+  </div>
+<% end %>
+
+<%= javascript_tag do %>
+$(window).on('load', function(){
+  $(document).on('change', 'input[data-disables]', function(){
+    if ($(this).prop('checked')){
+      $($(this).data('disables')).attr('disabled', true).val('');
+    } else {
+      $($(this).data('disables')).attr('disabled', false);
+    }
+  });
+});
+$(document).ready(function(){
+  $('input[data-disables]').trigger('change');
+});
+<% end %>

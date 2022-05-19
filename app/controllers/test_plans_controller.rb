@@ -18,6 +18,7 @@ class TestPlansController < ApplicationController
   include QueriesHelper
   helper :test_plans_queries
   include TestPlansQueriesHelper
+  helper :context_menus
 
   # GET /projects/:project_id/test_plans
   def index

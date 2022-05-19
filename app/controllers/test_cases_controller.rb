@@ -6,6 +6,7 @@ class TestCasesController < ApplicationController
   before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
   before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :auto_complete, :statistics]
+  before_action :find_test_cases, :only => [:bulk_edit, :bulk_update]
 
   before_action do
     prepare_user_candidates
@@ -282,6 +283,14 @@ SQL
     rescue
       render 'forbidden', status: 404
     end
+  end
+
+  # GET /projects/:project_id/test_cases/bulk_edit
+  def bulk_edit
+  end
+
+  # POST /projects/:project_id/test_cases/bulk_update
+  def bulk_update
   end
 
   private

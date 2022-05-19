@@ -11,6 +11,7 @@ en:
   label_test_case_new: "New Test Case"
   label_test_case_edit: "Edit Test Case"
   label_related_test_cases: "Related Test Cases"
+  label_bulk_edit_selected_test_cases: "Bulk edit test cases"
   label_test_case_execution_new: "New Test Case Execution"
   label_test_case_execution_edit: "Edit Test Case Execution"
   label_back_to_lists: "Back to lists"

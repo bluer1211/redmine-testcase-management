@@ -1,3 +1,9 @@
 <ul>
-  <li>context menu</li>
+  <% if @test_case -%>
+    <li><%= context_menu_link l(:button_edit), edit_project_test_plan_test_case_path(id: @test_case.id),
+            :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
+  <% else %>
+    <li><%= context_menu_link l(:button_edit), bulk_edit_project_test_cases_path(:ids => @test_case_ids),
+            :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
+  <% end %>
 </ul>
