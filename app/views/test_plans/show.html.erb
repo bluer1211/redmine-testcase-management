@@ -49,44 +49,6 @@
         } do |f| %>
       <%= render :partial => 'test_case_assignment', :locals => {:form => f}%>
     <% end %>
-    <% if @test_cases.any? %>
-      <%= form_tag({}) do %>
-      <table id="related_test_cases" class="list issues odd-even">
-        <tbody>
-          <% @test_cases.each do |test_case| %>
-            <tr class="issue">
-              <td><%= link_to "##{test_case.id} #{test_case.name}",
-                              project_test_plan_test_case_url(test_plan_id: @test_plan.id,
-                                                              id: test_case.id) %></td>
-              <td>
-                <% if test_case.latest_result.nil? %>
-                  <%= l(:label_none) %>
-                <% else %>
-                  <%= test_case.latest_result ? l(:label_succeed) : l(:label_failure) %>
-                <% end %>
-              </td>
-              <td><%= link_to test_case.user.name,
-                              user_path(test_case.user)  %></td>
-              <td>
-                <%= link_to l(:button_edit),
-                            edit_project_test_plan_test_case_path(test_plan_id: @test_plan.id,
-                                                                  id: test_case.id),
-                            title: l(:label_test_case_edit),
-                            class: "icon-only icon-edit" %>
-                <%= link_to l(:label_relation_delete),
-                            "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/assign_test_case/#{test_case.id}",
-                            method: :delete,
-                            data: { confirm: l(:text_are_you_sure) },
-                            title: l(:label_relation_delete),
-                            class: "icon-only icon-link-break" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-      <% end %>
-      <span class="pagination"><%= pagination_links_full @test_case_pages, @test_case_count %></span>
-    <% end %>
   </div>
 </div>
 
@@ -97,6 +59,52 @@
   </div>
 </div>
 
+<div>
+  <p><strong><%=l(:label_related_test_cases)%></strong></p>
+<% if @test_cases.empty? %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% else %>
+  <%= render_query_totals(@query) %>
+  <% query_options = nil unless defined?(query_options) %>
+  <% query_options ||= {} %>
+
+  <%= form_tag({}, :data => {:cm_url => project_test_plan_context_menu_path(test_plan_id: @test_plan.id)}) do -%>
+    <%= hidden_field_tag 'back_url', url_for(:params => request.query_parameters), :id => nil %>
+    <%= query_columns_hidden_tags(@query) %>
+    <div class="autoscroll">
+      <table id="related_test_cases" class="list test_case odd-even <%= @query.css_classes %>">
+        <thead>
+          <tr>
+            <th class="checkbox hide-when-print">
+              <%= check_box_tag 'check_all', '', false, :class => 'toggle-selection',
+              :title => "#{l(:button_check_all)}/#{l(:button_uncheck_all)}" %>
+            </th>
+            <% @query.inline_columns.each do |column| %>
+              <%= column_header(@query, column, query_options) %>
+            <% end %>
+            <th class="buttons"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @test_cases.each do |test_case| -%>
+            <tr id="test-case-<%= test_case.id %>" class="hascontextmenu <%= cycle('odd', 'even') %>">
+              <td class="checkbox hide-when-print"><%= check_box_tag("ids[]", test_case.id, false, :id => nil) %></td>
+              <% @query.inline_columns.each do |column| %>
+                <%= content_tag('td', column_content(column, test_case), :class => column.css_classes) %>
+              <% end %>
+              <td class="buttons"><%= link_to_context_menu %></td>
+            </tr>
+          <% end -%>
+        </tbody>
+      </table>
+      <span class="pagination"><%= pagination_links_full @test_case_pages, @test_case_count %></span>
+    </div>
+  <% end -%>
+<% end %>
+</div>
+
 <% content_for :sidebar do %>
   <%= render :partial => 'test_plans/sidebar' %>
 <% end %>
+
+<%= context_menu %>

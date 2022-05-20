@@ -115,6 +115,15 @@ module ApplicationsHelper
     false
   end
 
+  def find_test_cases
+    # Used via context menu
+    @test_cases = TestCase.where(id: params[:id] || params[:ids]).to_a
+    raise ActiveRecord::RecordNotFound if @test_cases.empty?
+    raise Unauthorized unless @test_cases.all?(&:visible?)
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
+
   # mainly copied from Rails's ApplicationController#authorize
   def authorize_with_issues_permission(controller = params[:controller], action = params[:action], global = false)
     allowed = User.current.allowed_to?({controller: "issues", action: action}, @project || @projects, :global => global)

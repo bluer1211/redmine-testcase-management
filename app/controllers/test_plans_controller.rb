@@ -5,8 +5,8 @@ class TestPlansController < ApplicationController
   before_action :find_project_id
   before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
-  before_action :find_test_case_id, :only => [:unassign_test_case]
-  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case, :statistics]
+  before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case, :statistics, :context_menu]
+  before_action :find_test_cases, :only => [:context_menu, :unassign_test_case]
 
   before_action do
     prepare_issue_status_candidates
@@ -17,6 +17,7 @@ class TestPlansController < ApplicationController
   include QueriesHelper
   helper :test_plans_queries
   include TestPlansQueriesHelper
+  helper :context_menus
 
   # GET /projects/:project_id/test_plans
   def index
@@ -57,11 +58,16 @@ class TestPlansController < ApplicationController
   def show
     @test_case_test_plan = TestCaseTestPlan.new
 
-    @test_case_count = @test_plan.test_cases.count
-    @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
-    @test_cases = TestCase.visible.with_latest_result(@test_plan).offset(@test_case_pages.offset).limit(@test_case_pages.per_page)
-
     @title = html_title("##{@test_plan.id} #{@test_plan.name}", l(:label_test_plans))
+
+    retrieve_query(TestCaseQuery, false)
+    if @query.valid?
+      @test_case_count = @query.test_case_count(params[:id], true)
+      @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
+      @test_cases = @query.test_cases(test_plan_id: params[:id],
+                                      offset: @test_case_pages.offset,
+                                      limit: @test_case_pages.per_page).visible
+    end
   end
 
   # GET /projects/:project_id/test_plans/:id/edit
@@ -164,18 +170,21 @@ class TestPlansController < ApplicationController
     end
   end
 
-  # DELETE /projects/:project_id/test_plans/:test_plan_id/assign_test_case/:test_case_id
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/unassign_test_case/:id
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/unassign_test_case/?ids[]=ID1&ids[]=ID2 ...
   def unassign_test_case
     return unless authorize_with_issues_permission(params[:controller], :destroy)
     begin
-      raise ActiveRecord::RecordNotFound unless @test_case.visible?
+      raise ActiveRecord::RecordNotFound unless @test_cases.all?(&:visible?)
       raise ActiveRecord::RecordNotFound unless @test_plan.visible?
-      @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
-                                                    test_case: @test_case).first
-      if @test_case_test_plan
-        @test_case_test_plan.destroy
-        # FIXME: unassign without full rendering, use remote XHR
-        flash[:notice] = l(:notice_successful_delete)
+      @test_cases.each do |test_case|
+        @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
+                                                      test_case: test_case).first
+        if @test_case_test_plan
+          @test_case_test_plan.destroy
+          # FIXME: unassign without full rendering, use remote XHR
+          flash[:notice] = l(:notice_successful_delete)
+        end
       end
       redirect_to project_test_plan_path(id: @test_plan.id)
     rescue
@@ -229,6 +238,22 @@ SQL
     rescue
       render 'forbidden', status: 404
     end
+  end
+
+  # GET /projects/:project_id/test_plans/:id/context_menu
+  def context_menu
+    if @test_cases.size == 1
+      @test_case = @test_cases.first
+    end
+    @test_case_ids = @test_cases.map(&:id).sort
+
+    edit_allowed = @test_cases.all? {|t| t.editable?(User.current)}
+    @can = {:edit => edit_allowed, :delete => edit_allowed}
+    @back = back_url
+
+    @safe_attributes = @test_cases.map(&:safe_attribute_names).reduce(:&)
+    @assignables = @project.users
+    render :layout => false
   end
 
   private

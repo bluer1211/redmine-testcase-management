@@ -147,24 +147,26 @@ class TestPlansControllerTest < ActionController::TestCase
   class Show < self
     def setup
       super
-      login_with_permissions(projects(:projects_002), [:view_project, :view_issues])
+      @project = projects(:projects_003)
+      login_with_permissions(@project, [:view_project, :view_issues])
     end
 
     def test_show
       test_plan = test_plans(:test_plans_002)
-      get :show, params: { project_id: @project_id, id: test_plan.id }
+      get :show, params: { project_id: @project.identifier, id: test_plan.id }
 
       assert_response :success
-      assert_select "tbody tr", 1
+      assert_select "table#related_test_cases tbody tr", 1
       assert_select "div#content h2.inline-flex" do |h2|
         assert_equal "#{I18n.t(:label_test_plans)} » \##{test_plan.id} #{test_plan.name}", h2.text
       end
       assert_select "div.subject div h3" do |h3|
         assert_equal test_plan.name, h3.text
       end
-      assert_select "table#related_test_cases tbody tr td:first-child" do |td|
-        assert_equal "##{test_cases(:test_cases_001).id} #{test_cases(:test_cases_001).name}", td.text
-      end
+      test_case = test_cases(:test_cases_001)
+      assert_equal ["", "#{test_case.id}", test_case.name, test_case.environment, test_case.user.name,
+                    I18n.t(:label_none), I18n.t(:label_none), test_case.scenario, test_case.expected, I18n.t(:button_actions)],
+                   css_select("table#related_test_cases tbody tr td").map(&:text)
       assert_select "div#test_case_tree div.contextual a:first-child" do |a|
         assert_equal new_project_test_plan_test_case_path(test_plan_id: test_plan.id), a.first.attributes["href"].text
         assert_equal I18n.t(:label_test_case_new), a.text
@@ -370,7 +372,7 @@ class TestPlansControllerTest < ActionController::TestCase
         delete :unassign_test_case, params: {
                  project_id: @project.identifier,
                  test_plan_id: @test_plan.id,
-                 test_case_id: @test_case.id
+                 id: @test_case.id
                }
       end
       assert_equal I18n.t(:notice_successful_delete), flash[:notice]
@@ -466,7 +468,7 @@ class TestPlansControllerTest < ActionController::TestCase
         delete :unassign_test_case, params: {
                  project_id: @project.identifier,
                  test_plan_id: @test_plan.id,
-                 test_case_id: @test_case.id
+                 id: @test_case.id
                }
       end
 

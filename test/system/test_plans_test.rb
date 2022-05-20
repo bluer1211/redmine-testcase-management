@@ -6,7 +6,7 @@ class ApplicationSystemTestCase
   options = {
     capabilities: Selenium::WebDriver::Remote::Capabilities.firefox
   }
-  browser = :headless_firefox
+  browser = ENV["UI"] ? :firefox : :headless_firefox
   driven_by :selenium, using: browser, screen_size: [1024, 900], options: options
 end
 
@@ -125,9 +125,42 @@ class TestPlansTest < ApplicationSystemTestCase
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
 
+    click_on I18n.t(:button_actions)
     click_on I18n.t(:label_relation_delete)
     page.accept_confirm I18n.t(:text_are_you_sure)
     # FIXME: evaluate #related_test_cases
+    assert_equal path, current_path
+  end
+
+  test "bulk unassign test case" do
+    @test_plan = test_plans(:test_plans_003)
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
+
+    check 'check_all'
+    find("table#related_test_cases tbody tr:first-child td.buttons a").click
+    click_on I18n.t(:label_relation_delete)
+    page.accept_confirm I18n.t(:text_are_you_sure)
+    assert_equal path, current_path
+    # No related test cases
+    assert_equal true, page.has_css?("p.nodata")
+  end
+
+  test "bulk assign specific user" do
+    @test_plan = test_plans(:test_plans_003)
+    path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
+    visit path
+
+    check 'check_all'
+    find("table#related_test_cases tbody tr:first-child td.buttons a").click
+    # select user folder in context menu
+    find("div#context-menu ul li.folder a").click
+
+    find("div#context-menu ul li.folder ul li:first-child a").click
+    # assigned to @user
+    assert_selector "table#related_test_cases tbody tr td.user" do |td|
+      assert_equal @user.name, td.text
+    end
     assert_equal path, current_path
   end
 

@@ -1,0 +1,67 @@
+<h2><%= l(:label_bulk_edit_selected_test_cases) %></h2>
+
+<% if @saved_test_cases && @unsaved_test_cases.present? %>
+<div id="errorExplanation">
+  <span>
+    <%= l(:notice_failed_to_save_issues,
+        :count => @unsaved_test_cases.size,
+        :total => @saved_test_cases.size,
+        :ids => @unsaved_test_cases.map {|i| "##{i.id}"}.join(', ')) %>
+  </span>
+  <ul>
+  <% bulk_edit_error_messages(@unsaved_test_cases).each do |message| %>
+    <li><%= message %></li>
+  <% end %>
+  </ul>
+</div>
+<% end %>
+
+<ul id="bulk-selection">
+  <% @test_cases.each do |test_case| %>
+    <%= content_tag 'li', link_to(test_case.name, project_test_plan_test_case_path(test_plan_id: test_case.test_plan.id, id: test_case.id)) %>
+  <% end %>
+</ul>
+
+<%= form_tag(bulk_update_project_test_cases_path(back: @back_url), :id => 'bulk_edit_form') do %>
+  <%= hidden_field_tag('back_url', @back_url) %>
+  <%= @test_cases.collect {|i| hidden_field_tag('ids[]', i.id, :id => nil)}.join("\n").html_safe %>
+  <div class="box tabular">
+    <fieldset class="attributes">
+      <legend><%= l(:label_change_properties) %></legend>
+
+      <div class="splitcontent">
+        <div class="splitcontentleft">
+          <% if @safe_attributes.include?('user_id') -%>
+          <p>
+            <label for='test_case_user_id'><%= l(:field_user) %></label>
+            <%= select_tag('test_case[user_id]',
+                content_tag('option', l(:label_no_change_option), :value => '') +
+            principals_options_for_select(@assignables, @test_case_params[:user_id])) %>
+          </p>
+          <% end %>
+        </div>
+
+        <div class="splitcontentright">
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <p>
+    <%= submit_tag l(:button_submit) %>
+  </p>
+<% end %>
+
+<%= javascript_tag do %>
+$(window).on('load', function(){
+  $(document).on('change', 'input[data-disables]', function(){
+    if ($(this).prop('checked')){
+      $($(this).data('disables')).attr('disabled', true).val('');
+    } else {
+      $($(this).data('disables')).attr('disabled', false);
+    }
+  });
+});
+$(document).ready(function(){
+  $('input[data-disables]').trigger('change');
+});
+<% end %>

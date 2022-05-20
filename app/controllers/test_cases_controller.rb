@@ -6,6 +6,7 @@ class TestCasesController < ApplicationController
   before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
   before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :auto_complete, :statistics]
+  before_action :find_test_cases, :only => [:bulk_edit, :bulk_update]
 
   before_action do
     prepare_user_candidates
@@ -281,6 +282,44 @@ SQL
       render :statistics
     rescue
       render 'forbidden', status: 404
+    end
+  end
+
+  # GET /projects/:project_id/test_cases/bulk_edit
+  def bulk_edit
+    @assignables = @project.users
+    @safe_attributes = @test_cases.map(&:safe_attribute_names).reduce(:&)
+    @test_case_params = params[:test_case] || {}
+    @back_url = params[:back_url]
+  end
+
+  # POST /projects/:project_id/test_cases/bulk_update
+  def bulk_update
+    attributes = parse_params_for_bulk_update(params[:test_case])
+
+    unsaved_test_cases = []
+    saved_test_cases = []
+
+    @test_cases.each do |orig_test_case|
+      orig_test_case.reload
+      test_case = orig_test_case
+      test_case.safe_attributes = attributes
+      if test_case.save
+        saved_test_cases << test_case
+      else
+        unsaved_test_cases << orig_test_case
+      end
+    end
+
+    if unsaved_test_cases.empty?
+      flash[:notice] = l(:notice_successful_update) unless saved_test_cases.empty?
+      redirect_back_or_default project_test_plans_path(id: @test_cases.first.test_plan.id)
+    else
+      @saved_test_cases = @test_cases
+      @unsaved_test_cases = unsaved_test_cases
+      @test_cases = TestCase.visible.where(id: @unsaved_test_cases.map(&:id)).to_a
+      bulk_edit
+      render :action => 'bulk_edit'
     end
   end
 
