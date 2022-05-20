@@ -164,8 +164,8 @@ class TestPlansControllerTest < ActionController::TestCase
         assert_equal test_plan.name, h3.text
       end
       test_case = test_cases(:test_cases_001)
-      assert_equal ["#{test_case.id}", test_case.name, test_case.environment, test_case.user.name,
-                    I18n.t(:label_none), I18n.t(:label_none), test_case.scenario, test_case.expected],
+      assert_equal ["", "#{test_case.id}", test_case.name, test_case.environment, test_case.user.name,
+                    I18n.t(:label_none), I18n.t(:label_none), test_case.scenario, test_case.expected, I18n.t(:button_actions)],
                    css_select("table#related_test_cases tbody tr td").map(&:text)
       assert_select "div#test_case_tree div.contextual a:first-child" do |a|
         assert_equal new_project_test_plan_test_case_path(test_plan_id: test_plan.id), a.first.attributes["href"].text
@@ -372,7 +372,7 @@ class TestPlansControllerTest < ActionController::TestCase
         delete :unassign_test_case, params: {
                  project_id: @project.identifier,
                  test_plan_id: @test_plan.id,
-                 test_case_id: @test_case.id
+                 id: @test_case.id
                }
       end
       assert_equal I18n.t(:notice_successful_delete), flash[:notice]
@@ -468,7 +468,7 @@ class TestPlansControllerTest < ActionController::TestCase
         delete :unassign_test_case, params: {
                  project_id: @project.identifier,
                  test_plan_id: @test_plan.id,
-                 test_case_id: @test_case.id
+                 id: @test_case.id
                }
       end
 

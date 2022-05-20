@@ -5,9 +5,8 @@ class TestPlansController < ApplicationController
   before_action :find_project_id
   before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
-  before_action :find_test_case_id, :only => [:unassign_test_case]
   before_action :authorize_with_issues_permission, :except => [:index, :new, :create, :assign_test_case, :unassign_test_case, :statistics, :context_menu]
-  before_action :find_test_cases, :only => [:context_menu]
+  before_action :find_test_cases, :only => [:context_menu, :unassign_test_case]
 
   before_action do
     prepare_issue_status_candidates
@@ -171,18 +170,21 @@ class TestPlansController < ApplicationController
     end
   end
 
-  # DELETE /projects/:project_id/test_plans/:test_plan_id/assign_test_case/:test_case_id
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/unassign_test_case/:id
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/unassign_test_case/?ids[]=ID1&ids[]=ID2 ...
   def unassign_test_case
     return unless authorize_with_issues_permission(params[:controller], :destroy)
     begin
-      raise ActiveRecord::RecordNotFound unless @test_case.visible?
+      raise ActiveRecord::RecordNotFound unless @test_cases.all?(&:visible?)
       raise ActiveRecord::RecordNotFound unless @test_plan.visible?
-      @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
-                                                    test_case: @test_case).first
-      if @test_case_test_plan
-        @test_case_test_plan.destroy
-        # FIXME: unassign without full rendering, use remote XHR
-        flash[:notice] = l(:notice_successful_delete)
+      @test_cases.each do |test_case|
+        @test_case_test_plan = TestCaseTestPlan.where(test_plan: @test_plan,
+                                                      test_case: test_case).first
+        if @test_case_test_plan
+          @test_case_test_plan.destroy
+          # FIXME: unassign without full rendering, use remote XHR
+          flash[:notice] = l(:notice_successful_delete)
+        end
       end
       redirect_to project_test_plan_path(id: @test_plan.id)
     rescue
