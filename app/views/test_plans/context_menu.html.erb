@@ -2,6 +2,21 @@
   <% if @test_case -%>
     <li><%= context_menu_link l(:button_edit), edit_project_test_plan_test_case_path(id: @test_case.id),
             :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
+    <% if @safe_attributes.include?("user_id") && @assignables.present? -%>
+      <li class="folder">
+        <a href="#" class="submenu"><%= l(:field_user) %></a>
+        <ul>
+          <% if @assignables.include?(User.current) %>
+          <li><%= context_menu_link "<< #{l(:label_me)} >>", bulk_update_project_test_cases_path(:ids => @test_case_ids, :test_case => {'user_id' => User.current},
+            :back_url => @back), :method => :post, :disabled => !@can[:edit] %></li>
+          <% end %>
+          <% @assignables.each do |u| -%>
+          <li><%= context_menu_link u.name, bulk_update_project_test_cases_path(:ids => @test_case_ids, :test_case => {'user_id' => u}, :back_url => @back),
+            :method => :post, :disabled => !@can[:edit] %></li>
+          <% end -%>
+        </ul>
+      </li>
+    <% end %>
     <% if @test_case.test_plan %>
       <li><%= link_to l(:label_relation_delete),
               "/projects/#{@project.identifier}/test_plans/#{@test_case.test_plan.id}/assign_test_case/#{@test_case.id}",
@@ -13,6 +28,21 @@
   <% else %>
     <li><%= context_menu_link l(:button_edit), bulk_edit_project_test_cases_path(:ids => @test_case_ids),
             :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
+    <% if @safe_attributes.include?("user_id") && @assignables.present? -%>
+      <li class="folder">
+        <a href="#" class="submenu"><%= l(:field_user) %></a>
+        <ul>
+          <% if @assignables.include?(User.current) %>
+          <li><%= context_menu_link "<< #{l(:label_me)} >>", bulk_update_project_test_cases_path(:ids => @test_case_ids, :test_case => {'user_id' => User.current},
+            :back_url => @back), :method => :post, :disabled => !@can[:edit] %></li>
+          <% end %>
+          <% @assignables.each do |u| -%>
+          <li><%= context_menu_link u.name, bulk_update_project_test_cases_path(:ids => @test_case_ids, :test_case => {'user_id' => u}, :back_url => @back),
+            :method => :post, :disabled => !@can[:edit] %></li>
+          <% end -%>
+        </ul>
+      </li>
+    <% end %>
     <% ids = @test_cases.pluck(:id).map { |id| "ids[]=#{id}" }.join("&") %>
     <li><%= link_to l(:label_relation_delete),
             "/projects/#{@project.identifier}/test_plans/#{@test_cases.first.test_plan.id}/assign_test_case/?#{ids}",

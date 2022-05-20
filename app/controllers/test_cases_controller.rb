@@ -291,6 +291,32 @@ SQL
 
   # POST /projects/:project_id/test_cases/bulk_update
   def bulk_update
+    attributes = parse_params_for_bulk_update(params[:test_case])
+
+    unsaved_test_cases = []
+    saved_test_cases = []
+
+    @test_cases.each do |orig_test_case|
+      orig_test_case.reload
+      test_case = orig_test_case
+      test_case.safe_attributes = attributes
+      if test_case.save
+        saved_test_cases << test_case
+      else
+        unsaved_test_cases << orig_test_case
+      end
+    end
+
+    if unsaved_test_cases.empty?
+      flash[:notice] = l(:notice_successful_update) unless saved_test_cases.empty?
+      redirect_to params[:back_url]
+    else
+      @saved_test_cases = @test_cases
+      @unsaved_test_cases = unsaved_test_cases
+      @test_cases = TestCase.visible.where(id: @unsaved_test_cases.map(&:id)).to_a
+      bulk_edit
+      render :action => 'bulk_edit'
+    end
   end
 
   private

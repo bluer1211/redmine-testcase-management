@@ -251,6 +251,8 @@ SQL
     @can = {:edit => edit_allowed, :delete => edit_allowed}
     @back = back_url
 
+    @safe_attributes = @test_cases.map(&:safe_attribute_names).reduce(:&)
+    @assignables = @project.users
     render :layout => false
   end
 
