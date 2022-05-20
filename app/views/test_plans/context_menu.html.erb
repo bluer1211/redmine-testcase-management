@@ -26,7 +26,7 @@
               class: 'icon icon-link-break', disabled: !@can[:edit] %></li>
     <% end %>
   <% else %>
-    <li><%= context_menu_link l(:button_edit), bulk_edit_project_test_cases_path(:ids => @test_case_ids),
+    <li><%= context_menu_link l(:button_edit), bulk_edit_project_test_cases_path(:ids => @test_case_ids, :back_url => @back),
             :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
     <% if @safe_attributes.include?("user_id") && @assignables.present? -%>
       <li class="folder">

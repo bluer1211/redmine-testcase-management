@@ -287,6 +287,10 @@ SQL
 
   # GET /projects/:project_id/test_cases/bulk_edit
   def bulk_edit
+    @assignables = @project.users
+    @safe_attributes = @test_cases.map(&:safe_attribute_names).reduce(:&)
+    @test_case_params = params[:test_case] || {}
+    @back_url = params[:back_url]
   end
 
   # POST /projects/:project_id/test_cases/bulk_update
@@ -309,7 +313,7 @@ SQL
 
     if unsaved_test_cases.empty?
       flash[:notice] = l(:notice_successful_update) unless saved_test_cases.empty?
-      redirect_to params[:back_url]
+      redirect_back_or_default project_test_plans_path(id: @test_cases.first.test_plan.id)
     else
       @saved_test_cases = @test_cases
       @unsaved_test_cases = unsaved_test_cases

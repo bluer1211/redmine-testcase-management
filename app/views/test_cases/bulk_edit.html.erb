@@ -22,7 +22,8 @@
   <% end %>
 </ul>
 
-<%= form_tag(bulk_edit_project_test_cases_path, :id => 'bulk_edit_form') do %>
+<%= form_tag(bulk_update_project_test_cases_path(back: @back_url), :id => 'bulk_edit_form') do %>
+  <%= hidden_field_tag('back_url', @back_url) %>
   <%= @test_cases.collect {|i| hidden_field_tag('ids[]', i.id, :id => nil)}.join("\n").html_safe %>
   <div class="box tabular">
     <fieldset class="attributes">
@@ -30,6 +31,14 @@
 
       <div class="splitcontent">
         <div class="splitcontentleft">
+          <% if @safe_attributes.include?('user_id') -%>
+          <p>
+            <label for='test_case_user_id'><%= l(:field_user) %></label>
+            <%= select_tag('test_case[user_id]',
+                content_tag('option', l(:label_no_change_option), :value => '') +
+            principals_options_for_select(@assignables, @test_case_params[:user_id])) %>
+          </p>
+          <% end %>
         </div>
 
         <div class="splitcontentright">
@@ -37,6 +46,9 @@
       </div>
     </fieldset>
   </div>
+  <p>
+    <%= submit_tag l(:button_submit) %>
+  </p>
 <% end %>
 
 <%= javascript_tag do %>
