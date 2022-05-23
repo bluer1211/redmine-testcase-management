@@ -195,6 +195,28 @@ class TestPlansControllerTest < ActionController::TestCase
         end
       end
     end
+
+    def test_scenario_with_newline
+      scenario = "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11"
+      test_case = test_cases(:test_cases_001).update(scenario: scenario)
+      test_plan = test_plans(:test_plans_002)
+      get :show, params: { project_id: @project.identifier, id: test_plan.id }
+      expected = 9.times.collect { |i| "<p>#{i+1}</p>\n" }.join + "<p>10\n11</p>"
+      assert_select "table#related_test_cases tbody tr:first-child td.scenario" do |node|
+        assert_equal expected, node.first.inner_html
+      end
+    end
+
+    def test_expected_with_newlines
+      expected = "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11"
+      test_case = test_cases(:test_cases_001).update(expected: expected)
+      test_plan = test_plans(:test_plans_002)
+      get :show, params: { project_id: @project.identifier, id: test_plan.id }
+      expected = 9.times.collect { |i| "<p>#{i+1}</p>\n" }.join + "<p>10\n11</p>"
+      assert_select "table#related_test_cases tbody tr:first-child td.expected" do |node|
+        assert_equal expected, node.first.inner_html
+      end
+    end
   end
 
   class Edit < self
