@@ -187,7 +187,7 @@ class TestPlansControllerTest < ActionController::TestCase
     end
 
     def test_show_with_nonexistent_test_plan
-      get :show, params: { project_id: @project_id, id: NONEXISTENT_TEST_PLAN_ID }
+      get :show, params: { project_id: @project.id, id: NONEXISTENT_TEST_PLAN_ID }
       assert_response :missing
       assert_flash_error I18n.t(:error_test_plan_not_found)
       assert_select "div#content a" do |link|
@@ -379,7 +379,6 @@ class TestPlansControllerTest < ActionController::TestCase
     def setup
       super
       activate_module_for_projects
-      @project_id = projects(:projects_002).id
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
       @project = @test_plan.project
@@ -497,9 +496,9 @@ class TestPlansControllerTest < ActionController::TestCase
     end
 
     def test_unassign_test_case
-      @project = projects(:projects_003)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
+      @project = @test_plan.project;
       assert_no_difference("TestCaseTestPlan.count", -1) do
         delete :unassign_test_case, params: {
                  project_id: @project.identifier,
@@ -1031,14 +1030,14 @@ class TestPlansControllerTest < ActionController::TestCase
     end
 
     def test_unassign_test_case
-      @project = projects(:projects_002)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
+      @project = @test_plan.project
       assert_no_difference("TestCaseTestPlan.count", -1) do
         delete :unassign_test_case, params: {
                  project_id: @project.identifier,
                  test_plan_id: @test_plan.id,
-                 test_case_id: @test_case.id
+                 id: @test_case.id,
                }
       end
       assert_response :forbidden
