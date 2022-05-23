@@ -394,9 +394,9 @@ class TestPlansControllerTest < ActionController::TestCase
                  test_case_id: test_cases(:test_cases_002).id
                }
              }
+        assert_redirected_to project_test_plan_path(:id => @test_plan.id)
       end
       assert_equal I18n.t(:notice_successful_update), flash[:notice]
-      assert_redirected_to project_test_plan_path(:id => @test_plan.id)
     end
 
     def test_unassign_test_case
@@ -408,9 +408,9 @@ class TestPlansControllerTest < ActionController::TestCase
                  test_plan_id: @test_plan.id,
                  id: @test_case.id
                }
+        assert_redirected_to project_test_plan_path(:id => @test_plan.id)
       end
       assert_equal I18n.t(:notice_successful_delete), flash[:notice]
-      assert_redirected_to project_test_plan_path(:id => @test_plan.id)
     end
   end
 
