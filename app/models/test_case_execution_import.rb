@@ -59,9 +59,18 @@ class TestCaseExecutionImport < Import
     end
 
     attributes = {
-      "comment" => row_value(row, "comment"),
-      "result" => (row_value(row, "result") == l(:label_succeed)),
+      "comment" => row_value(row, "comment")
     }
+
+    if result = row_value(row, "result")
+      if [l(:label_succeed), l(:label_failure)].include?(result)
+        attributes["result"] = (result == l(:label_succeed))
+      else
+        attributes["result"] = nil
+      end
+    else
+      attributes["result"] = nil
+    end
 
     if user_name = row_value(row, "user")
       if found_user = Principal.detect_by_keyword(test_case_execution.ownable_users, user_name)
