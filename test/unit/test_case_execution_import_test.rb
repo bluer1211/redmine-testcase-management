@@ -94,6 +94,18 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
     end
   end
 
+  def test_empty_result_error
+    import = generate_import_with_mapping("test_case_executions_empty_result.csv")
+    import.user_id = @user.id
+    test_case_executions = new_records(TestCaseExecution, 1) do
+      import.run
+    end
+    assert_equal ["Result is not included in the list"],
+                          import.unsaved_items.pluck(:message)
+    # only second data will be imported
+    assert_equal [102], test_case_executions.pluck(:test_case_id)
+  end
+
   private
 
   def prepare_authorized_user
