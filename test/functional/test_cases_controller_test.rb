@@ -11,11 +11,12 @@ class TestCasesControllerTest < ActionController::TestCase
   NONEXISTENT_TEST_PLAN_ID = 404
   NONEXISTENT_TEST_CASE_ID = 404
 
-  def setup
-    activate_module_for_projects
-  end
-
   class Independent < self
+    def setup
+      super
+      activate_module_for_projects
+    end
+
     class Index < self
       def setup
         super
@@ -1016,6 +1017,11 @@ class TestCasesControllerTest < ActionController::TestCase
   end
 
   class AssociatedWithTestPlan < self
+    def setup
+      super
+      activate_module_for_projects
+    end
+
     class Index < self
       def setup
         super
@@ -1723,6 +1729,7 @@ class TestCasesControllerTest < ActionController::TestCase
   class ViewWithoutPermissions < self
     def setup
       super
+      activate_module_for_projects
       login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project])
     end
 
@@ -1866,6 +1873,7 @@ class TestCasesControllerTest < ActionController::TestCase
   class ModifyWithoutPermissions < self
     def setup
       super
+      activate_module_for_projects
       login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
     end
 
@@ -1972,6 +1980,10 @@ class TestCasesControllerTest < ActionController::TestCase
   end
 
   class Statistics < self
+    def setup
+      activate_module_for_projects
+    end
+
     class SingleUser < self
       def setup
         super
@@ -2505,4 +2517,94 @@ class TestCasesControllerTest < ActionController::TestCase
     end
   end
 
+  class ForbiddenAccess < self
+    def setup
+      @test_case = test_cases(:test_cases_001)
+      @project = @test_case.project
+    end
+
+    class ModuleStillDeactivated < self
+      def setup
+        super
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+      end
+    end
+
+    class PermissionStillMissing < self
+      def setup
+        super
+        login_with_permissions(@project, [:view_project, :view_issues])
+        activate_module_for_projects
+      end
+    end
+
+    def test_index
+      get :index, params: { project_id: @project.identifier }
+      assert_response :forbidden
+    end
+
+    def test_show
+      get :show, params: { project_id: @project.identifier, id: @test_case.id }
+      assert_response :forbidden
+    end
+
+    def test_new
+      get :new, params: { project_id: @project.identifier }
+      assert_response :forbidden
+    end
+
+    def test_create
+      assert_no_difference("TestCase.count") do
+        post :create, params: {
+               project_id: @project.identifier,
+               test_case: {
+                 name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                 user: 2
+               },
+             }
+      end
+      assert_response :forbidden
+    end
+
+    def test_edit
+      get :edit, params: { project_id: @project.identifier, id: @test_case.id }
+      assert_response :forbidden
+    end
+
+    def test_update
+      put :update, params: {
+            project_id: @project.identifier,
+            id: @test_case.id,
+            test_case: {
+              name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+              user: 2
+            },
+          }
+      assert_response :forbidden
+    end
+
+    def test_destroy
+      assert_no_difference("TestCase.count") do
+        delete :destroy, params: {
+                 project_id: @project.identifier,
+                 id: @test_case.id,
+               }
+      end
+      assert_response :forbidden
+    end
+
+    def test_statistics
+      get :statistics, params: { project_id: @project.identifier }
+      assert_response :forbidden
+    end
+
+    def test_auto_complete
+      get :auto_complete, params: {
+            project_id: @project.identifier,
+            id: @test_case.id,
+            terms: "TEST",
+          }
+      assert_response :forbidden
+    end
+  end
 end

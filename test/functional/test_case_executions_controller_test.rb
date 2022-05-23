@@ -12,13 +12,10 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   NONEXISTENT_TEST_CASE_ID = 404
   NONEXISTENT_TEST_CASE_EXECUTION_ID = 404
 
-  def setup
-    activate_module_for_projects
-  end
-
   class Index < self
     def setup
       super
+      activate_module_for_projects
       @project = projects(:projects_003)
       login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
     end
@@ -558,6 +555,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class New < self
     def setup
       super
+      activate_module_for_projects
       @project = projects(:projects_002)
       @test_plan = test_plans(:test_plans_002)
       @test_case = test_cases(:test_cases_001)
@@ -590,6 +588,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class Create < self
     def setup
       super
+      activate_module_for_projects
       login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :add_issues])
     end
 
@@ -691,6 +690,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class Show < self
     def setup
       super
+      activate_module_for_projects
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -788,6 +788,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def setup
       super
+      activate_module_for_projects
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -879,6 +880,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
 
     def setup
       super
+      activate_module_for_projects
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -990,6 +992,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class Destroy < self
     def setup
       super
+      activate_module_for_projects
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -1085,6 +1088,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class ViewWithoutPermission < self
     def setup
       super
+      activate_module_for_projects
       @project = projects(:projects_003)
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
@@ -1180,6 +1184,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
   class ModifyWithoutPermission < self
     def setup
       super
+      activate_module_for_projects
       @test_plan = test_plans(:test_plans_003)
       @test_case = test_cases(:test_cases_002)
       @test_case_execution = test_case_executions(:test_case_executions_001)
@@ -1224,6 +1229,105 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
                  test_plan_id: @test_plan.id,
                  test_case_id: @test_case.id,
                  id: @test_case_execution.id
+               }
+      end
+      assert_response :forbidden
+    end
+  end
+
+  class ForbiddenAccess < self
+    def setup
+      @test_plan = test_plans(:test_plans_003)
+      @test_case = test_cases(:test_cases_002)
+      @test_case_execution = test_case_executions(:test_case_executions_001)
+      @project = @test_plan.project
+    end
+
+    class ModuleStillDeactivated < self
+      def setup
+        super
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+      end
+    end
+
+    class PermissionStillMissing < self
+      def setup
+        super
+        login_with_permissions(@project, [:view_project, :view_issues])
+        activate_module_for_projects
+      end
+    end
+
+    def test_index
+      get :index, params: { project_id: @project.identifier }
+      assert_response :forbidden
+    end
+
+    def test_show
+      get :show, params: {
+            project_id: @project.identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id,
+          }
+      assert_response :forbidden
+    end
+
+    def test_new
+      get :new, params: {
+            project_id: @project.identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+          }
+      assert_response :forbidden
+    end
+
+    def test_create
+      assert_no_difference("TestCaseExecution.count") do
+        post :create, params: {
+               project_id: @project.identifier,
+               test_plan_id: @test_plan.id,
+               test_case_id: @test_case.id,
+               test_case_execution: {
+                 result: true, user: 2, issue_id: issues(:issues_001).id,
+                 comment: "dummy", execution_date: "2022-01-01"
+               }
+             }
+      end
+      assert_response :forbidden
+    end
+
+    def test_edit
+      get :edit, params: {
+            project_id: @project.identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id
+          }
+      assert_response :forbidden
+    end
+
+    def test_update
+      put :update, params: {
+            project_id: @project.identifier,
+            test_plan_id: @test_plan.id,
+            test_case_id: @test_case.id,
+            id: @test_case_execution.id,
+            test_case_execution: {
+              result: true, user: 2, issue_id: issues(:issues_001).id,
+              comment: "dummy", execution_date: "2022-01-01",
+            },
+          }
+      assert_response :forbidden
+    end
+
+    def test_destroy
+      assert_no_difference("TestCaseExecution.count") do
+        delete :destroy, params: {
+                 project_id: @project.identifier,
+                 test_plan_id: @test_plan.id,
+                 test_case_id: @test_case.id,
+                 id: @test_case_execution.id,
                }
       end
       assert_response :forbidden
