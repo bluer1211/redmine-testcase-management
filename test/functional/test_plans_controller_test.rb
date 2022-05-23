@@ -400,6 +400,8 @@ class TestPlansControllerTest < ActionController::TestCase
     end
 
     def test_unassign_test_case
+      @test_plan.test_cases << @test_case
+      @test_plan.save!
       assert_difference("TestCaseTestPlan.count", -1) do
         delete :unassign_test_case, params: {
                  project_id: @project.identifier,
