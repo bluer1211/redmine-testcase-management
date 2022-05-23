@@ -1,3 +1,38 @@
+# v1.2.0
+
+## Release v1.2.0 - 2022/MM/DD
+
+### Improvements
+
+* test case: Expanded scenario and expected textarea editable rows.
+* test case: Changed environment input field to optional.
+* test case execution: Supported to fill in issue template. MR#36
+* test case: Tweaked layout for Zenmine theme.
+  There was a broken floating layout issue with it. MR#35
+* test case execution: Changed to show scenario and expected when editing test case. MR#38
+* test case execution: Supported to filter with scenario and expected. MR#39
+* test case: Supported to import with test plan CSV.
+  It makes easy to import modified version of exported test case CSV. MR#41
+* test case execution: Added missing filter items (test plan, test case) MR#42
+* test case: Supported to filter with latest execution date/latest result. MR#46
+* Translated labels for module permissions.
+* test plan: Tweaked list of related test case layout in a table and supported bulk operations via context menu. MR#47
+
+### Bug fixes
+
+* test case: Show newline correctly in scenario, expected fields in list.
+* test case: Fixed a bug that CSV export with execution date. MR#40
+* test case execution: Fixed a bug that back link navigate to list of test plan when it raised error.
+  It should be linked to list of test case execution. MR#43
+* Fixed a bug that non project members was listed in select options.
+* Fixed a bug that "testcase management" tab was shown even though the module was deactivated for the project.
+* test plan: Fixed a bug that open/closed filter causes a error. MR#44
+* test case execution: Fixed a bug that empty result will be imported as "Failure" status. MR#48
+
+### Miscellaneous
+
+* Changed to be Redmine 4.2 ready.
+
 # v1.1.0
 
 ## Release v1.1.0 - 2022/04/22
