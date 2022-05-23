@@ -416,6 +416,120 @@ class TestPlansControllerTest < ActionController::TestCase
     end
   end
 
+  class BulkUpdate < self
+    class One < self
+      def setup
+        super
+        activate_module_for_projects
+        @project = projects(:projects_003)
+        @test_plan = test_plans(:test_plans_003)
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues])
+      end
+
+      def test_update_status
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_plan.id],
+               test_plan: {
+                 user_id: @user.id
+               },
+               back_url: project_test_plans_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_plans_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal [@user.name], css_select("table#test_plans_list tbody tr:first-child td.user").map(&:text)
+      end
+
+      def test_update_begin_date
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_plan.id],
+               test_plan: {
+                 begin_date: "2022-01-01"
+               },
+               back_url: project_test_plans_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_plans_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal ["2022/01/01"], css_select("table#test_plans_list tbody tr:first-child td.begin_date").map(&:text)
+      end
+
+      def test_update_end_date
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_plan.id],
+               test_plan: {
+                 end_date: "2021-12-31"
+               },
+               back_url: project_test_plans_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_plans_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal ["2021/12/31"], css_select("table#test_plans_list tbody tr:first-child td.end_date").map(&:text)
+      end
+    end
+
+    class Many < self
+      def setup
+        super
+        activate_module_for_projects
+        @project = projects(:projects_003)
+        @test_plan3 = test_plans(:test_plans_003)
+        @test_plan2 = test_plans(:test_plans_002)
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues])
+      end
+
+      def test_update_status
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_plan3.id, @test_plan2.id],
+               test_plan: {
+                 user_id: @user.id
+               },
+               back_url: project_test_plans_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_plans_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal [@user.name, @user.name],
+                     css_select("table#test_plans_list tbody tr td.user").map(&:text)
+      end
+
+      def test_update_begin_date
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_plan3.id, @test_plan2.id],
+               test_plan: {
+                 begin_date: "2022-01-01"
+               },
+               back_url: project_test_plans_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_plans_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal ["2022/01/01", "2022/01/01"], css_select("table#test_plans_list tbody tr td.begin_date").map(&:text)
+      end
+
+      def test_update_end_date
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_plan3.id, @test_plan2.id],
+               test_plan: {
+                 end_date: "2021-12-31"
+               },
+               back_url: project_test_plans_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_plans_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal ["2021/12/31", "2021/12/31"], css_select("table#test_plans_list tbody tr td.end_date").map(&:text)
+      end
+    end
+  end
+
   class ViewWithoutPermission < self
     def setup
       super
