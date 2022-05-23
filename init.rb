@@ -13,8 +13,8 @@ Redmine::Plugin.register :testcase_management do
   author_url 'https://www.clear-code.com'
 
   project_module :testcase_management do
-    permission :test_cases, {:test_cases => [:index, :show, :new, :create, :edit, :update, :destroy, :statistics, :auto_complete]}
-    permission :test_plans, {:test_plans => [:index, :show, :new, :create, :edit, :update, :destroy, :statistics, :assign_test_case, :unassign_test_case]}
+    permission :test_cases, {:test_cases => [:index, :show, :new, :create, :edit, :update, :destroy, :statistics, :auto_complete, :bulk_edit, :bulk_update]}
+    permission :test_plans, {:test_plans => [:index, :show, :new, :create, :edit, :update, :destroy, :statistics, :assign_test_case, :unassign_test_case, :context_menu]}
     permission :test_case_executions, {:test_case_executions => [:index, :show, :new, :create, :edit, :update, :destroy]}
 
     permission :import_test_cases, :test_cases => :imports
