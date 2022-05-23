@@ -49,6 +49,8 @@ module TestPlansQueriesHelper
         else
           l(:label_none)
         end
+      when :scenario, :expected
+        column_truncated_text(value)
       else
         super
       end
