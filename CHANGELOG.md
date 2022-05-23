@@ -16,7 +16,7 @@
 * test case execution: Added missing filter items (test plan, test case) MR#42
 * test case: Supported to filter with latest execution date/latest result. MR#46
 * Translated labels for module permissions.
-* test plan: Tweaked list of related test case layout in a table and supported bulk operations via context menu. MR#47
+* test plan: Tweaked list of related test case layout in a table and supported bulk operations via context menu. MR#47, MR#50
 
 ### Bug fixes
 
