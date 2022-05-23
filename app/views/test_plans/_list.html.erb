@@ -11,6 +11,7 @@
         <% query.inline_columns.each do |column| %>
           <%= column_header(query, column, query_options) %>
         <% end %>
+        <th class="buttons"></th>
       </tr>
     </thead>
     <tbody>
@@ -19,9 +20,12 @@
           <% query.inline_columns.each do |column| %>
             <%= content_tag('td', column_content(column, test_plan), :class => column.css_classes) %>
           <% end %>
+          <td class="buttons"><%= link_to_context_menu %></td>
         </tr>
       <% end -%>
     </tbody>
   </table>
   </div>
 <% end -%>
+
+<% context_menu %>
