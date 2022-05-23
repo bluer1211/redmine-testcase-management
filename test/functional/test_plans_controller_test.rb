@@ -38,16 +38,18 @@ class TestPlansControllerTest < ActionController::TestCase
       columns = []
       assert_select "table#test_plans_list thead tr:first-child th" do |ths|
         ths.each do |th|
-          columns << th.text
+          columns << th.text.strip
         end
       end
-      assert_equal ['#',
+      assert_equal ['',
+                    '#',
                     I18n.t(:field_name),
                     I18n.t(:field_status),
                     I18n.t(:field_estimated_bug),
                     I18n.t(:field_user),
                     I18n.t(:field_begin_date),
-                    I18n.t(:field_end_date)
+                    I18n.t(:field_end_date),
+                    '',
                    ],
                    columns
       assert_select "div#content div.contextual > a:first-child" do |a|
