@@ -7,6 +7,7 @@ class TestPlansController < ApplicationController
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
   before_action :find_test_cases, :only => [:show_context_menu, :unassign_test_case]
   before_action :authorize_with_issues_permission
+  before_action :find_test_plans, :only => [:list_context_menu, :bulk_edit, :bulk_update]
 
   before_action do
     prepare_issue_status_candidates
@@ -254,6 +255,58 @@ SQL
     @safe_attributes = @test_cases.map(&:safe_attribute_names).reduce(:&)
     @assignables = @project.users
     render :layout => false
+  end
+
+  # GET /projects/:project_id/test_plans/context_menu
+  def list_context_menu
+    if @test_plans.size == 1
+      @test_plan = @test_plans.first
+    end
+    @test_plan_ids = @test_plans.map(&:id).sort
+
+    edit_allowed = @test_plans.all? {|t| t.editable?(User.current)}
+    @can = {:edit => edit_allowed, :delete => edit_allowed}
+    @back = back_url
+
+    @safe_attributes = @test_plans.map(&:safe_attribute_names).reduce(:&)
+    @assignables = @project.users
+    render :layout => false
+  end
+
+  def bulk_edit
+    @assignables = @project.users
+    @safe_attributes = @test_plans.map(&:safe_attribute_names).reduce(:&)
+    @test_plan_params = params[:test_plan] || {}
+    @back_url = params[:back_url]
+  end
+
+  def bulk_update
+    attributes = parse_params_for_bulk_update(params[:test_plan])
+
+    unsaved_test_plans = []
+    saved_test_plans = []
+
+    @test_plans.each do |orig_test_plan|
+      orig_test_plan.reload
+      test_plan = orig_test_plan
+      test_plan.safe_attributes = attributes
+      if test_plan.save
+        saved_test_plans << test_plan
+      else
+        unsaved_test_plans << orig_test_plan
+      end
+    end
+
+    if unsaved_test_plans.empty?
+      flash[:notice] = l(:notice_successful_update) unless saved_test_plans.empty?
+      redirect_to params[:back_url]
+    else
+      @saved_test_plans = @test_plans
+      @unsaved_test_plans = unsaved_test_plans
+      @test_plans = TestPlan.visible.where(id: @unsaved_test_plans.map(&:id)).to_a
+      bulk_edit
+      render :action => 'bulk_edit'
+    end
   end
 
   private

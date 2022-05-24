@@ -1,0 +1,74 @@
+<ul>
+  <% if @test_plan -%>
+    <li><%= context_menu_link l(:button_edit), edit_project_test_plan_path(id: @test_plan.id),
+            :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
+    <% if @safe_attributes.include?("user_id") && @assignables.present? -%>
+      <li class="folder">
+        <a href="#" class="submenu"><%= l(:field_user) %></a>
+        <ul>
+          <% if @assignables.include?(User.current) %>
+          <li><%= context_menu_link "<< #{l(:label_me)} >>", bulk_update_project_test_plans_path(:ids => @test_plan_ids, :test_plan => {'user_id' => User.current},
+            :back_url => @back), :method => :post, :disabled => !@can[:edit] %></li>
+          <% end %>
+          <% @assignables.each do |u| -%>
+          <li><%= context_menu_link u.name, bulk_update_project_test_plans_path(:ids => @test_plan_ids, :test_plan => {'user_id' => u}, :back_url => @back),
+            :method => :post, :disabled => !@can[:edit] %></li>
+          <% end -%>
+        </ul>
+      </li>
+    <% end %>
+
+    <li class="folder">
+      <a href="#" class="submenu"><%= l(:field_status) %></a>
+      <ul>
+        <% IssueStatus.all.each do |status| -%>
+          <li><%= context_menu_link status.name, bulk_update_project_test_plans_path(:ids => @test_plan_ids, :test_plan => {'issue_status_id' => status}, :back_url => @back),
+            :method => :post, :disabled => !@can[:edit] %></li>
+        <% end -%>
+      </ul>
+    </li>
+
+    <% if @test_plan %>
+      <li><%= link_to l(:label_deleted),
+              "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}",
+              method: :delete,
+              data: { confirm: l(:text_are_you_sure) },
+              title: l(:label_delete),
+              class: 'icon icon-link-break', disabled: !@can[:edit] %></li>
+    <% end %>
+  <% else %>
+    <li><%= context_menu_link l(:button_edit), bulk_edit_project_test_plans_path(:ids => @test_plan_ids, :back_url => @back),
+            :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
+    <% if @safe_attributes.include?("user_id") && @assignables.present? -%>
+      <li class="folder">
+        <a href="#" class="submenu"><%= l(:field_user) %></a>
+        <ul>
+          <% if @assignables.include?(User.current) %>
+          <li><%= context_menu_link "<< #{l(:label_me)} >>", bulk_update_project_test_plans_path(:ids => @test_plan_ids, :test_plan => {'user_id' => User.current},
+            :back_url => @back), :method => :post, :disabled => !@can[:edit] %></li>
+          <% end %>
+          <% @assignables.each do |u| -%>
+          <li><%= context_menu_link u.name, bulk_update_project_test_plans_path(:ids => @test_plan_ids, :test_plan => {'user_id' => u}, :back_url => @back),
+            :method => :post, :disabled => !@can[:edit] %></li>
+          <% end -%>
+        </ul>
+      </li>
+    <% end %>
+    <li class="folder">
+      <a href="#" class="submenu"><%= l(:field_status) %></a>
+      <ul>
+        <% IssueStatus.all.each do |status| -%>
+          <li><%= context_menu_link status.name, bulk_update_project_test_plans_path(:ids => @test_plan_ids, :test_plan => {'issue_status_id' => status}, :back_url => @back),
+            :method => :post, :disabled => !@can[:edit] %></li>
+        <% end -%>
+      </ul>
+    </li>
+    <% ids = @test_plans.pluck(:id).map { |id| "ids[]=#{id}" }.join("&") %>
+    <li><%= link_to l(:label_deleted),
+            "/projects/#{@project.identifier}/test_plans/?#{ids}",
+            method: :delete,
+            data: { confirm: l(:text_are_you_sure) },
+            title: l(:label_deleted),
+            class: 'icon icon-link-break', disabled: !@can[:edit] %></li>
+  <% end %>
+</ul>

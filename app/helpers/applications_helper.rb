@@ -124,6 +124,20 @@ module ApplicationsHelper
     render_404
   end
 
+  def find_test_plans
+    # Used via context menu
+    @test_plans = if params[:id] || params[:ids]
+                    TestPlan.where(id: params[:id] || params[:ids]).to_a
+                  else
+                    find_project_id
+                    TestPlan.where(project_id: @project.id).to_a
+                  end
+    raise ActiveRecord::RecordNotFound if @test_plans.empty?
+    raise Unauthorized unless @test_plans.all?(&:visible?)
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
+
   # mainly copied from Rails's ApplicationController#authorize
   def authorize_with_issues_permission(controller = params[:controller], action = params[:action], global = false)
     issue_allowed = User.current.allowed_to?({controller: "issues", action: related_issues_action(action)}, @project || @projects, :global => global)
