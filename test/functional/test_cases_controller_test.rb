@@ -1016,6 +1016,110 @@ class TestCasesControllerTest < ActionController::TestCase
         end
       end
     end
+
+    class BulkUpdate < self
+      def setup
+        super
+        @project = projects(:projects_003)
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :delete_issues])
+      end
+
+      class One < self
+        def test_bulk_update_user
+          post :bulk_update, params: {
+                 project_id: @project.identifier,
+                 ids: [test_cases(:test_cases_001).id],
+                 test_case: {
+                   user_id: @user.id
+                 },
+                 back_url: project_test_cases_path(project_id: @project.identifier)
+               }
+          assert_equal I18n.t(:notice_successful_update), flash[:notice]
+          assert_redirected_to project_test_cases_path(project_id: @project.identifier)
+          get :index, params: { project_id: @project.identifier }
+          assert_equal [test_cases(:test_cases_003).user.name,
+                        test_cases(:test_cases_003).user.name,
+                        @user.name],
+                       css_select("table#test_cases_list tbody tr td.user").map(&:text)
+        end
+
+        def test_bulk_update_environment
+          environment = "DUMMY"
+          post :bulk_update, params: {
+                 project_id: @project.identifier,
+                 ids: [test_cases(:test_cases_001).id],
+                 test_case: {
+                   environment: environment
+                 },
+                 back_url: project_test_cases_path(project_id: @project.identifier)
+               }
+          assert_equal I18n.t(:notice_successful_update), flash[:notice]
+          assert_redirected_to project_test_cases_path(project_id: @project.identifier)
+          get :index, params: { project_id: @project.identifier }
+          assert_equal [test_cases(:test_cases_003).environment,
+                        test_cases(:test_cases_003).environment,
+                        environment],
+                       css_select("table#test_cases_list tbody tr td.environment").map(&:text)
+        end
+      end
+
+      class Many < self
+        def test_bulk_update_user
+          environment = "DUMMY"
+          post :bulk_update, params: {
+                   project_id: @project.identifier,
+                   ids: test_cases(:test_cases_001, :test_cases_002).pluck(:id),
+                   test_case: {
+                     environment: environment
+                   },
+                   back_url: project_test_cases_path(project_id: @project.identifier)
+                 }
+          assert_equal I18n.t(:notice_successful_update), flash[:notice]
+          assert_redirected_to project_test_cases_path
+          get :index, params: { project_id: @project.identifier }
+          assert_equal [test_cases(:test_cases_003).environment,
+                        environment,
+                        environment],
+                       css_select("table#test_cases_list tbody tr td.environment").map(&:text)
+        end
+      end
+    end
+
+    class BulkDelete < self
+      def setup
+        super
+        @project = projects(:projects_003)
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :delete_issues])
+      end
+
+      class One < self
+        def test_bulk_delete
+          assert_difference("TestCase.count", -1) do
+            delete :bulk_delete, params: {
+                     project_id: @project.identifier,
+                     ids: [test_cases(:test_cases_001).id],
+                     back_url: project_test_cases_path(project_id: @project.identifier)
+                   }
+            assert_equal I18n.t(:notice_successful_delete), flash[:notice]
+            assert_redirected_to project_test_cases_path(project_id: @project.identifier)
+          end
+        end
+      end
+
+      class Many < self
+        def test_bulk_delete
+          assert_difference("TestCase.count", -2) do
+            delete :bulk_delete, params: {
+                     project_id: @project.identifier,
+                     ids: test_cases(:test_cases_001, :test_cases_002).pluck(:id),
+                     back_url: project_test_cases_path(project_id: @project.identifier)
+                   }
+            assert_equal I18n.t(:notice_successful_delete), flash[:notice]
+            assert_redirected_to project_test_cases_path
+          end
+        end
+      end
+    end
   end
 
   class AssociatedWithTestPlan < self
