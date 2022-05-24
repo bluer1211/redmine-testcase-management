@@ -163,8 +163,10 @@ module ApplicationsHelper
     case action.to_sym
     when :auto_complete, :statistics, :show_context_menu, :list_context_menu
       :index
-    when :assign_test_case, :unassign_test_case
+    when :assign_test_case, :unassign_test_case, :bulk_edit
       :edit
+    when :bulk_update
+      :update
     else
       action
     end
