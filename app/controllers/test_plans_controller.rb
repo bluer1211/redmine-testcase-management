@@ -7,7 +7,7 @@ class TestPlansController < ApplicationController
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
   before_action :find_test_cases, :only => [:show_context_menu, :unassign_test_case]
   before_action :authorize_with_issues_permission
-  before_action :find_test_plans, :only => [:list_context_menu, :bulk_edit, :bulk_update]
+  before_action :find_test_plans, :only => [:list_context_menu, :bulk_edit, :bulk_update, :bulk_delete]
 
   before_action do
     prepare_issue_status_candidates
@@ -307,6 +307,20 @@ SQL
       bulk_edit
       render :action => 'bulk_edit'
     end
+  end
+
+  # DELETE /projects/:project_id/test_plans/bulk_delete
+  def bulk_delete
+    @test_plan_params = params[:test_plan] || {}
+
+    delete_allowed = @test_plans.all? { |t| t.editable?(User.current) }
+    if delete_allowed
+      @test_plans.destroy_all
+      flash[:notice] = l(:notice_successful_delete)
+    else
+      flash[:notice] = l(:error_delete_failure)
+    end
+    redirect_to params[:back_url]
   end
 
   private

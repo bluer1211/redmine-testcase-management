@@ -32,6 +32,7 @@ Rails.application.routes.draw do |map|
       collection do
         get 'bulk_edit'
         post 'bulk_update'
+        delete 'bulk_delete'
       end
     end
 

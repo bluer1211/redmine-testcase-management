@@ -65,7 +65,7 @@
     </li>
     <% ids = @test_plans.pluck(:id).map { |id| "ids[]=#{id}" }.join("&") %>
     <li><%= link_to l(:label_deleted),
-            "/projects/#{@project.identifier}/test_plans/?#{ids}",
+            bulk_delete_project_test_plans_path(:ids => @test_plan_ids, :back_url => @back),
             method: :delete,
             data: { confirm: l(:text_are_you_sure) },
             title: l(:label_deleted),
