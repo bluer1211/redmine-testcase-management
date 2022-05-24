@@ -34,17 +34,19 @@ class TestCasesControllerTest < ActionController::TestCase
         columns = []
         assert_select "table#test_cases_list thead tr:first-child th" do |ths|
           ths.each do |th|
-            columns << th.text
+            columns << th.text.strip
           end
         end
-        assert_equal ['#',
+        assert_equal ['',
+                      '#',
                       I18n.t(:field_name),
                       I18n.t(:field_environment),
                       I18n.t(:field_user),
                       I18n.t(:field_latest_result),
                       I18n.t(:field_execution_date),
                       I18n.t(:field_scenario),
-                      I18n.t(:field_expected)
+                      I18n.t(:field_expected),
+                      ''
                      ],
                      columns
         assert_select "div#content div.contextual > a:first-child" do |a|
@@ -1040,17 +1042,19 @@ class TestCasesControllerTest < ActionController::TestCase
         columns = []
         assert_select "thead tr:first-child th" do |ths|
           ths.each do |th|
-            columns << th.text
+            columns << th.text.strip
           end
         end
-        assert_equal ['#',
+        assert_equal ['',
+                      '#',
                       I18n.t(:field_name),
                       I18n.t(:field_environment),
                       I18n.t(:field_user),
                       I18n.t(:field_latest_result),
                       I18n.t(:field_execution_date),
                       I18n.t(:field_scenario),
-                      I18n.t(:field_expected)
+                      I18n.t(:field_expected),
+                      ''
                      ],
                      columns
         assert_select "div#content div.contextual > a:first-child" do |a|
