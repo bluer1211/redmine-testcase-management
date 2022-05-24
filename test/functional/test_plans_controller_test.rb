@@ -530,6 +530,38 @@ class TestPlansControllerTest < ActionController::TestCase
     end
   end
 
+  class BulkDelete < self
+    class Many < self
+      def setup
+        super
+        activate_module_for_projects
+        @project = projects(:projects_003)
+        @test_plan = test_plans(:test_plans_003)
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :delete_issues])
+      end
+
+      def test_bulk_delete
+        @test_plans = []
+        2.times do |index|
+          @test_plans << TestPlan.create!({
+                                            name: "tp#{index}",
+                                            project: @project,
+                                            user: @user,
+                                            issue_status: issue_statuses(:issue_statuses_001)
+                                          })
+        end
+        assert_difference("TestPlan.count", -2) do
+          delete :bulk_delete, params: {
+                   project_id: @project.identifier,
+                   ids: [@test_plans.first.id, @test_plans.last.id],
+                   back_url: project_test_plans_path(project_id: @project.identifier)
+                 }
+          assert_redirected_to project_test_plans_path(project_id: @project.identifier)
+        end
+      end
+    end
+  end
+
   class ViewWithoutPermission < self
     def setup
       super

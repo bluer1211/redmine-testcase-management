@@ -127,10 +127,10 @@ module ApplicationsHelper
   def find_test_plans
     # Used via context menu
     @test_plans = if params[:id] || params[:ids]
-                    TestPlan.where(id: params[:id] || params[:ids]).to_a
+                    TestPlan.where(id: params[:id] || params[:ids])
                   else
                     find_project_id
-                    TestPlan.where(project_id: @project.id).to_a
+                    TestPlan.where(project_id: @project.id)
                   end
     raise ActiveRecord::RecordNotFound if @test_plans.empty?
     raise Unauthorized unless @test_plans.all?(&:visible?)
@@ -167,6 +167,8 @@ module ApplicationsHelper
       :edit
     when :bulk_update
       :update
+    when :bulk_delete
+      :destroy
     else
       action
     end
