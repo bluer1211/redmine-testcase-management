@@ -67,32 +67,6 @@ Redmine::Plugin.register :testcase_management do
     permission :delete_test_case_executions, {
       :test_case_executions => [:index, :destroy],
     }
-
-
-    permission :test_cases, {:test_cases => [:index, :show, :new, :create, :edit, :update, :destroy, :statistics, :auto_complete, :bulk_edit, :bulk_update]}
-    permission :test_plans, {:test_plans => [:index, :show, :new, :create, :edit, :update, :destroy, :statistics, :assign_test_case, :unassign_test_case, :context_menu]}
-    permission :test_case_executions, {:test_case_executions => [:index, :show, :new, :create, :edit, :update, :destroy]}
-
-    permission :import_test_cases, :test_cases => :imports
-    permission :import_test_plans, :test_plans => :imports
-    permission :import_test_case_executions, :test_case_executions => :imports
-
-=begin
-    permission :view_test_cases, :test_cases => :show
-    permission :add_test_cases, :test_cases => :create
-    permission :edit_test_cases, :test_cases => :update
-    permission :delete_test_cases, :test_cases => :destroy
-
-    permission :view_test_plans, :test_plans => :show
-    permission :add_test_plans, :test_plans => :create
-    permission :edit_test_plans, :test_plans => :update
-    permission :delete_test_plans, :test_plans => :destroy
-
-    permission :view_test_case_executions, :test_case_executions => :show
-    permission :add_test_case_executions, :test_case_executions => :create
-    permission :edit_test_case_executions, :test_case_executions => :update
-    permission :delete_test_case_executions, :test_case_executions => :destroy
-=end
   end
 
   menu :project_menu,
