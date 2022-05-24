@@ -10,12 +10,13 @@ class TestCaseFlowTest < Redmine::IntegrationTest
     activate_module_for_projects
     @project = projects(:projects_003)
     @test_plan = test_plans(:test_plans_002)
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :test_cases, :test_plans, :test_case_executions])
-    log_user(@user.login, "password")
     @base_url = "/projects/#{@project.identifier}"
   end
 
   test "add new test case" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :add_test_cases])
+    log_user(@user.login, "password")
+
     get "#{@base_url}/test_cases/new"
     assert_response :success
 
@@ -28,6 +29,9 @@ class TestCaseFlowTest < Redmine::IntegrationTest
   end
 
   test "add new test case with a test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :view_test_plans, :add_test_cases])
+    log_user(@user.login, "password")
+
     @base_url = "#{@base_url}/test_plans/#{@test_plan.id}"
 
     get "#{@base_url}/test_cases/new"
@@ -42,6 +46,9 @@ class TestCaseFlowTest < Redmine::IntegrationTest
   end
 
   test "edit test case" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :edit_test_cases])
+    log_user(@user.login, "password")
+
     test_case = test_cases(:test_cases_001)
     url = "/projects/#{@project.identifier}/test_cases/#{test_case.id}"
 
@@ -53,6 +60,9 @@ class TestCaseFlowTest < Redmine::IntegrationTest
   end
 
   test "edit test case with a test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_plans, :edit_test_cases])
+    log_user(@user.login, "password")
+
     test_case = test_cases(:test_cases_001)
     url = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{test_case.id}"
 
@@ -65,6 +75,9 @@ class TestCaseFlowTest < Redmine::IntegrationTest
 
   test "update test case" do
     test_case = test_cases(:test_cases_001)
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :edit_test_cases])
+    log_user(@user.login, "password")
+
     url = "/projects/#{@project.identifier}/test_cases/#{test_case.id}"
 
     get "#{url}/edit"
@@ -85,6 +98,9 @@ class TestCaseFlowTest < Redmine::IntegrationTest
   end
 
   test "update test case with a test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_plans, :edit_test_cases])
+    log_user(@user.login, "password")
+
     test_case = test_cases(:test_cases_001)
     url = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{test_case.id}"
 
@@ -106,7 +122,10 @@ class TestCaseFlowTest < Redmine::IntegrationTest
     assert_redirected_to :controller => "test_plans", :action => "show", :id => @test_plan.id
   end
 
-  test "delete test plan" do
+  test "delete test case" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :delete_issues, :delete_test_cases, :view_test_plans])
+    log_user(@user.login, "password")
+
     test_case = test_cases(:test_cases_001)
     url = "/projects/#{@project.identifier}/test_cases/#{test_case.id}"
     get url
@@ -116,7 +135,10 @@ class TestCaseFlowTest < Redmine::IntegrationTest
     assert_redirected_to :controller => "test_cases", :action => "index"
   end
 
-  test "delete test plan with a test plan" do
+  test "delete test case with a test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :delete_issues, :delete_test_cases, :view_test_plans])
+    log_user(@user.login, "password")
+
     test_case = test_cases(:test_cases_001)
     url = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{test_case.id}"
     get url

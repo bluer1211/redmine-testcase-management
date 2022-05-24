@@ -20,7 +20,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Index < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_003), [:view_project, :view_issues])
+        login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :view_test_cases])
       end
 
       def test_index
@@ -94,7 +94,7 @@ class TestCasesControllerTest < ActionController::TestCase
         super
         ActiveRecord::Base.default_timezone = :utc
         @project = projects(:projects_003)
-        login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
+        login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :view_test_cases])
         @test_case = TestCase.create(name: "dummy",
                                      scenario: "dummy",
                                      expected: "dummy",
@@ -433,7 +433,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def setup
         super
         @project = projects(:projects_003)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         @test_case = TestCase.create(name: "dummy",
                                      scenario: "dummy",
                                      expected: "dummy",
@@ -592,7 +592,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class New < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :add_issues])
+        login_with_permissions(projects(:projects_001, :projects_002), [:view_project, :view_issues, :add_issues, :add_test_cases])
       end
 
       def test_breadcrumb_with_test_plan
@@ -619,7 +619,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Create < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_001), [:view_project, :view_issues, :add_issues])
+        login_with_permissions(projects(:projects_001), [:view_project, :view_issues, :add_issues, :add_test_cases])
       end
 
       def test_create
@@ -666,7 +666,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Show < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_002), [:view_project, :view_issues])
+        login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :view_test_cases])
       end
 
       def test_show
@@ -743,7 +743,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Edit < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_002), [:view_project, :view_issues, :edit_issues])
+        login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :edit_issues, :edit_test_cases])
       end
 
       def test_edit
@@ -818,7 +818,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Update < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
+        login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues, :edit_test_cases])
       end
 
       def test_update
@@ -875,7 +875,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Destroy < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues])
+        login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues, :delete_test_cases])
       end
 
       def test_destroy
@@ -930,7 +930,7 @@ class TestCasesControllerTest < ActionController::TestCase
         def setup
           super
           @project = projects(:projects_003)
-          login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+          login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
           @params = {
             project_id: @project.identifier
           }
@@ -1131,7 +1131,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Index < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_003), [:view_project, :view_issues])
+        login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :view_test_cases, :view_test_plans])
       end
 
       def test_index
@@ -1200,7 +1200,7 @@ class TestCasesControllerTest < ActionController::TestCase
           super
           @project = projects(:projects_003)
           @test_plan = test_plans(:test_plans_003)
-          login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+          login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases, :view_test_plans])
         end
 
         def test_index_with_invalid_filter
@@ -1300,7 +1300,7 @@ class TestCasesControllerTest < ActionController::TestCase
         def setup
           super
           @project = projects(:projects_003)
-          login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+          login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases, :view_test_plans])
           @order_params = {
             project_id: @project.identifier,
             test_plan_id: test_plans(:test_plans_003),
@@ -1414,7 +1414,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Create < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_001), [:view_project, :view_issues, :add_issues])
+        login_with_permissions(projects(:projects_001), [:view_project, :view_issues, :add_issues, :add_test_cases])
       end
 
       def test_create_with_test_plan
@@ -1492,7 +1492,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Show < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_002), [:view_project, :view_issues])
+        login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :view_test_cases])
       end
 
       def test_show_without_execution
@@ -1597,7 +1597,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Edit < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_002), [:view_project, :view_issues, :edit_issues])
+        login_with_permissions(projects(:projects_002), [:view_project, :view_issues, :edit_issues, :edit_test_cases])
       end
 
       def test_edit
@@ -1665,7 +1665,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Update < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues])
+        login_with_permissions(projects(:projects_002, :projects_003), [:view_project, :view_issues, :edit_issues, :edit_test_cases])
       end
 
       def test_update_with_test_plan
@@ -1756,7 +1756,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class Destroy < self
       def setup
         super
-        login_as_allowed_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues])
+        login_with_permissions(projects(:projects_003), [:view_project, :view_issues, :delete_issues, :delete_test_cases])
       end
 
       def test_destroy_with_test_plan
@@ -1838,7 +1838,7 @@ class TestCasesControllerTest < ActionController::TestCase
     def setup
       super
       activate_module_for_projects
-      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project])
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_test_cases])
     end
 
     def test_index
@@ -1982,7 +1982,7 @@ class TestCasesControllerTest < ActionController::TestCase
     def setup
       super
       activate_module_for_projects
-      login_as_allowed_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues])
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :add_test_cases, :edit_test_cases, :delete_test_cases])
     end
 
     def test_create
@@ -2106,7 +2106,7 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_statistics
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         expected = {
@@ -2129,7 +2129,7 @@ class TestCasesControllerTest < ActionController::TestCase
         # no test case, no statistics
         TestPlan.find(test_plans(:test_plans_005).id).destroy
         @project = projects(:projects_001)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         assert_select "p.nodata"
@@ -2138,7 +2138,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_ignore_closed_test_plan
         TestPlan.find(test_plans(:test_plans_003).id).update(issue_status: @closed_status)
         @project = projects(:projects_003)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # under test plan 3 should be ignored
@@ -2161,21 +2161,21 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_count_not_executed
         TestCaseExecution.find(test_case_executions(:test_case_executions_004).id).destroy
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         assert_equal [1], css_select("table#statistics tr td.count_not_executed").map(&:text).map(&:to_i)
       end
 
       def test_no_count_not_executed
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         assert_equal [0], css_select("table#statistics tr td.count_not_executed").map(&:text).map(&:to_i)
       end
 
       def test_count_succeeded
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         assert_equal [1], css_select("table#statistics tr td.count_succeeded").map(&:text).map(&:to_i)
@@ -2189,7 +2189,7 @@ class TestCasesControllerTest < ActionController::TestCase
                                  result: false,
                                  execution_date: Time.now.strftime("%F"),
                                  comment: "dummy")
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # latest failed test case execution should be counted
@@ -2204,14 +2204,14 @@ class TestCasesControllerTest < ActionController::TestCase
                                  result: false,
                                  execution_date: Time.now.strftime("%F"),
                                  comment: "dummy")
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [1], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
       end
 
       def test_no_count_failed
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [0], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
@@ -2219,14 +2219,14 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_no_progress_rate
         TestCaseExecution.find(@test_case_execution.id).destroy
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [0], css_select("table#statistics tr td.progress_rate").map(&:text).map(&:to_i)
       end
 
       def test_progress_rate_with_succeeded_only
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # true => 1/1
@@ -2235,7 +2235,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_progress_rate_with_failed_only
         add_test_case_with_test_case_execution({ result: false })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # false = 1/1
@@ -2245,7 +2245,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_progress_rate_with_mixed_result
         add_test_case_without_test_case_execution
         add_test_case_with_test_case_execution({ result: false })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # true, none, false => 2/3
@@ -2253,7 +2253,7 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_no_detected_bug
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [0], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
@@ -2262,7 +2262,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_detected_bug
         issue = Issue.generate!(project: @project)
         add_test_case_execution_for(@test_case, { result: false, issue: issue })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [1], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
@@ -2272,14 +2272,14 @@ class TestCasesControllerTest < ActionController::TestCase
         skip "assign issue for existing test case execution may fail"
         issue = Issue.generate!(project: @project)
         @test_case_execution.update(issue: issue)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [1], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
       end
 
       def test_no_remained_bug
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [0], css_select("table#statistics tr td.remained_bug").map(&:text).map(&:to_i)
@@ -2287,7 +2287,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_remained_bug
         @project = projects(:projects_001)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # Even though same issue is assigned to multiple test case (and as a execution), they are counted
@@ -2299,7 +2299,7 @@ class TestCasesControllerTest < ActionController::TestCase
         @test_case_execution = test_case_executions(:test_case_executions_007)
         # prepare closed issue
         @test_case_execution.update(issue: issues(:issues_008))
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # associated issues 2 - 1 (closed)
@@ -2308,7 +2308,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_no_fixed_rate
         TestCaseExecution.find(@test_case_execution.id).destroy
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # detected_bug is 0, so it can't be calculated
@@ -2320,7 +2320,7 @@ class TestCasesControllerTest < ActionController::TestCase
         @test_case_execution = test_case_executions(:test_case_executions_007)
         # prepare closed issue
         @test_case_execution.update(issue: @closed_issue)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # associated issues 1/2
@@ -2334,7 +2334,7 @@ class TestCasesControllerTest < ActionController::TestCase
           # prepare closed issue
           test_case_execution.update(issue: @closed_issue)
         end
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # associated issues 2/3
@@ -2349,7 +2349,7 @@ class TestCasesControllerTest < ActionController::TestCase
           # prepare closed issue
           test_case_execution.update(issue: @closed_issue)
         end
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # associated issues 3/3
@@ -2374,7 +2374,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_statistics
         add_test_case_with_test_case_execution(options={ result: false, issue: nil })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # In this case, order was determined by remained_bug
@@ -2397,7 +2397,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_no_statistics
         # no test case, no statistics
         TestPlan.find(test_plans(:test_plans_005).id).destroy
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         assert_select "p.nodata"
@@ -2406,7 +2406,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_count_not_executed
         n = 3
         n.times { add_test_case_without_test_case_execution }
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         assert_equal [n, 0], css_select("table#statistics tr td.count_not_executed").map(&:text).map(&:to_i)
@@ -2415,7 +2415,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_no_count_not_executed
         n = 3
         n.times { add_test_case_with_test_case_execution(options={ result: false, issue: nil }) }
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         assert_equal [0, 0], css_select("table#statistics tr td.count_not_executed").map(&:text).map(&:to_i)
@@ -2424,7 +2424,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_count_succeeded
         n = 3
         n.times { add_test_case_with_test_case_execution(options={ result: true, issue: nil }) }
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # In this case, order was determined by failed count
@@ -2436,7 +2436,7 @@ class TestCasesControllerTest < ActionController::TestCase
         # P1 - TP5 - TC - TCE(true), TCE(true), TCE(false)
         test_case = add_test_case_with_test_case_execution(options={ result: true, issue: nil })
         add_test_case_execution_for(test_case, { result: false })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # latest failed test case execution should be counted
@@ -2446,7 +2446,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_count_failed
         n = 3
         n.times { add_test_case_with_test_case_execution(options={ result: false, issue: nil }) }
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [n, 1], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
@@ -2455,7 +2455,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_no_count_failed
         n = 3
         n.times { add_test_case_with_test_case_execution(options={ result: true, issue: nil }) }
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [1, 0], css_select("table#statistics tr td.count_failed").map(&:text).map(&:to_i)
@@ -2463,7 +2463,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_no_progress_rate
         add_test_case_without_test_case_execution
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [0, 100], css_select("table#statistics tr td.progress_rate").map(&:text).map(&:to_i)
@@ -2472,7 +2472,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_progress_rate_with_succeeded_only
         n = 3
         n.times { add_test_case_with_test_case_execution(options={ result: true, issue: nil }) }
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # true, true, true => 3/3
@@ -2482,7 +2482,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_progress_rate_with_failed_only
         n = 3
         n.times { add_test_case_with_test_case_execution(options={ result: false, issue: nil }) }
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # false, false, false = 3/3
@@ -2493,7 +2493,7 @@ class TestCasesControllerTest < ActionController::TestCase
         add_test_case_without_test_case_execution
         add_test_case_with_test_case_execution({ result: false })
         add_test_case_with_test_case_execution({ result: true })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # true, none, false => 2/3
@@ -2502,7 +2502,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_no_detected_bug
         add_test_case_without_test_case_execution
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [0, 2], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
@@ -2510,7 +2510,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_detected_bug
         add_test_case_with_test_case_execution({ result: false, issue: issues(:issues_001) })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [2, 1], css_select("table#statistics tr td.detected_bug").map(&:text).map(&:to_i)
@@ -2518,7 +2518,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_no_remained_bug
         add_test_case_with_test_case_execution({ result: false })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         assert_equal [2, 0], css_select("table#statistics tr td.remained_bug").map(&:text).map(&:to_i)
@@ -2526,7 +2526,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_remained_bug
         add_test_case_with_test_case_execution({ result: false, issue: @open_issue })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # Even though same issue is assigned to multiple test case (and as a execution), they are counted
@@ -2536,7 +2536,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_remained_bug
         add_test_case_with_test_case_execution({ result: false, issue: @closed_issue })
         add_test_case_with_test_case_execution({ result: false, issue: @open_issue })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # associated issues 2 - 1 (closed)
@@ -2545,7 +2545,7 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_no_fixed_rate
         add_test_case_without_test_case_execution
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # detected_bug is 0, so it can't be calculated
@@ -2556,7 +2556,7 @@ class TestCasesControllerTest < ActionController::TestCase
         add_test_case_with_test_case_execution({ result: false, issue: @closed_issue })
         add_test_case_with_test_case_execution({ result: false, issue: @open_issue })
         add_test_case_with_test_case_execution({ result: false, issue: @closed_issue })
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: @params
         assert_response :success
         # associated issues 2/3
@@ -2566,7 +2566,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def test_fixed_rate_all
         n = 3
         n.times { add_test_case_with_test_case_execution({ result: false, issue: @closed_issue }) }
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
         get :statistics, params: { project_id: @project.identifier }
         assert_response :success
         # associated issues 3/3
@@ -2634,7 +2634,7 @@ class TestCasesControllerTest < ActionController::TestCase
     class ModuleStillDeactivated < self
       def setup
         super
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues])
+        login_with_permissions(@project, [:view_project, :view_issues, :view_test_cases, :add_test_cases, :edit_test_cases, :delete_test_cases])
       end
     end
 

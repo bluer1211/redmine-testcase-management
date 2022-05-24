@@ -22,7 +22,15 @@ def assert_back_to_lists_link(path)
   end
 end
 
-def generate_user_with_permissions(projects, permissions=[:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :test_cases, :test_plans, :test_case_executions])
+def generate_user_with_permissions(
+      projects,
+      permissions=[
+        :view_project, :view_issues, :add_issues, :edit_issues, :delete_issues,
+        :view_test_cases, :add_test_cases, :edit_test_cases, :delete_test_cases,
+        :view_test_plans, :add_test_plans, :edit_test_plans, :delete_test_plans,
+        :view_test_case_executions, :add_test_case_executions, :edit_test_case_executions, :delete_test_case_executions,
+      ]
+    )
   projects = [projects] if projects.is_a?(Project)
   permissions = [permissions] unless permissions.is_a?(Array)
   @role = Role.generate!(permissions: permissions.uniq)
@@ -40,7 +48,12 @@ def activate_module_for_projects(projects = Project.all)
 end
 
 def login_as_allowed_with_permissions(projects, permissions = [])
-  generate_user_with_permissions(projects, (permissions + [:test_cases, :test_plans, :test_case_executions]).uniq)
+  test_case_management_permissions = [
+    :view_test_cases, :add_test_cases, :edit_test_cases, :delete_test_cases,
+    :view_test_plans, :add_test_plans, :edit_test_plans, :delete_test_plans,
+    :view_test_case_executions, :add_test_case_executions, :edit_test_case_executions, :delete_test_case_executions,
+  ]
+  generate_user_with_permissions(projects, (permissions + test_case_management_permissions).uniq)
   @request.session[:user_id] = @user.id
 end
 

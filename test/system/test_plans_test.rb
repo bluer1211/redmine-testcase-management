@@ -21,8 +21,6 @@ class TestPlansTest < ApplicationSystemTestCase
     activate_module_for_projects
     @project = projects(:projects_003)
     @test_plan = test_plans(:test_plans_002)
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :test_cases, :test_plans, :test_case_executions])
-    log_user(@user.login, "password")
   end
 
   def teardown
@@ -30,6 +28,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "visiting the index" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_plans])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans"
     visit "/projects/#{@project.identifier}/test_plans"
     assert_selector "h2", text: I18n.t(:label_test_plans)
@@ -37,6 +38,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "add new test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_plans, :add_test_plans])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans"
     visit path
 
@@ -55,6 +59,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "show test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_plans])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
 
@@ -70,6 +77,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "update test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_plans, :edit_test_plans])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/edit"
     visit path
 
@@ -88,6 +98,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "delete test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :delete_issues, :view_test_plans, :deletet_test_plans])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
 
@@ -99,6 +112,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "assign test case" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_plans, :edit_test_plans])
+    log_user(@user.login, "password")
+
     skip if ENV["CI"] # FIXME: fragile on CI
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
@@ -123,6 +139,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "unassign test case" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_plans, :edit_test_plans])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
 
@@ -134,6 +153,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "bulk unassign test case" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_plans, :edit_test_plans])
+    log_user(@user.login, "password")
+
     @test_plan = test_plans(:test_plans_003)
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
@@ -148,6 +170,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "bulk assign specific user" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_plans, :edit_test_plans])
+    log_user(@user.login, "password")
+
     @test_plan = test_plans(:test_plans_003)
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
@@ -166,6 +191,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "visit test plan via index" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_plans])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans"
     visit path
 
@@ -176,6 +204,9 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "visit test case via test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_plans, :view_test_cases])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
     visit path
 

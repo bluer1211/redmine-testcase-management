@@ -9,11 +9,12 @@ class TestPlanFlowTest < Redmine::IntegrationTest
   def setup
     activate_module_for_projects
     @project = projects(:projects_001)
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :test_cases, :test_plans, :test_case_executions])
-    log_user(@user.login, "password")
   end
 
   test "add new test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :add_test_plans])
+    log_user(@user.login, "password")
+
     url = "/projects/#{@project.identifier}/test_plans"
 
     get "#{url}/new"
@@ -28,6 +29,9 @@ class TestPlanFlowTest < Redmine::IntegrationTest
   end
 
   test "edit test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :edit_test_plans])
+    log_user(@user.login, "password")
+
     url = "/projects/#{@project.identifier}/test_plans/#{test_plans(:test_plans_001).id}"
 
     get url
@@ -38,6 +42,9 @@ class TestPlanFlowTest < Redmine::IntegrationTest
   end
 
   test "update test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :edit_test_plans])
+    log_user(@user.login, "password")
+
     test_plan = test_plans(:test_plans_001)
     url = "/projects/#{@project.identifier}/test_plans/#{test_plan.id}"
 
@@ -53,6 +60,9 @@ class TestPlanFlowTest < Redmine::IntegrationTest
   end
 
   test "delete test plan" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :delete_issues, :view_test_plans, :delete_test_plans])
+    log_user(@user.login, "password")
+
     url = "/projects/#{@project.identifier}/test_plans/#{test_plans(:test_plans_001).id}"
     get url
     assert_response :success

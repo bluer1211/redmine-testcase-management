@@ -14,7 +14,7 @@ class TestPlanImport < Import
   end
 
   def self.authorized?(user)
-    user.allowed_to?(:import_test_plans, nil, :global => true)
+    user.allowed_to?(:add_test_plans, nil, :global => true)
   end
 
   def saved_objects

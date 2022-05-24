@@ -109,7 +109,7 @@ class TestCaseImportTest < ActiveSupport::TestCase
   def prepare_authorized_user
     user = User.generate!(firstname: "Test Case", lastname: "Importer")
     role = Role.generate!
-    role.add_permission! :import_test_cases
+    role.add_permission! :add_test_cases
     role.add_permission! :view_issues
     role.add_permission! :edit_issues
     role.save!

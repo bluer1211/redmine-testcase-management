@@ -11,11 +11,12 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
     @project = projects(:projects_003)
     @test_plan = test_plans(:test_plans_003)
     @test_case = test_cases(:test_cases_002)
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :test_cases, :test_plans, :test_case_executions])
-    log_user(@user.login, "password")
   end
 
   test "add new test case execution" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :add_test_case_executions])
+    log_user(@user.login, "password")
+
     url = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions"
 
     get "#{url}/new"
@@ -32,6 +33,9 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
   end
 
   test "edit test case execution" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :edit_test_case_executions])
+    log_user(@user.login, "password")
+
     test_case_execution = test_case_executions(:test_case_executions_001)
     url = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{test_case_execution.id}"
 
@@ -42,7 +46,10 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
     assert_response :success
   end
 
-  test "update test case" do
+  test "update test case execution" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :edit_test_case_executions])
+    log_user(@user.login, "password")
+
     test_case_execution = test_case_executions(:test_case_executions_001)
     url = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{test_case_execution.id}"
 
@@ -66,7 +73,10 @@ class TestCaseExecutionFlowTest < Redmine::IntegrationTest
                          id: @test_case.id
   end
 
-  test "delete test plan" do
+  test "delete test case execution" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues, :view_test_case_executions, :delete_test_case_executions])
+    log_user(@user.login, "password")
+
     test_case_execution = test_case_executions(:test_case_executions_001)
     url = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{test_case_execution.id}"
     get url

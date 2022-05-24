@@ -148,7 +148,6 @@ class TestPlansController < ApplicationController
 
   # POST /projects/:project_id/test_plans/:test_plan_id/assign_test_case
   def assign_test_case
-    return unless authorize_with_issues_permission(params[:controller], :create)
     begin
       @test_case = TestCase.find(params.require(:test_case_test_plan).permit(:test_case_id)[:test_case_id])
       raise ActiveRecord::RecordNotFound unless @test_case.visible?
@@ -174,7 +173,6 @@ class TestPlansController < ApplicationController
   # DELETE /projects/:project_id/test_plans/:test_plan_id/unassign_test_case/:id
   # DELETE /projects/:project_id/test_plans/:test_plan_id/unassign_test_case/?ids[]=ID1&ids[]=ID2 ...
   def unassign_test_case
-    return unless authorize_with_issues_permission(params[:controller], :destroy)
     begin
       raise ActiveRecord::RecordNotFound unless @test_cases.all?(&:visible?)
       raise ActiveRecord::RecordNotFound unless @test_plan.visible?
@@ -195,7 +193,6 @@ class TestPlansController < ApplicationController
 
   # GET /projects/:project_id/test_plans/statistics
   def statistics
-    return unless authorize_with_issues_permission(params[:controller], :index)
     begin
       #
       # 1. Generate every TP - TC - TCE set

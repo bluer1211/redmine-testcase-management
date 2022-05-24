@@ -22,9 +22,6 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
     @test_plan = test_plans(:test_plans_003)
     @test_case = test_cases(:test_cases_002)
     @test_case_execution = test_case_executions(:test_case_executions_001)
-    @role = Role.generate!(:permissions => [:view_project, :view_issues, :add_issues, :edit_issues, :delete_issues])
-    User.add_to_project(User.all.first, @project, @role)
-    login_with_admin
   end
 
   def teardown
@@ -32,6 +29,9 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
   end
 
   test "visiting the index" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_case_executions])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions"
     visit path
     assert_selector "h2", text: I18n.t(:label_test_case_executions)
@@ -39,6 +39,9 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
   end
 
   test "add new test case execution" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_plans, :view_test_case_executions, :add_test_case_executions])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions"
     visit path
 
@@ -58,6 +61,9 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
   end
 
   test "issue template via new" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues, :view_test_case_executions, :add_test_case_executions])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/new"
     visit path
 
@@ -91,6 +97,9 @@ EOS
   end
 
   test "show test case execution" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_case_executions])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{@test_case_execution.id}"
     visit path
 
@@ -107,6 +116,9 @@ EOS
   end
 
   test "update test case execution" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_case_executions, :edit_test_case_executions])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{@test_case_execution.id}/edit"
     visit path
 
@@ -122,6 +134,9 @@ EOS
   end
 
   test "delete test case execution" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :delete_issues, :view_test_case_executions, :delete_test_case_executions])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{@test_case_execution.id}"
     visit path
 
@@ -133,6 +148,9 @@ EOS
   end
 
   test "autocomplete issue" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_case_executions, :edit_test_case_executions])
+    log_user(@user.login, "password")
+
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{@test_case_execution.id}/edit"
     visit path
 
