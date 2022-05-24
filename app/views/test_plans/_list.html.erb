@@ -1,27 +1,36 @@
 <% query_options = nil unless defined?(query_options) %>
 <% query_options ||= {} %>
 
-<%= form_tag({}, :data => {:cm_url => issues_context_menu_path}) do -%>
+<%= form_tag({}, :data => {:cm_url => project_test_plan_list_context_menu_path}) do -%>
   <%= hidden_field_tag 'back_url', url_for(:params => request.query_parameters), :id => nil %>
   <%= query_columns_hidden_tags(query) %>
   <div class="autoscroll">
   <table id="test_plans_list" class="list test_plan odd-even <%= query.css_classes %>">
     <thead>
       <tr>
+        <th class="checkbox hide-when-print">
+          <%= check_box_tag 'check_all', '', false, class: 'toggle-selection',
+              title: "#{l(:button_check_all)}/#{l(:button_uncheck_all)}" %>
+        </th>
         <% query.inline_columns.each do |column| %>
           <%= column_header(query, column, query_options) %>
         <% end %>
+        <th class="buttons"></th>
       </tr>
     </thead>
     <tbody>
       <% test_plans.each do |test_plan| -%>
         <tr id="test-plan-<%= test_plan.id %>" class="hascontextmenu <%= cycle('odd', 'even') %>">
+          <td class="checkbox hide-when-print"><%= check_box_tag("ids[]", test_plan.id, false, id: nil) %></td>
           <% query.inline_columns.each do |column| %>
             <%= content_tag('td', column_content(column, test_plan), :class => column.css_classes) %>
           <% end %>
+          <td class="buttons"><%= link_to_context_menu %></td>
         </tr>
       <% end -%>
     </tbody>
   </table>
   </div>
 <% end -%>
+
+<% context_menu %>

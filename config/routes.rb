@@ -16,6 +16,7 @@ Rails.application.routes.draw do |map|
       end
     end
 
+    match 'test_plans/context_menu', :to => 'test_plans#list_context_menu', :as => :test_plan_list_context_menu, :via => [:get, :post]
     resources :test_plans do
       resources :test_cases do
         resources :test_case_executions
@@ -27,7 +28,11 @@ Rails.application.routes.draw do |map|
       delete 'assign_test_case/:test_case_id', to: 'test_plans#unassign_test_case'
       delete 'assign_test_case', to: 'test_plans#unassign_test_case'
 
-      match 'context_menu', :to => 'test_plans#context_menu', :as => :context_menu, :via => [:get, :post]
+      match 'context_menu', :to => 'test_plans#show_context_menu', :as => :show_context_menu, :via => [:get, :post]
+      collection do
+        get 'bulk_edit'
+        post 'bulk_update'
+      end
     end
 
     resources :test_case_executions

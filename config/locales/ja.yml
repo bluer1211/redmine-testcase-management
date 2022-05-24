@@ -7,6 +7,7 @@ ja:
   label_test_case_executions: "テスト実行結果"
   label_test_plan_new: "新しいテスト計画"
   label_test_plan_edit: "テスト計画の編集"
+  label_bulk_edit_selected_test_plans: "テスト計画の一括編集"
   label_test_case_new: "新しいテストケース"
   label_test_case_edit: "テストケースの編集"
   label_related_test_cases: "関連するテストケース"
@@ -44,6 +45,9 @@ ja:
   error_test_case: "テストケースが存在しません。"
   error_test_case_not_found: "テストケースが存在しません。"
   error_test_case_execution_not_found: "テスト実行結果が存在しません。"
+
+  notice_failed_to_save_test_plans: "全%{total}件中%{count}件のテスト計画が保存できませんでした: %{ids}。"
+  notice_failed_to_save_test_cases: "全%{total}件中%{count}件のテストケースが保存できませんでした: %{ids}。"
 
   # TestPlan
   field_estimated_bug: "想定バグ数"
