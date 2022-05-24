@@ -117,7 +117,7 @@ module ApplicationsHelper
 
   def find_test_cases
     # Used via context menu
-    @test_cases = TestCase.where(id: params[:id] || params[:ids]).to_a
+    @test_cases = TestCase.where(id: params[:id] || params[:ids])
     raise ActiveRecord::RecordNotFound if @test_cases.empty?
     raise Unauthorized unless @test_cases.all?(&:visible?)
   rescue ActiveRecord::RecordNotFound

@@ -6,7 +6,7 @@ class TestCasesController < ApplicationController
   before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
   before_action :authorize_with_issues_permission
-  before_action :find_test_cases, :only => [:bulk_edit, :bulk_update]
+  before_action :find_test_cases, :only => [:list_context_menu, :bulk_edit, :bulk_update, :bulk_delete]
 
   before_action do
     prepare_user_candidates
@@ -21,6 +21,7 @@ class TestCasesController < ApplicationController
   include QueriesHelper
   helper :test_cases_queries
   include TestCasesQueriesHelper
+  helper :context_menus
 
   # GET /projects/:project_id/test_cases
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases
@@ -321,6 +322,36 @@ SQL
       bulk_edit
       render :action => 'bulk_edit'
     end
+  end
+
+  # DELETE /projects/:project_id/test_cases/bulk_delete
+  def bulk_delete
+    @test_case_params = params[:test_case] || {}
+
+    delete_allowed = @test_cases.all? { |t| t.editable?(User.current) }
+    if delete_allowed
+      @test_cases.destroy_all
+      flash[:notice] = l(:notice_successful_delete)
+    else
+      flash[:notice] = l(:error_delete_failure)
+    end
+    redirect_to params[:back_url]
+  end
+
+  # GET /projects/:project_id/test_cases/context_menu
+  def list_context_menu
+    if @test_cases.size == 1
+      @test_case = @test_cases.first
+    end
+    @test_case_ids = @test_cases.map(&:id).sort
+
+    edit_allowed = @test_cases.all? {|t| t.editable?(User.current)}
+    @can = {:edit => edit_allowed, :delete => edit_allowed}
+    @back = back_url
+
+    @safe_attributes = @test_cases.map(&:safe_attribute_names).reduce(:&)
+    @assignables = @project.users
+    render :layout => false
   end
 
   private
