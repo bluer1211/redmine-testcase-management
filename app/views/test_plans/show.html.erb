@@ -68,7 +68,7 @@
   <% query_options = nil unless defined?(query_options) %>
   <% query_options ||= {} %>
 
-  <%= form_tag({}, :data => {:cm_url => project_test_plan_context_menu_path(test_plan_id: @test_plan.id)}) do -%>
+  <%= form_tag({}, :data => {:cm_url => project_test_plan_show_context_menu_path(test_plan_id: @test_plan.id)}) do -%>
     <%= hidden_field_tag 'back_url', url_for(:params => request.query_parameters), :id => nil %>
     <%= query_columns_hidden_tags(@query) %>
     <div class="autoscroll">

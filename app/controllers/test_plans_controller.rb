@@ -5,7 +5,7 @@ class TestPlansController < ApplicationController
   before_action :find_project_id
   before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
-  before_action :find_test_cases, :only => [:context_menu, :unassign_test_case]
+  before_action :find_test_cases, :only => [:show_context_menu, :unassign_test_case]
   before_action :authorize_with_issues_permission
 
   before_action do
@@ -241,7 +241,7 @@ SQL
   end
 
   # GET /projects/:project_id/test_plans/:id/context_menu
-  def context_menu
+  def show_context_menu
     if @test_cases.size == 1
       @test_case = @test_cases.first
     end
