@@ -161,7 +161,7 @@ module ApplicationsHelper
 
   def related_issues_action(action)
     case action.to_sym
-    when :auto_complete, :statistics
+    when :auto_complete, :statistics, :show_context_menu, :list_context_menu
       :index
     when :assign_test_case, :unassign_test_case
       :edit
