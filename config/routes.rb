@@ -8,12 +8,15 @@ Rails.application.routes.draw do |map|
     get 'test_plans/statistics', to: 'test_plans#statistics', as: 'test_plan_statistics'
     get 'test_cases/statistics', to: 'test_cases#statistics', as: 'test_case_statistics'
 
+    match 'test_cases/context_menu', :to => 'test_cases#list_context_menu', :as => :test_case_list_context_menu, :via => [:get, :post]
     resources :test_cases do
       resources :test_case_executions
       collection do
         get 'bulk_edit'
         post 'bulk_update'
+        delete 'bulk_delete'
       end
+      #match 'context_menu', :to => 'test_cases#show_context_menu', :as => :show_context_menu, :via => [:get, :post]
     end
 
     match 'test_plans/context_menu', :to => 'test_plans#list_context_menu', :as => :test_plan_list_context_menu, :via => [:get, :post]

@@ -3,7 +3,7 @@
 <% if @saved_test_cases && @unsaved_test_cases.present? %>
 <div id="errorExplanation">
   <span>
-    <%= l(:notice_failed_to_save_issues,
+    <%= l(:notice_failed_to_save_test_cases,
         :count => @unsaved_test_cases.size,
         :total => @saved_test_cases.size,
         :ids => @unsaved_test_cases.map {|i| "##{i.id}"}.join(', ')) %>
@@ -18,7 +18,7 @@
 
 <ul id="bulk-selection">
   <% @test_cases.each do |test_case| %>
-    <%= content_tag 'li', link_to(test_case.name, project_test_plan_test_case_path(test_plan_id: test_case.test_plan.id, id: test_case.id)) %>
+    <%= content_tag 'li', link_to(test_case.name, project_test_case_path(id: test_case.id)) %>
   <% end %>
 </ul>
 
@@ -30,6 +30,14 @@
       <legend><%= l(:label_change_properties) %></legend>
 
       <div class="splitcontent">
+        <div class="splitcontentleft">
+          <% if @safe_attributes.include?('environment') -%>
+          <p>
+            <label for='test_case_environment'><%= l(:field_environment) %></label>
+            <%= text_field_tag "test_case[environment]", nil, size:60, id: "environment" %>
+          </p>
+          <% end %>
+        </div>
         <div class="splitcontentleft">
           <% if @safe_attributes.include?('user_id') -%>
           <p>
