@@ -98,7 +98,8 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "delete test plan" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :delete_issues, :view_test_plans, :deletet_test_plans])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :delete_issues,
+                                              :view_test_plans, :delete_test_plans])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}"
