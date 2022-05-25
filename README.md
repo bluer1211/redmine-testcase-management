@@ -21,19 +21,17 @@ for every member roles.
 
 Since v1.2.0, the following 12 permissions were introduced:
 
-|:--------------------:|:---------------------------:|:-:|
-| Test Plans           | View Test Plans             |   |
-| ^^                   | Add Test Plans              |   |
-| ^^                   | Edit Test Plans             |   |
-| ^^                   | Delete Test Plans           |   |
-| Test Cases           | View Test Cases             |   |
-| ^^                   | Add Test Cases              |   |
-| ^^                   | Edit Test Cases             |   |
-| ^^                   | Delete Test Cases           |   |
-| Test Case Executions | View Test Case Executions   |   |
-| ^^                   | Add Test Case Executions    |   |
-| ^^                   | Edit Test Case Executions   |   |
-| ^^                   | Delete Test Case Executions |   |
+* View Test Plans
+* Add Test Plans
+* Edit Test Plans
+* Delete Test Plans,
+* Add Test Cases
+* Edit Test Cases
+* Delete Test Cases
+* View Test Case Executions
+* Add Test Case Executions
+* Edit Test Case Executions
+* Delete Test Case Executions
 
 Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed)
 
