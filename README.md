@@ -14,6 +14,33 @@ $ bin/rails redmine:plugins:migrate RAILS_ENV=production
 
 And then restart your Redmine.
 
+## Settings
+
+Not only enabling testcase management module in each project, you need to configure appropriate permissions
+for every member roles.
+
+Since v1.2.0, the following 12 permissions were introduced:
+
+|:--------------------:|:---------------------------:|:-:|
+| Test Plans           | View Test Plans             |   |
+| ^^                   | Add Test Plans              |   |
+| ^^                   | Edit Test Plans             |   |
+| ^^                   | Delete Test Plans           |   |
+| Test Cases           | View Test Cases             |   |
+| ^^                   | Add Test Cases              |   |
+| ^^                   | Edit Test Cases             |   |
+| ^^                   | Delete Test Cases           |   |
+| Test Case Executions | View Test Case Executions   |   |
+| ^^                   | Add Test Case Executions    |   |
+| ^^                   | Edit Test Case Executions   |   |
+| ^^                   | Delete Test Case Executions |   |
+
+Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed)
+
+* Import Test Cases
+* Import Test Plans
+* Import Test Case Executions
+
 ## Known Restrictions
 
 * Test Plan, Test Case, Test Case Execution inherits permission from issues. (view, edit, and so on)
