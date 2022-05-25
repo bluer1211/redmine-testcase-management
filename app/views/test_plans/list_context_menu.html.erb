@@ -29,11 +29,11 @@
     </li>
 
     <% if @test_plan %>
-      <li><%= link_to l(:label_deleted),
+      <li><%= link_to l(:button_delete),
               "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}",
               method: :delete,
               data: { confirm: l(:text_are_you_sure) },
-              title: l(:label_delete),
+              title: l(:button_delete),
               class: 'icon icon-link-break', disabled: !@can[:edit] %></li>
     <% end %>
   <% else %>
@@ -64,11 +64,11 @@
       </ul>
     </li>
     <% ids = @test_plans.pluck(:id).map { |id| "ids[]=#{id}" }.join("&") %>
-    <li><%= link_to l(:label_deleted),
+    <li><%= link_to l(:button_delete),
             bulk_delete_project_test_plans_path(:ids => @test_plan_ids, :back_url => @back),
             method: :delete,
             data: { confirm: l(:text_are_you_sure) },
-            title: l(:label_deleted),
+            title: l(:button_delete),
             class: 'icon icon-link-break', disabled: !@can[:edit] %></li>
   <% end %>
 </ul>
