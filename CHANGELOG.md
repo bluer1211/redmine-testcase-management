@@ -18,6 +18,12 @@
 * Translated labels for module permissions.
 * test plan: Tweaked list of related test case layout in a table and
   supported bulk operations via context menu. MR#47, MR#50, MR#51, MR#52
+* Revised testcase management permissions.
+  Instead of Test Cases, Test Plans, Test Case Executions, Import Test
+  Cases, Import Test Plans, Import Test Case Executions, existing permissions are unified into 12 permissions.
+  New permissions are: View Test Cases, Add Test Cases, Edit Test Cases, Delete Test Cases,
+  View Test Plans, Add Test Plans, Edit Test Plans, Delete Test Plans,
+  View Test Case Executions, Add Test Case Executions, Edit Test Case Executions, Delete Test Case Executions.
 
 ### Bug fixes
 
