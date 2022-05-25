@@ -38,7 +38,8 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "add new test plan" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_plans, :add_test_plans])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues,
+                                              :view_test_plans, :add_test_plans])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans"
