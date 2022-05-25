@@ -19,7 +19,7 @@ And then restart your Redmine.
 * Test Plan, Test Case, Test Case Execution inherits permission from issues. (view, edit, and so on)
 * After saving query, the page will not be redirected to the page which filter was executed. (Always redirected to test case list)
 * CSV import may fails when the localized value of column is not matched to stored in database.
-* Enabled/Disabled plugin status is not reflected in main menu.
+* Enabled/Disabled plugin status is not reflected in main menu. (Fixed in 1.2.0)
 
 ## Tests
 
