@@ -24,7 +24,7 @@ Since v1.2.0, the following 12 permissions were introduced:
 * View Test Plans
 * Add Test Plans
 * Edit Test Plans
-* Delete Test Plans,
+* Delete Test Plans
 * Add Test Cases
 * Edit Test Cases
 * Delete Test Cases
