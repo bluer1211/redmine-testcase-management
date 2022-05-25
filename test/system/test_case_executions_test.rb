@@ -39,7 +39,8 @@ class TestCaseExecutionsTest < ApplicationSystemTestCase
   end
 
   test "add new test case execution" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_plans, :view_test_case_executions, :add_test_case_executions])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues,
+                                              :view_test_plans, :view_test_case_executions, :add_test_case_executions])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions"
@@ -116,7 +117,8 @@ EOS
   end
 
   test "update test case execution" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_case_executions, :edit_test_case_executions])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_case_executions, :edit_test_case_executions])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/test_case_executions/#{@test_case_execution.id}/edit"
