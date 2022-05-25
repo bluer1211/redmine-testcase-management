@@ -39,7 +39,14 @@ Rails.application.routes.draw do |map|
       end
     end
 
-    resources :test_case_executions
+    match 'test_case_executions/context_menu', :to => 'test_case_executions#list_context_menu', :as => :test_case_execution_list_context_menu, :via => [:get, :post]
+    resources :test_case_executions do
+      collection do
+        get 'bulk_edit'
+        post 'bulk_update'
+        delete 'bulk_delete'
+      end
+    end
   end
 
   get 'projects/:project_id/test_cases/imports/new',

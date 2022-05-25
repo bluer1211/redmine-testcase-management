@@ -1,0 +1,85 @@
+<h2><%= l(:label_bulk_edit_selected_test_case_executions) %></h2>
+
+<% if @saved_test_case_executions && @unsaved_test_case_executions.present? %>
+<div id="errorExplanation">
+  <span>
+    <%= l(:notice_failed_to_save_test_case_executions,
+        :count => @unsaved_test_cases.size,
+        :total => @saved_test_cases.size,
+        :ids => @unsaved_test_cases.map {|i| "##{i.id}"}.join(', ')) %>
+  </span>
+  <ul>
+  <% bulk_edit_error_messages(@unsaved_test_case_executions).each do |message| %>
+    <li><%= message %></li>
+  <% end %>
+  </ul>
+</div>
+<% end %>
+
+<ul id="bulk-selection">
+  <% @test_case_executions.each do |test_case_execution| %>
+    <%= content_tag 'li', link_to("#{test_case_execution.id}", project_test_case_execution_path(id: test_case_execution.id)) %>
+  <% end %>
+</ul>
+
+<%= form_tag(bulk_update_project_test_case_executions_path(back: @back_url), :id => 'bulk_edit_form') do %>
+  <%= hidden_field_tag('back_url', @back_url) %>
+  <%= @test_case_executions.collect {|i| hidden_field_tag('ids[]', i.id, :id => nil)}.join("\n").html_safe %>
+  <div class="box tabular">
+    <fieldset class="attributes">
+      <legend><%= l(:label_change_properties) %></legend>
+
+      <div class="splitcontent">
+        <div class="splitcontentleft">
+          <% if @safe_attributes.include?('environment') -%>
+          <p>
+            <label for='test_case_environment'><%= l(:field_environment) %></label>
+            <%= text_field_tag "test_case[environment]", nil, size:60, id: "environment" %>
+          </p>
+          <% end %>
+        </div>
+        <div class="splitcontentleft">
+          <% if @safe_attributes.include?('user_id') -%>
+          <p>
+            <label for='test_case_execution_user_id'><%= l(:field_user) %></label>
+            <%= select_tag('test_case_execution[user_id]',
+                content_tag('option', l(:label_no_change_option), :value => '') +
+            principals_options_for_select(@assignables, @test_case_execution_params[:user_id])) %>
+          </p>
+          <% end %>
+        </div>
+
+        <div class="splitcontentleft">
+          <% if @safe_attributes.include?('execution_date') %>
+          <p>
+            <label for='test_case_execution_execution_date'><%= l(:field_execution_date) %></label>
+            <%= date_field_tag 'test_case_execution[execution_date]', '', :value => @test_case_execution_params[:execution_date], :size => 10 %><%= calendar_for('test_case_execution_execution_date') %>
+            <label class="inline"><%= check_box_tag 'test_case_execution[execution_date]', 'none', (@test_case_execution_params[:execution_date] == 'none'), :id => nil, :data => {:disables => '#test_case_execution_date'} %><%= l(:button_clear) %></label>
+          </p>
+          <% end %>
+        </div>
+
+        <div class="splitcontentright">
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <p>
+    <%= submit_tag l(:button_submit) %>
+  </p>
+<% end %>
+
+<%= javascript_tag do %>
+$(window).on('load', function(){
+  $(document).on('change', 'input[data-disables]', function(){
+    if ($(this).prop('checked')){
+      $($(this).data('disables')).attr('disabled', true).val('');
+    } else {
+      $($(this).data('disables')).attr('disabled', false);
+    }
+  });
+});
+$(document).ready(function(){
+  $('input[data-disables]').trigger('change');
+});
+<% end %>

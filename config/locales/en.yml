@@ -15,6 +15,7 @@ en:
   label_bulk_edit_selected_test_cases: "Bulk edit test cases"
   label_test_case_execution_new: "New Test Case Execution"
   label_test_case_execution_edit: "Edit Test Case Execution"
+  label_bulk_edit_selected_test_case_executions: "Bulk edit Test Case Execution"
   label_back_to_lists: "Back to lists"
   label_test_plan_statistics: "Test Plan Statistics"
   label_import_test_cases: "Import Test Cases"
@@ -62,6 +63,7 @@ en:
 
   notice_failed_to_save_test_plans: "Failed to save %{count} test plan(s) on %{total} selected: %{ids}."
   notice_failed_to_save_test_cases: "Failed to save %{count} test case(s) on %{total} selected: %{ids}."
+  notice_failed_to_save_test_case_executions: "Failed to save %{count} test case execution(s) on %{total} selected: %{ids}."
 
   # TestPlan
   field_estimated_bug: "Estimated Bugs"

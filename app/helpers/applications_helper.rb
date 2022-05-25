@@ -124,6 +124,15 @@ module ApplicationsHelper
     render_404
   end
 
+  def find_test_case_executions
+    # Used via context menu
+    @test_case_executions = TestCaseExecution.where(id: params[:id] || params[:ids])
+    raise ActiveRecord::RecordNotFound if @test_case_executions.empty?
+    raise Unauthorized unless @test_case_executions.all?(&:visible?)
+  rescue ActiveRecord::RecordNotFound
+    render_404
+  end
+
   def find_test_plans
     # Used via context menu
     @test_plans = if params[:id] || params[:ids]

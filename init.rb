@@ -62,10 +62,10 @@ Redmine::Plugin.register :testcase_management do
     permission :edit_test_case_executions, {
       :test_cases => [:index, :show],
       :test_plans => [:index, :show],
-      :test_case_executions => [:index, :show, :edit, :update],
+      :test_case_executions => [:index, :show, :edit, :update, :bulk_edit, :bulk_update, :list_context_menu],
     }
     permission :delete_test_case_executions, {
-      :test_case_executions => [:index, :destroy],
+      :test_case_executions => [:index, :destroy, :bulk_delete, :list_context_menu],
     }
   end
 

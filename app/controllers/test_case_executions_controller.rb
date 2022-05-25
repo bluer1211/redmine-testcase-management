@@ -3,11 +3,12 @@ class TestCaseExecutionsController < ApplicationController
   include ApplicationsHelper
 
   before_action :find_project_id
-  before_action :find_test_plan_id, :except => [:index, :show, :edit, :update]
+  before_action :find_test_plan_id, :except => [:index, :show, :edit, :update, :bulk_edit, :bulk_update, :bulk_delete, :list_context_menu]
   before_action :find_test_plan_id_if_given, :only => [:index, :show, :edit, :update]
   before_action :find_test_case_id, :only => [:show, :new, :create, :edit, :update, :destroy]
   before_action :find_test_case_id_if_given, :only => [:index]
-  before_action :find_test_case_execution, :except => [:index, :new, :create]
+  before_action :find_test_case_execution, :except => [:index, :new, :create, :bulk_edit, :bulk_update, :bulk_delete, :list_context_menu]
+  before_action :find_test_case_executions, :only => [:bulk_edit, :bulk_update, :bulk_delete, :list_context_menu]
   before_action :authorize_with_issues_permission
 
   before_action do
@@ -19,6 +20,7 @@ class TestCaseExecutionsController < ApplicationController
   include QueriesHelper
   helper :test_case_executions_queries
   include TestCaseExecutionsQueriesHelper
+  helper :context_menus
 
   # GET /projects/:project_id/test_case_executions
   # GET /projects/:project_id/test_cases/:test_case_id/test_case_executions
@@ -210,6 +212,72 @@ class TestCaseExecutionsController < ApplicationController
       flash.now[:error] = l(:error_test_case_execution_not_found)
       render 'forbidden', status: 404
     end
+  end
+
+  # GET /projects/:project_id/test_case_executions/context_menu
+  def list_context_menu
+    if @test_case_executions.size == 1
+      @test_case_execution = @test_case_executions.first
+    end
+    @test_case_execution_ids = @test_case_executions.map(&:id).sort
+
+    edit_allowed = @test_case_executions.all? {|t| t.editable?(User.current)}
+    @can = {:edit => edit_allowed, :delete => edit_allowed}
+    @back = back_url
+
+    @safe_attributes = @test_case_executions.map(&:safe_attribute_names).reduce(:&)
+    @assignables = @project.users
+    render :layout => false
+  end
+
+  def bulk_edit
+    @assignables = @project.users
+    @safe_attributes = @test_case_executions.map(&:safe_attribute_names).reduce(:&)
+    @test_case_execution_params = params[:test_case_execution] || {}
+    @back_url = params[:back_url]
+  end
+
+  def bulk_update
+    attributes = parse_params_for_bulk_update(params[:test_case_execution])
+
+    unsaved_test_case_executions = []
+    saved_test_case_executions = []
+
+    @test_case_executions.each do |orig_test_case_execution|
+      orig_test_case_execution.reload
+      test_case_execution = orig_test_case_execution
+      test_case_execution.safe_attributes = attributes
+      if test_case_execution.save
+        saved_test_case_executions << test_case_execution
+      else
+        unsaved_test_case_executions << orig_test_case_execution
+      end
+    end
+
+    if unsaved_test_case_executions.empty?
+      flash[:notice] = l(:notice_successful_update) unless saved_test_case_executions.empty?
+      redirect_to params[:back_url]
+    else
+      @saved_test_case_executions = @test_case_executions
+      @unsaved_test_case_executions = unsaved_test_case_executions
+      @test_case_executions = TestPlan.visible.where(id: @unsaved_test_case_executions.map(&:id)).to_a
+      bulk_edit
+      render :action => 'bulk_edit'
+    end
+  end
+
+  # DELETE /projects/:project_id/test_plans/bulk_delete
+  def bulk_delete
+    @test_case_execution_params = params[:test_case_execution] || {}
+
+    delete_allowed = @test_case_executions.all? { |t| t.deletable?(User.current) }
+    if delete_allowed
+      @test_case_executions.destroy_all
+      flash[:notice] = l(:notice_successful_delete)
+    else
+      flash[:notice] = l(:error_delete_failure)
+    end
+    redirect_to params[:back_url]
   end
 
   private

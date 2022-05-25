@@ -1,0 +1,43 @@
+<ul>
+  <% if @test_case_execution %>
+    <li><%= context_menu_link l(:button_edit),
+            edit_project_test_plan_test_case_test_case_execution_path(test_plan_id: @test_case_execution.test_plan.id,
+            test_case_id: @test_case_execution.test_case.id, id: @test_case_execution.id),
+            class: 'icon icon-edit', disabled: !@can[:edit] %></li>
+  <% else %>
+    <li><%= context_menu_link l(:button_edit), bulk_edit_project_test_case_executions_path(:ids => @test_case_execution_ids, :back_url => @back),
+      :class => 'icon icon-edit', :disabled => !@can[:edit] %></li>
+  <% end %>
+  <% if @safe_attributes.include?("user_id") && @assignables.present? -%>
+    <li class="folder">
+      <a href="#" class="submenu"><%= l(:field_user) %></a>
+      <ul>
+        <% if @assignables.include?(User.current) %>
+        <li><%= context_menu_link "<< #{l(:label_me)} >>", bulk_update_project_test_case_executions_path(:ids => @test_case_execution_ids, :test_case_execution => {'user_id' => User.current},
+          :back_url => @back), :method => :post, :disabled => !@can[:edit] %></li>
+        <% end %>
+        <% @assignables.each do |u| -%>
+        <li><%= context_menu_link u.name, bulk_update_project_test_case_executions_path(:ids => @test_case_execution_ids, :test_case_execution => {'user_id' => u}, :back_url => @back),
+          :method => :post, :disabled => !@can[:edit] %></li>
+        <% end -%>
+      </ul>
+    </li>
+    <% end %>
+  <li class="folder">
+    <a href="#" class="submenu"><%= l(:field_result) %></a>
+    <ul>
+      <% [{name: l(:label_succeed), value: 1},
+         {name: l(:label_failure), value: 0}].each do |status| -%>
+      <li><%= context_menu_link status[:name], bulk_update_project_test_case_executions_path(:ids => @test_case_execution_ids, :test_case_execution => {'result' => status[:value]}, :back_url => @back),
+        :method => :post, :disabled => !@can[:edit] %></li>
+      <% end -%>
+    </ul>
+  </li>
+  <% ids = @test_case_executions.pluck(:id).map { |id| "ids[]=#{id}" }.join("&") %>
+  <li><%= link_to l(:button_delete),
+          bulk_delete_project_test_case_executions_path(:ids => @test_case_execution_ids, :back_url => @back),
+    method: :delete,
+    data: { confirm: l(:text_are_you_sure) },
+    title: l(:button_delete),
+    class: 'icon icon-link-break', disabled: !@can[:edit] %></li>
+</ul>
