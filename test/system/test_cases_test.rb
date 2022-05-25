@@ -145,7 +145,8 @@ class TestCasesTest < ApplicationSystemTestCase
   end
 
   test "minimum scenario/expected rows" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :add_issues,
+                                              :view_test_cases, :add_test_cases])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases"
@@ -163,7 +164,8 @@ class TestCasesTest < ApplicationSystemTestCase
   end
 
   test "scenario/expected rows" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_cases, :edit_test_cases])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
@@ -184,7 +186,8 @@ class TestCasesTest < ApplicationSystemTestCase
   end
 
   test "maximum scenario/expected rows" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_cases, :edit_test_cases])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
@@ -205,7 +208,8 @@ class TestCasesTest < ApplicationSystemTestCase
   end
 
   test "scenario/expected with newline" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_cases, :edit_test_cases])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
@@ -236,7 +240,8 @@ class TestCasesTest < ApplicationSystemTestCase
   end
 
   test "scenario/expected with max newline" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :view_test_cases])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_cases, :edit_test_cases])
     log_user(@user.login, "password")
 
     path = "/projects/#{@project.identifier}/test_plans/#{@test_plan.id}/test_cases/#{@test_case.id}/edit"
