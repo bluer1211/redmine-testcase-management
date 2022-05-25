@@ -45,6 +45,16 @@ Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed
 * After saving query, the page will not be redirected to the page which filter was executed. (Always redirected to test case list)
 * CSV import may fails when the localized value of column is not matched to stored in database.
 * ~~Enabled/Disabled plugin status is not reflected in main menu.~~ (Fixed in 1.2.0)
+* test plans: Context menu operation for listed test plans supports only editing test plan, changing user, changing status and delete test plans.
+* test plans: Bulk update for listed test plans supports only changing user, status, begin date, end date.
+* test plan: Context menu operation for related test cases supports only editing test case, changing user, deleting related test cases.
+* test plan: Bulk update for related test cases supports only changing environment, user.
+* test cases: Context menu operation for listed test case supports only editing test case, changing user, delete test cases.
+* test cases: Bulk update for listed test cases supports only changing user, status, begin date, end date.
+* test case: Context menu operation for listed test case executions is not supported.
+* test case: Bulk update for listed test case executions is not supported
+* test case executions: Context menu operation for listed test case executions is not supported.
+* test case executions: Bulk update for listed test case executions is not supported
 
 ## Tests
 
