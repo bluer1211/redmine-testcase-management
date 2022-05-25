@@ -171,7 +171,8 @@ class TestPlansTest < ApplicationSystemTestCase
   end
 
   test "bulk assign specific user" do
-    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :view_test_plans, :edit_test_plans])
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_plans, :edit_test_plans, :view_test_cases, :edit_test_cases])
     log_user(@user.login, "password")
 
     @test_plan = test_plans(:test_plans_003)
@@ -179,10 +180,12 @@ class TestPlansTest < ApplicationSystemTestCase
     visit path
 
     check 'check_all'
+    # Click action column (show context menu)
     find("table#related_test_cases tbody tr:first-child td.buttons a").click
-    # select user folder in context menu
+    # Click User folder in context menu
     find("div#context-menu ul li.folder a").click
 
+    # Click User > <<me>> in context menu
     find("div#context-menu ul li.folder ul li:first-child a").click
     # assigned to @user
     assert_selector "table#related_test_cases tbody tr td.user" do |td|
