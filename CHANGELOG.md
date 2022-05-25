@@ -40,15 +40,15 @@
 
 ### Improvements
 
-* test plan: Improved rendering performance to show Test Plan.
+* test plan: Improved rendering performance to show Test Plan. #1
   Showing Test Cases associated to the Test Plan will be paginated.
 
 ### Bug fixes
 
 * import: Fixed a bug that import fails because of detecting correct issue
-* test case execution: Fixed a bug that Test Case Execution's execution date is not mandatory. MR#29
-* test plan stats: Fixed a bug that test case execution is counted wrongly (duplicated) MR#30
-* test case stats: Fixed a bug that test case execution is counted wrongly (duplicated) MR#31
+* test case execution: Fixed a bug that Test Case Execution's execution date is not mandatory. #4, MR#29
+* test plan stats: Fixed a bug that test case execution is counted wrongly (duplicated) #3, MR#30
+* test case stats: Fixed a bug that test case execution is counted wrongly (duplicated) #3, MR#31
 * Fixed a bug that issue_visibility=default is not handled correctly.
   There was a case that user can't be assigned for private project. MR#34
 * test case: Fixed a bug that latest execution date is not fetched
