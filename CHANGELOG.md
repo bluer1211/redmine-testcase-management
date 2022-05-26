@@ -2,6 +2,10 @@
 
 ## Release v1.2.0 - 2022/MM/DD
 
+In this release, permissions are re-designed.
+As redmine:plugins:migrate doesn't auto migrate existing permissions,
+configure roles for testcase management again.
+
 ### Improvements
 
 * test case: Expanded scenario and expected textarea editable rows.
