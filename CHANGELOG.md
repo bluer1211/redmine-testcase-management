@@ -30,6 +30,7 @@ configure roles for testcase management again.
   View Test Case Executions, Add Test Case Executions, Edit Test Case Executions, Delete Test Case Executions.
 * test case: Supported bulk operations via context menu in test case list. MR#53
 * test case execution: Supported bulk operations via context menu in test case execution list. MR#54
+* Supported to make the "testcase management" tab highlight when it was selected.
 
 ### Bug fixes
 
