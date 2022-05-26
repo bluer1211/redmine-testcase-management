@@ -28,28 +28,22 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
             c: ["result", "user", "execution_date", "comment", "issue"]
           }
       assert_response :success
-      assert_select "table#test_case_executions_list tbody tr", 1
-      executions = []
-      assert_select "table#test_case_executions_list tbody tr td:first-child" do |tds|
-        tds.each do |td|
-          executions << td.text.to_i
-        end
-      end
-      assert_equal [test_case_executions(:test_case_executions_001).id], executions
-      columns = []
-      assert_select "table#test_case_executions_list thead tr:first-child th" do |ths|
-        ths.each do |th|
-          columns << th.text
-        end
-      end
-      assert_equal ['#',
-                    I18n.t(:field_result),
-                    I18n.t(:field_user),
-                    I18n.t(:field_execution_date),
-                    I18n.t(:field_comment),
-                    I18n.t(:field_issue),
+      test_case_execution = test_case_executions(:test_case_executions_001)
+      assert_equal [['',
+                     '#',
+                     I18n.t(:field_result),
+                     I18n.t(:field_user),
+                     I18n.t(:field_execution_date),
+                     I18n.t(:field_comment),
+                     I18n.t(:field_issue),
+                     ''
+                    ],
+                    [
+                      test_case_execution.id.to_s,
+                    ]
                    ],
-                   columns
+                   [css_select("table#test_case_executions_list thead tr th").map(&:text).map(&:strip),
+                    css_select("table#test_case_executions_list tbody tr td:nth-child(2)").map(&:text)]
       assert_contextual_link(I18n.t(:label_test_case_execution_new),
                              new_project_test_plan_test_case_test_case_execution_path)
     end
@@ -1082,6 +1076,194 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       end
       assert_equal I18n.t(:notice_successful_delete), flash[:notice]
       assert_redirected_to project_test_plan_test_case_test_case_executions_path
+    end
+  end
+
+  class BulkUpdate < self
+
+    class One < self
+      def setup
+        super
+        activate_module_for_projects
+        @test_case_execution = test_case_executions(:test_case_executions_001)
+        @project = projects(:projects_003)
+        login_with_permissions(@project,
+                               [:view_project, :view_issues, :edit_issues, :edit_test_case_executions])
+      end
+
+      def test_update_user
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_case_execution.id],
+               test_case_execution: {
+                 user_id: @user.id
+               },
+               back_url: project_test_case_executions_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_case_executions_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal [test_case_executions(:test_case_executions_003).user.name,
+                      test_case_executions(:test_case_executions_002).user.name,
+                      @user.name],
+                     css_select("table#test_case_executions_list tbody tr td.user").map(&:text)
+      end
+
+      def test_update_result
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_case_execution.id],
+               test_case_execution: {
+                 result: 1
+               },
+               back_url: project_test_case_executions_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_case_executions_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal [I18n.t(:label_failure),
+                      I18n.t(:label_succeed),
+                      I18n.t(:label_succeed)],
+                     css_select("table#test_case_executions_list tbody tr td.result").map(&:text)
+      end
+
+      def test_update_execution_date
+        ActiveRecord::Base.default_timezone = :utc
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: [@test_case_execution.id],
+               test_case_execution: {
+                 execution_date: "2022-05-05"
+               },
+               back_url: project_test_case_executions_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_case_executions_path(project_id: @project.identifier)
+
+        assert_equal "2022-05-05",
+                     TestCaseExecution.find(test_case_executions(:test_case_executions_001).id).execution_date.strftime("%F")
+      end
+    end
+
+    class Many < self
+      def setup
+        super
+        activate_module_for_projects
+        @project = projects(:projects_003)
+        login_with_permissions(@project,
+                               [:view_project, :view_issues, :edit_issues, :edit_test_case_executions])
+      end
+
+      def test_update_users
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: test_case_executions(:test_case_executions_001,
+                                         :test_case_executions_002,
+                                         :test_case_executions_003).pluck(:id),
+               test_case_execution: {
+                 user_id: @user.id
+               },
+               back_url: project_test_case_executions_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_case_executions_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal [@user.name, @user.name, @user.name],
+                     css_select("table#test_case_executions_list tbody tr td.user").map(&:text)
+      end
+
+      def test_update_results
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: test_case_executions(:test_case_executions_001,
+                                         :test_case_executions_002,
+                                         :test_case_executions_003).pluck(:id),
+               test_case_execution: {
+                 result: 1,
+               },
+               back_url: project_test_case_executions_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_case_executions_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal [I18n.t(:label_succeed),
+                      I18n.t(:label_succeed),
+                      I18n.t(:label_succeed)],
+                     css_select("table#test_case_executions_list tbody tr td.result").map(&:text)
+      end
+
+      def test_update_execution_dates
+        ActiveRecord::Base.default_timezone = :utc
+        post :bulk_update, params: {
+               project_id: @project.identifier,
+               ids: test_case_executions(:test_case_executions_001,
+                                         :test_case_executions_002,
+                                         :test_case_executions_003).pluck(:id),
+               test_case_execution: {
+                 execution_date: "2022-05-05"
+               },
+               back_url: project_test_case_executions_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_case_executions_path(project_id: @project.identifier)
+
+        assert_equal ["2022-05-05"] * 3,
+                     TestCaseExecution.where(id: test_case_executions(:test_case_executions_001,
+                                                                      :test_case_executions_002,
+                                                                      :test_case_executions_003).pluck(:id))
+                                            .map { |v| v.execution_date.strftime("%F") }
+      end
+    end
+  end
+
+  class BulkDelete < self
+
+    class One < self
+      def setup
+        super
+        activate_module_for_projects
+        @test_case_execution = test_case_executions(:test_case_executions_001)
+        @project = projects(:projects_003)
+        login_with_permissions(@project,
+                               [:view_project, :view_issues, :delete_issues, :delete_test_case_executions])
+      end
+
+      def test_delete
+        delete :bulk_delete, params: {
+                 project_id: @project.identifier,
+                 ids: [@test_case_execution.id],
+                 back_url: project_test_case_executions_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_case_executions_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal test_case_executions(:test_case_executions_003,
+                                          :test_case_executions_002).pluck(:id).map(&:to_s),
+                     css_select("table#test_case_executions_list tbody tr td.id").map(&:text)
+      end
+    end
+
+    class Many < self
+      def setup
+        super
+        activate_module_for_projects
+        @project = projects(:projects_003)
+        login_with_permissions(@project,
+                               [:view_project, :view_issues, :delete_issues, :delete_test_case_executions])
+      end
+
+      def test_delete
+        delete :bulk_delete, params: {
+                 project_id: @project.identifier,
+                 ids: test_case_executions(:test_case_executions_001,
+                                           :test_case_executions_002,
+                                           :test_case_executions_003).pluck(:id),
+               back_url: project_test_case_executions_path(project_id: @project.identifier)
+             }
+        assert_redirected_to project_test_case_executions_path(project_id: @project.identifier)
+
+        get :index, params: { project_id: @project.identifier }
+        assert_equal [],
+                     css_select("table#test_case_executions_list tbody tr td.id").map(&:text)
+      end
     end
   end
 

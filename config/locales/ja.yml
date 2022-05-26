@@ -14,6 +14,7 @@ ja:
   label_bulk_edit_selected_test_cases: "テストケースの一括編集"
   label_test_case_execution_new: "新しいテスト実行結果"
   label_test_case_execution_edit: "テスト実行結果の編集"
+  label_bulk_edit_selected_test_case_executions: "テスト実行結果の一括編集"
   label_back_to_lists: "一覧に戻る"
   label_test_plan_statistics: "テスト計画の統計"
   label_import_test_cases: "テストケースのインポート"
@@ -61,6 +62,7 @@ ja:
 
   notice_failed_to_save_test_plans: "全%{total}件中%{count}件のテスト計画が保存できませんでした: %{ids}。"
   notice_failed_to_save_test_cases: "全%{total}件中%{count}件のテストケースが保存できませんでした: %{ids}。"
+  notice_failed_to_save_test_case_executions: "全%{total}件中%{count}件のテスト実行結果が保存できませんでした: %{ids}。"
 
   # TestPlan
   field_estimated_bug: "想定バグ数"
