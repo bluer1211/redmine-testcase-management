@@ -28,28 +28,22 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
             c: ["result", "user", "execution_date", "comment", "issue"]
           }
       assert_response :success
-      assert_select "table#test_case_executions_list tbody tr", 1
-      executions = []
-      assert_select "table#test_case_executions_list tbody tr td:first-child" do |tds|
-        tds.each do |td|
-          executions << td.text.to_i
-        end
-      end
-      assert_equal [test_case_executions(:test_case_executions_001).id], executions
-      columns = []
-      assert_select "table#test_case_executions_list thead tr:first-child th" do |ths|
-        ths.each do |th|
-          columns << th.text
-        end
-      end
-      assert_equal ['#',
-                    I18n.t(:field_result),
-                    I18n.t(:field_user),
-                    I18n.t(:field_execution_date),
-                    I18n.t(:field_comment),
-                    I18n.t(:field_issue),
+      test_case_execution = test_case_executions(:test_case_executions_001)
+      assert_equal [['',
+                     '#',
+                     I18n.t(:field_result),
+                     I18n.t(:field_user),
+                     I18n.t(:field_execution_date),
+                     I18n.t(:field_comment),
+                     I18n.t(:field_issue),
+                     ''
+                    ],
+                    [
+                      test_case_execution.id.to_s,
+                    ]
                    ],
-                   columns
+                   [css_select("table#test_case_executions_list thead tr th").map(&:text).map(&:strip),
+                    css_select("table#test_case_executions_list tbody tr td:nth-child(2)").map(&:text)]
       assert_contextual_link(I18n.t(:label_test_case_execution_new),
                              new_project_test_plan_test_case_test_case_execution_path)
     end
