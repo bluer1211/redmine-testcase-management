@@ -53,8 +53,8 @@ Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed
 * test cases: Bulk update for listed test cases supports only changing user, status, begin date, end date.
 * test case: Context menu operation for listed test case executions is not supported.
 * test case: Bulk update for listed test case executions is not supported
-* test case executions: Context menu operation for listed test case executions is not supported.
-* test case executions: Bulk update for listed test case executions is not supported
+* test case executions: Context menu operation for listed test case executions supports only editing test case execution, changing user, changing result and deleting test case executions.
+* test case executions: Bulk update for listed test case executions supports only changing user, changing execution date.
 
 ## Tests
 
