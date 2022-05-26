@@ -24,6 +24,8 @@
   New permissions are: View Test Cases, Add Test Cases, Edit Test Cases, Delete Test Cases,
   View Test Plans, Add Test Plans, Edit Test Plans, Delete Test Plans,
   View Test Case Executions, Add Test Case Executions, Edit Test Case Executions, Delete Test Case Executions.
+* test case: Supported bulk operations via context menu in test case list. MR#53
+* test case execution: Supported bulk operations via context menu in test case execution list. MR#54
 
 ### Bug fixes
 
