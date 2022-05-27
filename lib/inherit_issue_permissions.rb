@@ -65,7 +65,7 @@ module TestCaseManagement
 
     def owned_only_by_visible_user
       return true unless user
-      errors.add(:user, "Unownable User") unless visible?(user)
+      errors.add(:user, "Unownable User #{user.id} for #{self.class.name} #{id}") unless visible?(user)
     end
 
     module_function
