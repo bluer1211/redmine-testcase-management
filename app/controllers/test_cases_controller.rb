@@ -328,7 +328,7 @@ SQL
   def bulk_delete
     @test_case_params = params[:test_case] || {}
 
-    delete_allowed = @test_cases.all? { |t| t.editable?(User.current) }
+    delete_allowed = @test_cases.all? { |t| t.deletable?(User.current) }
     if delete_allowed
       @test_cases.destroy_all
       flash[:notice] = l(:notice_successful_delete)
