@@ -2,6 +2,12 @@
 
 https://gitlab.com/clear-code/redmine-plugin-testcase-management
 
+## Requirements
+
+* Redmine 4.1.0 or later (not Redmine 5.x)
+  * TimestampQueryColumn was implemented since 4.1.0.
+* PostgreSQL
+
 ## Install
 
 ```console
