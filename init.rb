@@ -21,7 +21,7 @@ Redmine::Plugin.register :testcase_management do
 
     permission :view_test_cases, {
       :test_cases => [:index, :show, :statistics, :auto_complete],
-    }
+    }, read: true
     permission :add_test_cases, {
       :test_cases => [:index, :show, :new, :create, :imports],
     }
@@ -36,7 +36,7 @@ Redmine::Plugin.register :testcase_management do
       :test_cases => [:index, :show, :auto_complete],
       :test_plans => [:index, :show, :statistics],
       :test_case_executions => [:index, :show],
-    }
+    }, read: true
     permission :add_test_plans, {
       :test_cases => [:index, :show, :auto_complete],
       :test_plans => [:index, :show, :new, :create, :assign_test_case, :unassign_test_case, :imports],
@@ -53,7 +53,7 @@ Redmine::Plugin.register :testcase_management do
       :test_cases => [:index, :show],
       :test_plans => [:index, :show],
       :test_case_executions => [:index, :show],
-    }
+    }, read: true
     permission :add_test_case_executions, {
       :test_cases => [:index, :show],
       :test_plans => [:index, :show],
