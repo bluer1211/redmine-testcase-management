@@ -1021,7 +1021,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def setup
         super
         @project = projects(:projects_003)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :delete_issues])
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :edit_test_cases])
       end
 
       class One < self
@@ -1089,7 +1089,7 @@ class TestCasesControllerTest < ActionController::TestCase
       def setup
         super
         @project = projects(:projects_003)
-        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :edit_issues, :delete_issues])
+        login_as_allowed_with_permissions(@project, [:view_project, :view_issues, :delete_issues, :delete_test_cases])
       end
 
       class One < self
