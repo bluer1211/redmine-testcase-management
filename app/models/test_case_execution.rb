@@ -39,9 +39,23 @@ class TestCaseExecution < ActiveRecord::Base
   end
 
   scope :visible, (lambda do |*args|
+    user = args.shift || User.current
     joins(:project).
-    where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
+    where(TestCaseManagement::InheritIssuePermissions.issue_visible_condition(user, *args)).
+    where(TestCaseManagement::InheritIssuePermissions.visible_condition(user, :view_test_case_executions, *args))
   end)
+
+  def visible?(user=User.current)
+    issues_visible?(user) and user_permission?(user, :view_test_case_executions)
+  end
+
+  def attributes_editable?(user=User.current)
+    user_permission?(user, :edit_test_case_executions)
+  end
+
+  def deletable?(user=User.current)
+    user_permission?(user, :delete_test_case_executions)
+  end
 
   def attachments_visible?(user=User.current)
     visible?(user)
