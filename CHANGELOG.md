@@ -46,6 +46,7 @@ configure roles for testcase management again.
 ### Miscellaneous
 
 * Changed to be Redmine 4.2 ready.
+* Described non supported version (4.1.0 or later is required, but not 5.0 ready)
 
 # v1.1.0
 
