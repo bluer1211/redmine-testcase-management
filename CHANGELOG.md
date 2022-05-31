@@ -1,6 +1,6 @@
 # v1.2.0
 
-## Release v1.2.0 - 2022/MM/DD
+## Release v1.2.0 - 2022/05/31
 
 In this release, permissions are re-designed.
 As redmine:plugins:migrate doesn't auto migrate existing permissions,
