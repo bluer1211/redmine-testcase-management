@@ -28,7 +28,7 @@ Rails.application.routes.draw do |map|
       resources :test_case_executions
 
       post 'assign_test_case', to: 'test_plans#assign_test_case'
-      delete 'assign_test_case/:test_case_id', to: 'test_plans#unassign_test_case'
+      delete 'assign_test_case/:id', to: 'test_plans#unassign_test_case'
       delete 'assign_test_case', to: 'test_plans#unassign_test_case'
 
       match 'context_menu', :to => 'test_plans#show_context_menu', :as => :show_context_menu, :via => [:get, :post]
