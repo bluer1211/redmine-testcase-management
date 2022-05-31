@@ -21,7 +21,7 @@ configure roles for testcase management again.
 * test case: Supported to filter with latest execution date/latest result. MR#46
 * Translated labels for module permissions.
 * test plan: Tweaked list of related test case layout in a table and
-  supported bulk operations via context menu. MR#47, MR#50, MR#51, MR#52
+  supported bulk operations via context menu. MR#47, MR#50, MR#51, MR#52, MR#56
 * Revised testcase management permissions.
   Instead of Test Cases, Test Plans, Test Case Executions, Import Test
   Cases, Import Test Plans, Import Test Case Executions, existing permissions are unified into 12 permissions.
