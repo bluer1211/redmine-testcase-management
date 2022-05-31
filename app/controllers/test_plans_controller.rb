@@ -170,8 +170,8 @@ class TestPlansController < ApplicationController
     end
   end
 
-  # DELETE /projects/:project_id/test_plans/:test_plan_id/unassign_test_case/:id
-  # DELETE /projects/:project_id/test_plans/:test_plan_id/unassign_test_case/?ids[]=ID1&ids[]=ID2 ...
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/assign_test_case/:id
+  # DELETE /projects/:project_id/test_plans/:test_plan_id/assign_test_case/?ids[]=ID1&ids[]=ID2 ...
   def unassign_test_case
     begin
       raise ActiveRecord::RecordNotFound unless @test_cases.all?(&:visible?)
