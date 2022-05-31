@@ -39,6 +39,9 @@ Since v1.2.0, the following 12 permissions were introduced:
 * Edit Test Case Executions
 * Delete Test Case Executions
 
+NOTE: As plugin inherits issue's permissions, issue's corresponding permissions also must be enabled.
+Thus, if you want to edit test plan, enable both of "Edit Test Plans", "Edit issues" permissions for role.
+
 Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed)
 
 * Import Test Cases
@@ -61,6 +64,9 @@ Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed
 * test case: Bulk update for listed test case executions is not supported
 * test case executions: Context menu operation for listed test case executions supports only editing test case execution, changing user, changing result and deleting test case executions.
 * test case executions: Bulk update for listed test case executions supports only changing user, changing execution date.
+* Not only "View issues" permission, "Add issues", "Edit Issues", "Delete Issues" permissions were also required for
+  each adding/editing/deleting actions in testcase management.
+  In the future, this restriction will be changed to require only "View issues" about issue permission. (Delegate permission control in plugin's side)
 
 ## Tests
 
