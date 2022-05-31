@@ -6,13 +6,6 @@ class TestPlanTest < ActiveSupport::TestCase
            :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_test_plans
 
-  def setup
-    activate_module_for_projects
-    Role.all.each do |role|
-      role.add_permission! :view_test_plans
-    end
-  end
-
   def test_initialize
     test_plan = TestPlan.new
 
@@ -278,7 +271,7 @@ class TestPlanTest < ActiveSupport::TestCase
   end
 
   def test_visible_scope_for_member_with_default_test_case_visibility
-    role = Role.generate!(:permissions => [:view_project, :view_issues, :view_test_plans],
+    role = Role.generate!(:permissions => [:view_project, :view_issues],
                           :issues_visibility => "default")
     user = User.generate!
     # Use private project
@@ -303,7 +296,7 @@ class TestPlanTest < ActiveSupport::TestCase
   end
 
   def test_visible_scope_with_custom_non_member_role_having_restricted_permission
-    role = Role.generate!(:permissions => [:view_project, :view_test_plans])
+    role = Role.generate!(:permissions => [:view_project])
     assert Role.non_member.has_permission?(:view_issues)
     user = User.generate!
     Member.create!(:principal => Group.non_member, :project_id => 1, :roles => [role])
@@ -315,7 +308,7 @@ class TestPlanTest < ActiveSupport::TestCase
   end
 
   def test_visible_scope_with_custom_non_member_role_having_extended_permission
-    role = Role.generate!(:permissions => [:view_project, :view_issues, :view_test_plans])
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
     Role.non_member.remove_permission!(:view_issues)
     user = User.generate!
     Member.create!(:principal => Group.non_member, :project_id => 3, :roles => [role])
@@ -329,11 +322,9 @@ class TestPlanTest < ActiveSupport::TestCase
     user = User.generate!
     role1 = Role.generate!
     role1.remove_permission! :view_issues
-    role1.add_permission! :view_test_plans
     role1.save!
     role2 = Role.generate!
     role2.remove_permission! :view_issues
-    role2.add_permission! :view_test_plans
     role2.save!
     User.add_to_project(user, Project.find(3), [role1, role2])
 
@@ -384,7 +375,7 @@ class TestPlanTest < ActiveSupport::TestCase
     end
   end
 
-  def test_should_be_readonly_on_closed_project
+  def test_test_plan_should_be_readonly_on_closed_project
     test_plan = TestPlan.find(1)
     user = User.find(1)
 
@@ -402,52 +393,54 @@ class TestPlanTest < ActiveSupport::TestCase
                   test_plan.deletable?(user)]
   end
 
-  def test_visible_scope_for_member
-    test_plan = test_plans(:test_plans_001)
+  def test_test_plan_should_editable_by_author
+    Role.all.each do |role|
+      role.remove_permission! :edit_issues
+      role.add_permission! :edit_own_issues
+    end
 
-    generate_user_with_permissions(test_plan.project, [:view_project])
-    assert_not test_plan.visible?(@user)
+    test_plan = test_plans(:test_plans_002)
+    user = users(:users_002)
 
-    generate_user_with_permissions(test_plan.project, [:view_project, :view_issues])
-    assert_not test_plan.visible?(@user)
-
-    generate_user_with_permissions(test_plan.project, [:view_project, :view_test_plans])
-    assert_not test_plan.visible?(@user)
-
-    generate_user_with_permissions(test_plan.project, [:view_project, :view_issues, :view_test_plans])
-    assert test_plan.visible?(@user)
+    assert_equal user, test_plan.user
+    assert_equal [true, true, false],
+                 [
+                   test_plan.attributes_editable?(user), #author
+                   test_plan.attributes_editable?(users(:users_001)), #admin
+                   test_plan.attributes_editable?(users(:users_003)), #other
+                 ]
   end
 
   def test_editable_scope_for_member
     test_plan = test_plans(:test_plans_001)
 
-    generate_user_with_permissions(test_plan.project, [:view_project])
-    assert_not test_plan.editable?(@user)
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_plan.project_id, :roles => [role])
 
-    generate_user_with_permissions(test_plan.project, [:view_project, :view_issues])
-    assert_not test_plan.editable?(@user)
+    assert_not test_plan.editable?(user)
 
-    generate_user_with_permissions(test_plan.project, [:view_project, :edit_test_plans])
-    assert test_plan.editable?(@user)
-
-    generate_user_with_permissions(test_plan.project, [:view_project, :view_issues, :edit_test_plans])
-    assert test_plan.editable?(@user)
+    role.add_permission!(:edit_issues)
+    test_plan.reload
+    user.reload
+    assert test_plan.editable?(user)
   end
 
   def test_deletable_scope_for_member
     test_plan = test_plans(:test_plans_001)
 
-    generate_user_with_permissions(test_plan.project, [:view_project])
-    assert_not test_plan.deletable?(@user)
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_plan.project_id, :roles => [role])
 
-    generate_user_with_permissions(test_plan.project, [:view_project, :view_issues])
-    assert_not test_plan.deletable?(@user)
+    assert_not test_plan.deletable?(user)
 
-    generate_user_with_permissions(test_plan.project, [:view_project, :delete_test_plans])
-    assert test_plan.deletable?(@user)
-
-    generate_user_with_permissions(test_plan.project, [:view_project, :view_issues, :delete_test_plans])
-    assert test_plan.deletable?(@user)
+    role.add_permission!(:delete_issues)
+    test_plan.reload
+    user.reload
+    assert test_plan.deletable?(user)
   end
 
   def test_ownable_user
@@ -462,7 +455,6 @@ class TestPlanTest < ActiveSupport::TestCase
 
     permitted_role = Role.generate!
     permitted_role.add_permission! :view_issues
-    permitted_role.add_permission! :view_test_plans
     permitted_role.save!
     unpermitted_role = Role.generate!
     unpermitted_role.remove_permission! :view_issues

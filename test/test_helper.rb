@@ -125,49 +125,14 @@ def generate_test_case_execution(params={})
 end
 
 def move_test_cases_to_project(project_id)
-  project = Project.find(project_id)
-  # ignore errors from permissions: we don't use such non-moved instances
   TestCaseExecution.all.each do |test_case_execution|
-    user = test_case_execution.user
-    if user and not project.users.any? { |member| member.id == user.id }
-      role = Role.generate!(permissions: [:view_issues, :view_test_case_executions])
-      begin
-        User.add_to_project(user, project, role)
-      rescue
-      end
-    end
-    begin
-      test_case_execution.update!(project_id: project_id)
-    rescue
-    end
+    test_case_execution.update!(project_id: project_id)
   end
   TestCase.all.each do |test_case|
-    user = test_case.user
-    if user and not project.users.any? { |member| member.id == user.id }
-      role = Role.generate!(permissions: [:view_issues, :view_test_cases])
-      begin
-        User.add_to_project(user, project, role)
-      rescue
-      end
-    end
-    begin
-      test_case.update!(project_id: project_id)
-    rescue
-    end
+    test_case.update!(project_id: project_id)
   end
   TestPlan.all.each do |test_plan|
-    user = test_plan.user
-    if user and not project.users.any? { |member| member.id == user.id }
-      role = Role.generate!(permissions: [:view_issues, :view_test_plans])
-      begin
-        User.add_to_project(user, project, role)
-      rescue
-      end
-    end
-    begin
-      test_plan.update!(project_id: project_id)
-    rescue
-    end
+    test_plan.update!(project_id: project_id)
   end
 end
 

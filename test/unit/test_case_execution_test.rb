@@ -6,13 +6,6 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
            :groups_users, :trackers, :projects_trackers, :enabled_modules
   fixtures :test_plans, :test_cases, :test_case_executions, :test_case_test_plans
 
-  def setup
-    activate_module_for_projects
-    Role.all.each do |role|
-      role.add_permission! :view_test_case_executions
-    end
-  end
-
   def test_initialize
     test_case_execution = TestCaseExecution.new
 
@@ -270,7 +263,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   end
 
   def test_visible_scope_for_member_with_default_test_case_execution_visibility
-    role = Role.generate!(:permissions => [:view_project, :view_issues, :view_test_case_executions],
+    role = Role.generate!(:permissions => [:view_project, :view_issues],
                           :issues_visibility => "default")
     user = User.generate!
     # Use private project
@@ -307,7 +300,7 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
   end
 
   def test_visible_scope_with_custom_non_member_role_having_extended_permission
-    role = Role.generate!(:permissions => [:view_project, :view_issues, :view_test_case_executions])
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
     Role.non_member.remove_permission!(:view_issues)
     user = User.generate!
     Member.create!(:principal => Group.non_member, :project_id => 3, :roles => [role])
@@ -321,11 +314,9 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
     user = User.generate!
     role1 = Role.generate!
     role1.remove_permission! :view_issues
-    role1.add_permission! :view_test_case_executions
     role1.save!
     role2 = Role.generate!
     role2.remove_permission! :view_issues
-    role2.add_permission! :view_test_case_executions
     role2.save!
     User.add_to_project(user, Project.find(3), [role1, role2])
 
@@ -394,76 +385,102 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
                   test_case_execution.deletable?(user)]
   end
 
-  def test_visible_scope_for_member
+  def test_test_plan_should_editable_by_author
+    Role.all.each do |role|
+      role.remove_permission! :edit_issues
+      role.add_permission! :edit_own_issues
+    end
+
     test_case_execution = test_case_executions(:test_case_executions_001)
+    user = users(:users_002)
 
-    generate_user_with_permissions(test_case_execution.project, [:view_project])
-    assert_equal [false, false],
-                 [test_case_execution.visible?(@user),
-                  test_case_execution.attachments_visible?(@user)]
-
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :view_issues])
-    assert_equal [false, false],
-                 [test_case_execution.visible?(@user),
-                  test_case_execution.attachments_visible?(@user)]
-
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :view_test_case_executions])
-    assert_equal [false, false],
-                 [test_case_execution.visible?(@user),
-                  test_case_execution.attachments_visible?(@user)]
-
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :view_issues, :view_test_case_executions])
-    assert_equal [true, true],
-                 [test_case_execution.visible?(@user),
-                  test_case_execution.attachments_visible?(@user)]
+    assert_equal user, test_case_execution.user
+    assert_equal [true, true, false],
+                 [
+                   test_case_execution.attributes_editable?(user), #author
+                   test_case_execution.attributes_editable?(users(:users_001)), #admin
+                   test_case_execution.attributes_editable?(users(:users_003)), #other
+                 ]
   end
 
   def test_editable_scope_for_member
     test_case_execution = test_case_executions(:test_case_executions_001)
 
-    generate_user_with_permissions(test_case_execution.project, [:view_project])
-    assert_equal [false, false],
-                 [test_case_execution.editable?(@user),
-                  test_case_execution.attachments_editable?(@user)]
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case_execution.project_id, :roles => [role])
 
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :view_issues])
-    assert_equal [false, false],
-                 [test_case_execution.editable?(@user),
-                  test_case_execution.attachments_editable?(@user)]
+    assert_not test_case_execution.editable?(user)
 
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :edit_test_case_executions])
-    assert_equal [true, true],
-                 [test_case_execution.editable?(@user),
-                  test_case_execution.attachments_editable?(@user)]
-
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :view_issues, :edit_test_case_executions])
-    assert_equal [true, true],
-                 [test_case_execution.editable?(@user),
-                  test_case_execution.attachments_editable?(@user)]
+    role.add_permission!(:edit_issues)
+    test_case_execution.reload
+    user.reload
+    assert test_case_execution.editable?(user)
   end
 
   def test_deletable_scope_for_member
     test_case_execution = test_case_executions(:test_case_executions_001)
 
-    generate_user_with_permissions(test_case_execution.project, [:view_project])
-    assert_equal [false, false],
-                 [test_case_execution.deletable?(@user),
-                  test_case_execution.attachments_deletable?(@user)]
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case_execution.project_id, :roles => [role])
 
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :view_issues])
-    assert_equal [false, false],
-                 [test_case_execution.deletable?(@user),
-                  test_case_execution.attachments_deletable?(@user)]
+    assert_not test_case_execution.deletable?(user)
 
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :delete_test_case_executions])
-    assert_equal [true, true],
-                 [test_case_execution.deletable?(@user),
-                  test_case_execution.attachments_deletable?(@user)]
+    role.add_permission!(:delete_issues)
+    test_case_execution.reload
+    user.reload
+    assert test_case_execution.deletable?(user)
+  end
 
-    generate_user_with_permissions(test_case_execution.project, [:view_project, :view_issues, :delete_test_case_executions])
-    assert_equal [true, true],
-                 [test_case_execution.deletable?(@user),
-                  test_case_execution.attachments_deletable?(@user)]
+  def test_attachments_visible_scope_for_member
+    test_case_execution = test_case_executions(:test_case_executions_001)
+
+    role = Role.generate!
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case_execution.project_id, :roles => [role])
+
+    assert_not test_case_execution.attachments_visible?(user)
+
+    role.add_permission!(:view_issues)
+    test_case_execution.reload
+    user.reload
+    assert test_case_execution.attachments_visible?(user)
+  end
+
+  def test_attachments_editable_scope_for_member
+    test_case_execution = test_case_executions(:test_case_executions_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case_execution.project_id, :roles => [role])
+
+    assert_not test_case_execution.attachments_editable?(user)
+
+    role.add_permission!(:edit_issues)
+    test_case_execution.reload
+    user.reload
+    assert test_case_execution.attachments_editable?(user)
+  end
+
+  def test_attachments_deletable_scope_for_member
+    test_case_execution = test_case_executions(:test_case_executions_001)
+
+    role = Role.generate!(:permissions => [:view_project, :view_issues])
+    Role.non_member.remove_permission!(:view_issues)
+    user = User.generate!
+    Member.create!(:principal => Group.non_member, :project_id => test_case_execution.project_id, :roles => [role])
+
+    assert_not test_case_execution.attachments_deletable?(user)
+
+    role.add_permission!(:delete_issues)
+    test_case_execution.reload
+    user.reload
+    assert test_case_execution.attachments_deletable?(user)
   end
 
   def test_ownable_user
@@ -478,7 +495,6 @@ class TestCaseExecutionTest < ActiveSupport::TestCase
 
     permitted_role = Role.generate!
     permitted_role.add_permission! :view_issues
-    permitted_role.add_permission! :view_test_case_executions
     permitted_role.save!
     unpermitted_role = Role.generate!
     unpermitted_role.remove_permission! :view_issues

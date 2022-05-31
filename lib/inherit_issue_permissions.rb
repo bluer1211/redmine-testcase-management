@@ -1,6 +1,6 @@
 module TestCaseManagement
   module InheritIssuePermissions
-    def issues_visible?(user=User.current)
+    def visible?(user=User.current)
       user.allowed_to?(:view_issues, project) do |role, allowed_user|
         if allowed_user.logged?
           case role.issues_visibility
@@ -23,14 +23,18 @@ module TestCaseManagement
       end
     end
 
-    def issue_editable?(user=User.current)
+    def editable?(user=User.current)
+      attributes_editable?(user)
+    end
+
+    def attributes_editable?(user=User.current)
       user_permission?(user, :edit_issues) || (
         user_permission?(user, :edit_own_issues) && self.user == user
       )
     end
 
-    def editable?(user=User.current)
-      attributes_editable?(user)
+    def deletable?(user=User.current)
+      user_permission?(user, :delete_issues)
     end
 
     def ownable_users
@@ -65,22 +69,12 @@ module TestCaseManagement
 
     def owned_only_by_visible_user
       return true unless user
-      errors.add(:user, "Unownable User #{user.id} for #{self.class.name} #{id}") unless visible?(user)
+      errors.add(:user, "Unownable User") unless visible?(user)
     end
 
     module_function
 
-    def self.visible_condition(user, permission, options={})
-      Project.allowed_to_condition(user, permission, options) do |role, allowed_user|
-        if allowed_user.id && allowed_user.logged?
-          "1=1"
-        else
-          "projects.is_public = (1=1)"
-        end
-      end
-    end
-
-    def self.issue_visible_condition(user, options={})
+    def self.visible_condition(user, options={})
       Project.allowed_to_condition(user, :view_issues, options) do |role, allowed_user|
         sql =
           if allowed_user.id && allowed_user.logged?

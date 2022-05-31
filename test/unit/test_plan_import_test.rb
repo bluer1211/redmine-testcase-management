@@ -9,7 +9,6 @@ class TestPlanImportTest < ActiveSupport::TestCase
   include Redmine::I18n
 
   def setup
-    activate_module_for_projects
     @user = User.current = prepare_authorized_user
     set_language_if_valid 'en'
   end
@@ -94,9 +93,9 @@ class TestPlanImportTest < ActiveSupport::TestCase
   def prepare_authorized_user
     user = User.generate!(firstname: "Test Plan", lastname: "Importer")
     role = Role.generate!
-    role.add_permission! :view_issues
-    role.add_permission! :view_test_plans
     role.add_permission! :add_test_plans
+    role.add_permission! :view_issues
+    role.add_permission! :edit_issues
     role.save!
     User.add_to_project(user, Project.find(1), [role])
     User.add_to_project(user, Project.find(3), [role])

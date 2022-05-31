@@ -38,10 +38,8 @@ class TestCase < ActiveRecord::Base
   end
 
   scope :visible, (lambda do |*args|
-    user = args.shift || User.current
     joins(:project).
-    where(TestCaseManagement::InheritIssuePermissions.issue_visible_condition(user, *args)).
-    where(TestCaseManagement::InheritIssuePermissions.visible_condition(user, :view_test_cases, *args))
+    where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
   end)
 
   scope :with_latest_result, (lambda do |test_plan_or_id=nil, for_count=false|
@@ -133,19 +131,6 @@ SQL
     end
     TestCaseExecution
       .where(conditions)
-  end
-
-
-  def visible?(user=User.current)
-    issues_visible?(user) and user_permission?(user, :view_test_cases)
-  end
-
-  def attributes_editable?(user=User.current)
-    user_permission?(user, :edit_test_cases)
-  end
-
-  def deletable?(user=User.current)
-    user_permission?(user, :delete_test_cases)
   end
 
 
