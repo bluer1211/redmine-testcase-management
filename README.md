@@ -8,7 +8,7 @@ https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-ma
   * TimestampQueryColumn was implemented since 4.1.0.
 * PostgreSQL
 
-## Install
+## Install to an existing redmine instance
 
 ```console
 $ cd /path/to/redmine/plugins
@@ -67,6 +67,27 @@ Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed
 * Not only "View issues" permission, "Add issues", "Edit Issues", "Delete Issues" permissions were also required for
   each adding/editing/deleting actions in testcase management.
   In the future, this restriction will be changed to require only "View issues" about issue permission. (Delegate permission control in plugin's side)
+
+## Starting development environment
+
+Initially you need to setup Docker to run withotu root privilege.
+See instructions at https://docs.docker.com/engine/install/linux-postinstall/
+
+```console
+$ sudo apt install docker-compose uidmap
+$ sudo adduser $USER docker
+(logout and login)
+$ newgrp docker
+```
+
+Then:
+
+```console
+$ git clone https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management.git
+$ cd redmine-plugin-testcase-management
+$ docker-compose -f db/docker-compose.yml up
+```
+
 
 ## Tests
 
