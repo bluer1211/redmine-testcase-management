@@ -1,6 +1,6 @@
 # Redmine Plugin Testcase Management
 
-https://gitlab.com/clear-code/redmine-plugin-testcase-management
+https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management
 
 ## Requirements
 
@@ -12,7 +12,7 @@ https://gitlab.com/clear-code/redmine-plugin-testcase-management
 
 ```console
 $ cd /path/to/redmine/plugins
-$ git clone https://gitlab.clear-code.com/clear-code/redmine-plugin-testcase-management.git testcase_management
+$ git clone https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management.git testcase_management
 $ cd ..
 $ bundle install
 $ bin/rails redmine:plugins:migrate RAILS_ENV=production
