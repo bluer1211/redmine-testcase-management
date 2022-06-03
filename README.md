@@ -68,25 +68,60 @@ Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed
   each adding/editing/deleting actions in testcase management.
   In the future, this restriction will be changed to require only "View issues" about issue permission. (Delegate permission control in plugin's side)
 
-## Starting development environment
+## For Developers
 
 Initially you need to setup Docker to run withotu root privilege.
-See instructions at https://docs.docker.com/engine/install/linux-postinstall/
+For example, if you running Ubuntu 21.04:
 
 ```console
-$ sudo apt install docker-compose uidmap
+$ sudo apt install git docker-compose uidmap
 $ sudo adduser $USER docker
 (logout and login)
 $ newgrp docker
 ```
 
-Then:
+For more details, see instructions: https://docs.docker.com/engine/install/linux-postinstall/
+
+And you also need to install geckodriver for system testing. For example:
+
+```console
+$ wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
+$ tar xf geckodriver-v0.30.0-linux64.tar.gz
+$ sudo mv geckodriver /usr/local/bin
+```
+
+While devlopment you should run a PostgreSQL container as the DB:
 
 ```console
 $ git clone https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management.git
 $ cd redmine-plugin-testcase-management
 $ docker-compose -f db/docker-compose.yml up
 ```
+
+Now you are ready to setup development environment Redmine. In another shell session, run following:
+
+```console
+$ sudo apt install bundler ruby-dev libpq-dev build-essential
+$ git clone \
+    --depth 1 \
+    --branch 4.2-stable \
+    https://github.com/redmine/redmine.git \
+    redmine
+$ cd redmine
+$ ln -s /path/to/cloned/this/repository plugins/testcase_management
+$ cp plugins/testcase_management/config/database.yml.example.postgresql config/database.yml
+$ cp plugins/testcase_management/test/fixtures/*.yml test/fixtures/
+$ cp plugins/testcase_management/test/fixtures/files/*.csv test/fixtures/files/
+$ bundle install
+$ bin/rails db:create
+$ bin/rails generate_secret_token
+$ bin/rails db:migrate
+$ bin/rails redmine:load_default_data REDMINE_LANG=en
+$ bin/rails redmine:plugins:migrate
+$ NAME=testcase_management PSQLRC=/tmp/nonexistent RAILS_ENV=test UI=true bin/rails redmine:plugins:test
+```
+
+All tests should pass. If you see failure or errored tests, please contribute to fix them.
 
 
 ## Tests
