@@ -1195,6 +1195,18 @@ class TestCasesControllerTest < ActionController::TestCase
         end
       end
 
+      def test_orphaned_test_case_and_test_case_execution
+        # unlink test plan 3 and test case 3
+        test_case_test_plans(:test_case_test_plans_003).delete
+        get :index, params: {
+              project_id: projects(:projects_003).identifier,
+            }
+        # can't follow the link for test case 3
+        css_select("#test_cases_list tbody tr:first-child td.latest_result").each do |td|
+          assert_nil td.children.first.attributes["href"]
+        end
+      end
+
       class Filter < self
         def setup
           super
