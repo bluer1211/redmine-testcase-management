@@ -20,33 +20,34 @@ class TestPlansImportTest < ApplicationSystemTestCase
 
   class Scenario
     def test_import_test_cases_without_failures
-    return true # FIX ME!!
-    login_with_admin
+      return true # FIX ME!!
+      login_with_admin
 
-    visit "/projects/#{projects(:projects_003).identifier}/test_plans"
-    find("div.contextual>span.drdn").click
-    click_on "Import"
+      visit "/projects/#{projects(:projects_003).identifier}/test_plans"
+      find("div.contextual>span.drdn").click
+      click_on "Import"
 
-    attach_file "file", Rails.root.join("test/fixtures/files/test_plans.csv")
-    click_on "Next »"
+      attach_file "file", Rails.root.join("test/fixtures/files/test_plans.csv")
+      click_on "Next »"
 
-    select "Comma", :from => "Field separator"
-    select "Double quote", :from => "Field wrapper"
-    select "UTF-8", :from => "Encoding"
-    click_on "Next »"
+      select "Comma", :from => "Field separator"
+      select "Double quote", :from => "Field wrapper"
+      select "UTF-8", :from => "Encoding"
+      click_on "Next »"
 
-    select "eCookbook Subproject 1", :from => "Project"
-    select "Name", :from => "Name"
-    select "Status", :from => "Status"
-    select "User", :from => "User"
-    select "Estimated Bugs", :from => "Estimated Bugs"
-    select "Begin Date", :from => "Begin Date"
-    select "End Date", :from => "End Date"
-    select "Test Cases", :from => "Test Cases"
+      select "eCookbook Subproject 1", :from => "Project"
+      select "Name", :from => "Name"
+      select "Status", :from => "Status"
+      select "User", :from => "User"
+      select "Estimated Bugs", :from => "Estimated Bugs"
+      select "Begin Date", :from => "Begin Date"
+      select "End Date", :from => "End Date"
+      select "Test Cases", :from => "Test Cases"
 
-    assert_difference "TestPlan.count", 3 do
-      click_button "Import"
-      assert page.has_content?("3 items have been imported")
+      assert_difference "TestPlan.count", 3 do
+        click_button "Import"
+        assert page.has_content?("3 items have been imported")
+      end
     end
   end
   end
