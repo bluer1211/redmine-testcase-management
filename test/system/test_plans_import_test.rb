@@ -19,12 +19,15 @@ class TestPlansImportTest < ApplicationSystemTestCase
     activate_module_for_projects
   end
 
-  class Scenario
+  class Scenario < self
     def test_import_test_cases_without_failures
-      return true # FIX ME!!
-      login_with_admin
+      @project = projects(:projects_003)
+      generate_user_with_permissions([@project], [:view_project,
+                                                  :view_issues, :add_issues,
+                                                  :view_test_plans, :add_test_plans])
+      login_with(@user.login)
 
-      visit "/projects/#{projects(:projects_003).identifier}/test_plans"
+      visit project_test_plans_path(@project)
       find("div.contextual>span.drdn").click
       click_on "Import"
 
@@ -57,6 +60,20 @@ class TestPlansImportTest < ApplicationSystemTestCase
       @project = projects(:projects_003)
       generate_user_with_permissions([@project], [:view_project,
                                                   :view_issues, :add_issues,
+                                                  :view_test_plans, :add_test_plans])
+      login_with(@user.login)
+
+      visit project_test_plans_path(@project)
+      # Click ... and show dropdown menu
+      find("div.contextual span.drdn-trigger").click
+      assert_equal I18n.t(:button_import),
+                   find("div.drdn-content div.drdn-items a.icon-import").text
+    end
+
+    def test_missing_add_issues_permission
+      @project = projects(:projects_003)
+      generate_user_with_permissions([@project], [:view_project,
+                                                  :view_issues,
                                                   :view_test_plans, :add_test_plans])
       login_with(@user.login)
 

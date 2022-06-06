@@ -20,10 +20,16 @@ class TestCaseExecutionsImportTest < ApplicationSystemTestCase
   end
 
   def test_import_test_cases_without_failures
-    return true # FIX ME!!
-    login_with_admin
+    skip "FIX ME!!"
+    @project = projects(:projects_003)
+    generate_user_with_permissions([@project], [:view_project,
+                                                :view_issues, :add_issues,
+                                                :view_test_plans,
+                                                :view_test_cases, :add_test_cases,
+                                                :view_test_case_executions, :add_test_case_executions])
+    login_with(@user.login)
 
-    visit "/projects/#{projects(:projects_003).identifier}/test_case_executions"
+    visit project_test_case_executions_path(@project)
     find("div.contextual>span.drdn").click
     click_on "Import"
 
@@ -52,6 +58,20 @@ class TestCaseExecutionsImportTest < ApplicationSystemTestCase
 
   class ImportMenu < self
     def test_show_import_menu
+      @project = projects(:projects_003)
+      generate_user_with_permissions([@project], [:view_project,
+                                                  :view_issues, :add_issues,
+                                                  :view_test_case_executions, :add_test_case_executions])
+      login_with(@user.login)
+
+      visit project_test_case_executions_path(@project)
+      # Click ... and show dropdown menu
+      find("div.contextual span.drdn-trigger").click
+      assert_equal I18n.t(:button_import),
+                   find("div.drdn-content div.drdn-items a.icon-import").text
+    end
+
+    def test_missing_add_issues_permission
       @project = projects(:projects_003)
       generate_user_with_permissions([@project], [:view_project,
                                                   :view_issues,
