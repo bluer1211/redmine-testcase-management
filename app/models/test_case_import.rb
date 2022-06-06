@@ -22,7 +22,7 @@ class TestCaseImport < Import
   end
 
   def allowed_target_projects
-    Project.allowed_to(user, :import_test_cases)
+    Project.allowed_to(user, :add_test_cases)
   end
 
   def project

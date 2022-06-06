@@ -23,7 +23,7 @@ class TestPlanImport < Import
   end
 
   def allowed_target_projects
-    Project.allowed_to(user, :import_test_plans)
+    Project.allowed_to(user, :add_test_plans)
   end
 
   def project

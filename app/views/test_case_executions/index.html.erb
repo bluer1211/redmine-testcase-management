@@ -5,7 +5,7 @@
                 :class => "icon icon-add new-issue" %>
   <% end %>
   <%= actions_dropdown do %>
-    <% if User.current.allowed_to?(:import_test_case_executions, @project, :global => true) %>
+    <% if User.current.allowed_to?(:add_test_case_executions, @project, :global => true) %>
       <%= link_to l(:button_import),
                   new_test_case_executions_import_path(:project_id => @project),
                   :class => "icon icon-import" %>
