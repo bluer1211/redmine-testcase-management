@@ -122,7 +122,11 @@ class TestPlansController < ApplicationController
     if @test_plan.valid?
       @test_plan.save
       flash[:notice] = l(:notice_successful_create)
-      redirect_to project_test_plan_path(:id => @test_plan.id)
+      if params[:continue]
+        redirect_to new_project_test_plan_path(@project)
+      else
+        redirect_to project_test_plan_path(:id => @test_plan.id)
+      end
     else
       render :new, status: :unprocessable_entity
     end

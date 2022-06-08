@@ -375,6 +375,17 @@ class TestPlansControllerTest < ActionController::TestCase
       end
       assert_response :unprocessable_entity
     end
+
+    def test_create_and_continue_test_plan
+      assert_difference("TestPlan.count") do
+        project_id = projects(:projects_002).id
+        post :create, params: { project_id: project_id,
+                                test_plan: { name: "test", user: 1, issue_status: 1 },
+                                continue: I18n.t(:button_create_and_continue) }
+      end
+      assert_equal I18n.t(:notice_successful_create), flash[:notice]
+      assert_redirected_to new_project_test_plan_path(projects(:projects_002))
+    end
   end
 
   class Assign < self
