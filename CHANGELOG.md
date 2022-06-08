@@ -1,3 +1,24 @@
+# v1.3.0
+
+## Release v1.3.0 - 2022/06/08
+
+### Improvements
+
+* test plan/test case: Supported to create and continue test plan/test case.
+
+### Bug fixes
+
+* test case: Fixed a bug that inconsistent test plan and test case
+  association data cause a 500 error. This bug occurs when the following conditions are met:
+  a) test_case has latest result and latest execution date
+  b) there is no association with test plan and such a test case
+* test plan/test case/test case execution: Fixed a bug that import button is not shown.
+  This was a regression of v1.2.0.
+
+### Miscellaneous
+
+* doc: Described how to start a development environment
+
 # v1.2.0
 
 ## Release v1.2.0 - 2022/05/31
