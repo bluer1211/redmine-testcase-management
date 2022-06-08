@@ -104,9 +104,17 @@ class TestCasesController < ApplicationController
         @test_case.save
         flash[:notice] = l(:notice_successful_create)
         if @test_plan
-          redirect_to project_test_plan_path(id: @test_plan.id)
+          if params[:continue]
+            redirect_to new_project_test_plan_test_case_path(test_plan_id: @test_plan.id)
+          else
+            redirect_to project_test_plan_path(id: @test_plan.id)
+          end
         else
-          redirect_to project_test_case_path(id: @test_case.id)
+          if params[:continue]
+            redirect_to new_project_test_case_path
+          else
+            redirect_to project_test_case_path(id: @test_case.id)
+          end
         end
       else
         render :new, status: :unprocessable_entity

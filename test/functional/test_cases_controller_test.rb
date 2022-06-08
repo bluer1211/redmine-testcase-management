@@ -661,6 +661,21 @@ class TestCasesControllerTest < ActionController::TestCase
         end
         assert_response :unprocessable_entity
       end
+
+      def test_create_and_continue
+        assert_difference("TestCase.count") do
+          post :create, params: {
+                 project_id: projects(:projects_001).identifier,
+                 test_case: {
+                   name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                   user: 2
+                 },
+                 continue: I18n.t(:button_create_and_continue)
+               }
+        end
+        assert_equal I18n.t(:notice_successful_create), flash[:notice]
+        assert_redirected_to new_project_test_case_path
+      end
     end
 
     class Show < self
@@ -1442,6 +1457,22 @@ class TestCasesControllerTest < ActionController::TestCase
         end
         assert_equal I18n.t(:notice_successful_create), flash[:notice]
         assert_redirected_to project_test_plan_path(id: test_plans(:test_plans_001).id)
+      end
+
+      def test_create_and_continue_with_test_plan
+        assert_difference("TestCase.count") do
+          post :create, params: {
+                 project_id: projects(:projects_001).identifier,
+                 test_plan_id: test_plans(:test_plans_001).id,
+                 test_case: {
+                   name: "test", scenario: "dummy", expected: "dummy", environment: "dummy",
+                   user: 2
+                 },
+                 continue: I18n.t(:button_create_and_continue)
+               }
+        end
+        assert_equal I18n.t(:notice_successful_create), flash[:notice]
+        assert_redirected_to new_project_test_plan_test_case_path(test_plan_id: test_plans(:test_plans_001).id)
       end
 
       def test_create_without_test_plan
