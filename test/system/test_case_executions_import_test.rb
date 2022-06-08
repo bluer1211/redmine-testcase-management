@@ -19,40 +19,150 @@ class TestCaseExecutionsImportTest < ApplicationSystemTestCase
     activate_module_for_projects
   end
 
-  def test_import_test_cases_without_failures
-    skip "FIX ME!!"
-    @project = projects(:projects_003)
-    generate_user_with_permissions([@project], [:view_project,
-                                                :view_issues, :add_issues,
-                                                :view_test_plans,
-                                                :view_test_cases, :add_test_cases,
-                                                :view_test_case_executions, :add_test_case_executions])
-    login_with(@user.login)
+  class ImportSucceed < self
+    def test_import_test_cases_without_failures
+      @project = projects(:projects_001)
+      generate_user_with_permissions([@project], [:view_project,
+                                                  :view_issues, :add_issues,
+                                                  :view_test_plans,
+                                                  :view_test_cases,
+                                                  :view_test_case_executions, :add_test_case_executions])
+      login_with(@user.login)
+      navigate_to_mapping
 
-    visit project_test_case_executions_path(@project)
-    find("div.contextual>span.drdn").click
-    click_on "Import"
+      select @project.name, :from => "Project"
+      select "Test Plan", :from => "Test Plan"
+      select "Test Case", :from => "Test Case"
+      select "User", :from => "User"
+      select "Result", :from => "Result"
+      select "Execution Date", :from => "Execution Date"
+      select "Comment", :from => "Comment"
+      select "Issue", :from => "Issue"
 
-    attach_file "file", Rails.root.join("test/fixtures/files/test_case_executions.csv")
-    click_on "Next »"
+      assert_difference "TestCaseExecution.count", 3 do
+        click_button "Import"
+        assert page.has_content?("3 items have been imported")
+      end
+    end
 
-    select "Comma", :from => "Field separator"
-    select "Double quote", :from => "Field wrapper"
-    select "UTF-8", :from => "Encoding"
-    click_on "Next »"
+    def test_missing_add_issues_permission
+      @project = projects(:projects_001)
+      generate_user_with_permissions([@project], [:view_project,
+                                                  :view_issues,
+                                                  :view_test_plans,
+                                                  :view_test_cases,
+                                                  :view_test_case_executions, :add_test_case_executions])
+      login_with(@user.login)
+      navigate_to_mapping
 
-    select "eCookbook Subproject 1", :from => "Project"
-    select "Test Plan", :from => "Test Plan"
-    select "Test Case", :from => "Test Case"
-    select "User", :from => "User"
-    select "Result", :from => "Result"
-    select "Execution Date", :from => "Execution Date"
-    select "Comment", :from => "Comment"
-    select "Issue", :from => "Issue"
+      select @project.name, :from => "Project"
+      select "Test Plan", :from => "Test Plan"
+      select "Test Case", :from => "Test Case"
+      select "User", :from => "User"
+      select "Result", :from => "Result"
+      select "Execution Date", :from => "Execution Date"
+      select "Comment", :from => "Comment"
+      select "Issue", :from => "Issue"
 
-    assert_difference "TestCaseExecution.count", 3 do
-      click_button "Import"
-      assert page.has_content?("3 items have been imported")
+      assert_difference "TestCaseExecution.count", 3 do
+        click_button "Import"
+        assert page.has_content?("3 items have been imported")
+      end
+    end
+
+    def test_import_without_issue
+      @project = projects(:projects_001)
+      generate_user_with_permissions([@project], [:view_project,
+                                                  :view_issues,
+                                                  :view_test_plans,
+                                                  :view_test_cases,
+                                                  :view_test_case_executions, :add_test_case_executions])
+      login_with(@user.login)
+      navigate_to_mapping
+
+      select @project.name, :from => "Project"
+      select "Test Plan", :from => "Test Plan"
+      select "Test Case", :from => "Test Case"
+      select "User", :from => "User"
+      select "Result", :from => "Result"
+      select "Execution Date", :from => "Execution Date"
+      select "Comment", :from => "Comment"
+
+      assert_difference "TestCaseExecution.count", 3 do
+        click_button "Import"
+        assert page.has_content?("3 items have been imported")
+      end
+    end
+  end
+
+  class ImportFailure < self
+    def test_missing_project_permissions
+      @project = projects(:projects_003)
+      generate_user_with_permissions([@project])
+      login_with(@user.login)
+      navigate_to_mapping
+
+      select @project.name, :from => "Project"
+      select "Test Plan", :from => "Test Plan"
+      select "Test Case", :from => "Test Case"
+      select "User", :from => "User"
+      select "Result", :from => "Result"
+      select "Execution Date", :from => "Execution Date"
+      select "Comment", :from => "Comment"
+      select "Issue", :from => "Issue"
+
+      assert_difference "TestCaseExecution.count", 0 do
+        click_button "Import"
+        assert page.has_content?("3 out of 3 items could not be imported")
+      end
+    end
+
+    def test_import_without_test_plan
+      @project = projects(:projects_001)
+      generate_user_with_permissions([@project], [:view_project,
+                                                  :view_issues,
+                                                  :view_test_plans,
+                                                  :view_test_cases,
+                                                  :view_test_case_executions, :add_test_case_executions])
+      login_with(@user.login)
+      navigate_to_mapping
+
+      select @project.name, :from => "Project"
+      select "-- Please select --", :from => "Test Plan"
+      select "Test Case", :from => "Test Case"
+      select "User", :from => "User"
+      select "Result", :from => "Result"
+      select "Execution Date", :from => "Execution Date"
+      select "Comment", :from => "Comment"
+
+      assert_difference "TestCaseExecution.count", 0 do
+        click_button "Import"
+        assert page.has_content?("3 out of 3 items could not be import")
+      end
+    end
+
+    def test_import_without_test_case
+      @project = projects(:projects_001)
+      generate_user_with_permissions([@project], [:view_project,
+                                                  :view_issues,
+                                                  :view_test_plans,
+                                                  :view_test_cases,
+                                                  :view_test_case_executions, :add_test_case_executions])
+      login_with(@user.login)
+      navigate_to_mapping
+
+      select @project.name, :from => "Project"
+      select "Test Plan", :from => "Test Plan"
+      select "-- Please select --", :from => "Test Case"
+      select "User", :from => "User"
+      select "Result", :from => "Result"
+      select "Execution Date", :from => "Execution Date"
+      select "Comment", :from => "Comment"
+
+      assert_difference "TestCaseExecution.count", 0 do
+        click_button "Import"
+        assert page.has_content?("3 out of 3 items could not be import")
+      end
     end
   end
 
@@ -101,6 +211,20 @@ class TestCaseExecutionsImportTest < ApplicationSystemTestCase
   end
 
   private
+
+  def navigate_to_mapping
+    visit project_test_case_executions_path(@project)
+    find("div.contextual>span.drdn").click
+    click_on "Import"
+
+    attach_file "file", Rails.root.join("test/fixtures/files/test_case_executions.csv")
+    click_on "Next »"
+
+    select "Comma", :from => "Field separator"
+    select "Double quote", :from => "Field wrapper"
+    select "UTF-8", :from => "Encoding"
+    click_on "Next »"
+  end
 
   def login_with(login_name, password="password")
     visit "/login"
