@@ -128,8 +128,30 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
           assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_cases)} ##{test_case.id} #{test_case.name} » #{I18n.t(:label_test_case_executions)}", h2.text
         end
       end
+
+      def test_execution_date
+        test_plan = test_plans(:test_plans_003)
+        test_case = test_cases(:test_cases_003)
+        get :index, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: test_plan.id,
+              test_case_id: test_case.id,
+            }
+        assert_equal [test_case_executions(:test_case_executions_003).execution_date.strftime("%Y/%m/%d"),
+                      test_case_executions(:test_case_executions_002).execution_date.strftime("%Y/%m/%d")],
+                     css_select("table#test_case_executions_list tbody tr td.execution_date").map(&:text)
+      end
     end
 
+    class Independent < self
+      def test_execution_date
+        get :index, params: {
+              project_id: projects(:projects_003).identifier
+            }
+        assert_equal [test_case_executions(:test_case_executions_003).execution_date.strftime("%Y/%m/%d"),
+                      test_case_executions(:test_case_executions_002).execution_date.strftime("%Y/%m/%d"),
+                      test_case_executions(:test_case_executions_001).execution_date.strftime("%Y/%m/%d")],
+                     css_select("table#test_case_executions_list tbody tr td.execution_date").map(&:text)
       end
     end
 
