@@ -322,7 +322,11 @@ SQL
 
     if unsaved_test_cases.empty?
       flash[:notice] = l(:notice_successful_update) unless saved_test_cases.empty?
-      redirect_back_or_default project_test_plans_path(id: @test_cases.first.test_plan.id)
+      unless @test_cases.first.test_plan
+        redirect_back_or_default project_test_cases_path
+      else
+        redirect_back_or_default project_test_plans_path(id: @test_cases.first.test_plan.id)
+      end
     else
       @saved_test_cases = @test_cases
       @unsaved_test_cases = unsaved_test_cases
