@@ -275,6 +275,30 @@ class TestCasesTest < ApplicationSystemTestCase
     end
   end
 
+  test "bulk update independent test case user" do
+    @project = projects(:projects_001)
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_cases, :edit_test_cases])
+    log_user(@user.login, "password")
+
+    generate_test_case
+    path = project_test_cases_path(@project)
+    visit path
+
+    # Click action column (show context menu)
+    find("table#test_cases_list tbody tr:first-child td.buttons a").click
+    # Click User folder in context menu
+    find("div#context-menu ul li.folder a").click
+
+    # Click User > <<me>> in context menu
+    find("div#context-menu ul li.folder ul li:first-child a").click
+    # assigned to @user
+    assert_selector "table#test_cases_list tbody tr:first-child td.user" do |td|
+      assert_equal @user.name, td.text
+    end
+    assert_equal path, current_path
+  end
+
   private
 
   def login_with_admin
