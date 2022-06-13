@@ -20,6 +20,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :view_test_case_executions])
     end
 
+    class AssociatedWithTestCase < self
     def test_index
       get :index, params: {
             project_id: test_plans(:test_plans_003).project.identifier,
@@ -126,6 +127,7 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_select "div#content h2.inline-flex" do |h2|
         assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_cases)} ##{test_case.id} #{test_case.name} » #{I18n.t(:label_test_case_executions)}", h2.text
       end
+    end
     end
 
     class Filter < self
