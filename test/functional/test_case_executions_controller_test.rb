@@ -20,111 +20,138 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :view_test_case_executions])
     end
 
-    def test_index
-      get :index, params: {
-            project_id: test_plans(:test_plans_003).project.identifier,
-            test_plan_id: test_plans(:test_plans_003).id,
-            test_case_id: test_cases(:test_cases_002).id,
-            c: ["result", "user", "execution_date", "comment", "issue"]
-          }
-      assert_response :success
-      test_case_execution = test_case_executions(:test_case_executions_001)
-      assert_equal [['',
-                     '#',
-                     I18n.t(:field_result),
-                     I18n.t(:field_user),
-                     I18n.t(:field_execution_date),
-                     I18n.t(:field_comment),
-                     I18n.t(:field_issue),
-                     ''
-                    ],
-                    [
-                      test_case_execution.id.to_s,
-                    ]
-                   ],
-                   [css_select("table#test_case_executions_list thead tr th").map(&:text).map(&:strip),
-                    css_select("table#test_case_executions_list tbody tr td:nth-child(2)").map(&:text)]
-      assert_contextual_link(I18n.t(:label_test_case_execution_new),
-                             new_project_test_plan_test_case_test_case_execution_path)
-    end
+    class AssociatedWithTestCase < self
+      def test_index
+        get :index, params: {
+              project_id: test_plans(:test_plans_003).project.identifier,
+              test_plan_id: test_plans(:test_plans_003).id,
+              test_case_id: test_cases(:test_cases_002).id,
+              c: ["result", "user", "execution_date", "comment", "issue"]
+            }
+        assert_response :success
+        test_case_execution = test_case_executions(:test_case_executions_001)
+        assert_equal [['',
+                       '#',
+                       I18n.t(:field_result),
+                       I18n.t(:field_user),
+                       I18n.t(:field_execution_date),
+                       I18n.t(:field_comment),
+                       I18n.t(:field_issue),
+                       ''
+                      ],
+                      [
+                        test_case_execution.id.to_s,
+                      ]
+                     ],
+                     [css_select("table#test_case_executions_list thead tr th").map(&:text).map(&:strip),
+                      css_select("table#test_case_executions_list tbody tr td:nth-child(2)").map(&:text)]
+        assert_contextual_link(I18n.t(:label_test_case_execution_new),
+                               new_project_test_plan_test_case_test_case_execution_path)
+      end
 
-    def test_index_with_nonexistent_project
-      get :index, params: {
-            project_id: NONEXISTENT_PROJECT_ID,
-            test_plan_id: test_plans(:test_plans_003).id,
-            test_case_id: test_cases(:test_cases_002).id
-          }
-      assert_response :missing
-      assert_flash_error I18n.t(:error_project_not_found)
-      assert_back_to_lists_link(projects_path)
-    end
+      def test_index_with_nonexistent_project
+        get :index, params: {
+              project_id: NONEXISTENT_PROJECT_ID,
+              test_plan_id: test_plans(:test_plans_003).id,
+              test_case_id: test_cases(:test_cases_002).id
+            }
+        assert_response :missing
+        assert_flash_error I18n.t(:error_project_not_found)
+        assert_back_to_lists_link(projects_path)
+      end
 
-    def test_index_with_nonexistent_test_plan
-      project = projects(:projects_002)
-      get :index, params: {
-            project_id: project.identifier,
-            test_plan_id: NONEXISTENT_TEST_PLAN_ID,
-            test_case_id: test_cases(:test_cases_002).id
-          }
-      assert_response :missing
-      assert_flash_error I18n.t(:error_test_plan_not_found)
-      assert_back_to_lists_link(project_test_plans_path)
-    end
+      def test_index_with_nonexistent_test_plan
+        project = projects(:projects_002)
+        get :index, params: {
+              project_id: project.identifier,
+              test_plan_id: NONEXISTENT_TEST_PLAN_ID,
+              test_case_id: test_cases(:test_cases_002).id
+            }
+        assert_response :missing
+        assert_flash_error I18n.t(:error_test_plan_not_found)
+        assert_back_to_lists_link(project_test_plans_path)
+      end
 
-    def test_index_with_nonexistent_test_case
-      test_plan = test_plans(:test_plans_003)
-      project = test_plan.project
-      get :index, params: {
-            project_id: project.identifier,
-            test_plan_id: test_plan.id,
-            test_case_id: NONEXISTENT_TEST_CASE_ID
-          }
-      assert_response :missing
-      assert_flash_error I18n.t(:error_test_case_not_found)
-      assert_back_to_lists_link(project_test_plan_test_cases_path)
-    end
+      def test_index_with_nonexistent_test_case
+        test_plan = test_plans(:test_plans_003)
+        project = test_plan.project
+        get :index, params: {
+              project_id: project.identifier,
+              test_plan_id: test_plan.id,
+              test_case_id: NONEXISTENT_TEST_CASE_ID
+            }
+        assert_response :missing
+        assert_flash_error I18n.t(:error_test_case_not_found)
+        assert_back_to_lists_link(project_test_plan_test_cases_path)
+      end
 
-    def test_breadcrumb
-      get :index, params: {
-            project_id: @project.identifier,
-          }
-      assert_select "div#content h2" do |h2|
-        assert_equal "#{I18n.t(:label_test_case_executions)}", h2.text
+      def test_breadcrumb
+        get :index, params: {
+              project_id: @project.identifier,
+            }
+        assert_select "div#content h2" do |h2|
+          assert_equal "#{I18n.t(:label_test_case_executions)}", h2.text
+        end
+      end
+
+      def test_breadcrumb_with_test_plan
+        test_plan = test_plans(:test_plans_001)
+        get :index, params: {
+              project_id: test_plan.project.identifier,
+              test_plan_id: test_plan.id,
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_case_executions)}", h2.text
+        end
+      end
+
+      def test_breadcrumb_with_test_case
+        test_case = test_cases(:test_cases_001)
+        get :index, params: {
+              project_id: test_case.project.identifier,
+              test_case_id: test_case.id,
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_cases)} » ##{test_case.id} #{test_case.name} » #{I18n.t(:label_test_case_executions)}", h2.text
+        end
+      end
+
+      def test_breadcrumb_with_test_plan_and_test_case
+        test_plan = test_plans(:test_plans_001)
+        test_case = test_cases(:test_cases_001)
+        get :index, params: {
+              project_id: test_plan.project.identifier,
+              test_plan_id: test_plan.id,
+              test_case_id: test_case.id,
+            }
+        assert_select "div#content h2.inline-flex" do |h2|
+          assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_cases)} ##{test_case.id} #{test_case.name} » #{I18n.t(:label_test_case_executions)}", h2.text
+        end
+      end
+
+      def test_execution_date
+        test_plan = test_plans(:test_plans_003)
+        test_case = test_cases(:test_cases_003)
+        get :index, params: {
+              project_id: projects(:projects_003).identifier,
+              test_plan_id: test_plan.id,
+              test_case_id: test_case.id,
+            }
+        assert_equal [test_case_executions(:test_case_executions_003).execution_date.strftime("%Y/%m/%d"),
+                      test_case_executions(:test_case_executions_002).execution_date.strftime("%Y/%m/%d")],
+                     css_select("table#test_case_executions_list tbody tr td.execution_date").map(&:text)
       end
     end
 
-    def test_breadcrumb_with_test_plan
-      test_plan = test_plans(:test_plans_001)
-      get :index, params: {
-            project_id: test_plan.project.identifier,
-            test_plan_id: test_plan.id,
-          }
-      assert_select "div#content h2.inline-flex" do |h2|
-        assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_case_executions)}", h2.text
-      end
-    end
-
-    def test_breadcrumb_with_test_case
-      test_case = test_cases(:test_cases_001)
-      get :index, params: {
-            project_id: test_case.project.identifier,
-            test_case_id: test_case.id,
-          }
-      assert_select "div#content h2.inline-flex" do |h2|
-        assert_equal "#{I18n.t(:label_test_cases)} » ##{test_case.id} #{test_case.name} » #{I18n.t(:label_test_case_executions)}", h2.text
-      end
-    end
-
-    def test_breadcrumb_with_test_plan_and_test_case
-      test_plan = test_plans(:test_plans_001)
-      test_case = test_cases(:test_cases_001)
-      get :index, params: {
-            project_id: test_plan.project.identifier,
-            test_plan_id: test_plan.id,
-            test_case_id: test_case.id,
-          }
-      assert_select "div#content h2.inline-flex" do |h2|
-        assert_equal "#{I18n.t(:label_test_plans)} » ##{test_plan.id} #{test_plan.name} » #{I18n.t(:label_test_cases)} ##{test_case.id} #{test_case.name} » #{I18n.t(:label_test_case_executions)}", h2.text
+    class Independent < self
+      def test_execution_date
+        get :index, params: {
+              project_id: projects(:projects_003).identifier
+            }
+        assert_equal [test_case_executions(:test_case_executions_003).execution_date.strftime("%Y/%m/%d"),
+                      test_case_executions(:test_case_executions_002).execution_date.strftime("%Y/%m/%d"),
+                      test_case_executions(:test_case_executions_001).execution_date.strftime("%Y/%m/%d")],
+                     css_select("table#test_case_executions_list tbody tr td.execution_date").map(&:text)
       end
     end
 

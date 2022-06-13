@@ -27,6 +27,8 @@ module TestCaseExecutionsQueriesHelper
         column_truncated_text(item.test_case.scenario)
       when :expected
         column_truncated_text(item.test_case.expected)
+      when :execution_date
+        yyyymmdd_date(value)
       else
         super
       end
