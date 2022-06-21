@@ -299,6 +299,45 @@ class TestCasesTest < ApplicationSystemTestCase
     assert_equal path, current_path
   end
 
+  test "use test case query" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_plans, :view_test_cases, :save_queries])
+    log_user(@user.login, "password")
+
+    path = project_test_cases_path(@project)
+    visit path
+
+    click_on I18n.t(:button_save)
+
+    fill_in 'query_name', with: "query"
+    select "Scenario", :from => "Add filter"
+    fill_in 'v[scenario][]', with: "Scenario 3"
+    click_on I18n.t(:button_save)
+
+    path = project_test_cases_path(@project)
+    assert_current_path path
+
+    click_on "query"
+    query_id = TestCaseQuery.last.id
+    query_path = project_test_cases_path(@project) + "?query_id=#{query_id}"
+    assert_current_path query_path
+
+    # check whether filter is applied
+    assert_selector "#test_cases_list tbody tr td.scenario" do |td|
+      assert_equal test_cases(:test_cases_003).scenario, td.text
+    end
+
+    click_on I18n.t(:button_edit)
+    fill_in 'query_name', with: "query2"
+    click_on I18n.t(:button_save)
+
+    click_on "query2"
+    click_on I18n.t(:button_delete)
+    page.accept_confirm I18n.t(:text_are_you_sure)
+    sleep 0.5
+    assert_nil TestCaseQuery.where(id: query_id).first
+  end
+
   private
 
   def login_with_admin

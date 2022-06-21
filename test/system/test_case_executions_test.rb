@@ -1,5 +1,6 @@
 require "application_system_test_case"
 require "test_helper"
+require File.expand_path('../../test_helper', __FILE__)
 
 class ApplicationSystemTestCase
   options = {
@@ -162,6 +163,46 @@ EOS
     page.execute_script "$('ul.ui-autocomplete li:first-child').trigger('mouseenter').click()"
     assert_equal issues(:issues_013).id.to_s, page.evaluate_script("$('#issue_id').val()")
     assert_equal path, current_path
+  end
+
+  test "use test case execution query" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_plans, :view_test_cases, :view_test_case_executions, :save_queries])
+    log_user(@user.login, "password")
+
+    path = project_test_case_executions_path(@project)
+    visit path
+
+    click_on I18n.t(:button_save)
+
+    fill_in 'query_name', with: "query"
+    select "Comment", :from => "Add filter"
+    fill_in 'v[comment][]', with: "Comment 3"
+    click_on I18n.t(:button_save)
+    assert_current_path project_test_cases_path(@project)
+
+    visit path
+
+    click_on "query"
+    query_id = TestCaseExecutionQuery.last.id
+    query_path = project_test_case_executions_path(@project) + "?query_id=#{query_id}"
+    assert_current_path query_path
+
+    # check whether filter is applied
+    assert_selector "#test_case_executions_list tbody tr td.comment" do |td|
+      assert_equal test_case_executions(:test_case_executions_003).comment, td.text
+    end
+
+    click_on I18n.t(:button_edit)
+    fill_in 'query_name', with: "query2"
+    click_on I18n.t(:button_save)
+
+    visit query_path
+    click_on "query2"
+    click_on I18n.t(:button_delete)
+    page.accept_confirm I18n.t(:text_are_you_sure)
+    sleep 0.5
+    assert_nil TestCaseExecutionQuery.where(id: query_id).first
   end
 
   private

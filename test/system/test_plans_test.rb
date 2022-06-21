@@ -222,6 +222,52 @@ class TestPlansTest < ApplicationSystemTestCase
     assert_equal path, current_path
   end
 
+  test "use test plan query" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues, :edit_issues,
+                                              :view_test_plans, :save_queries])
+    log_user(@user.login, "password")
+
+    path = project_test_plans_path(@project)
+    visit path
+
+    click_on I18n.t(:button_save)
+
+    fill_in 'query_name', with: "query"
+    select "Name", :from => "Add filter"
+    fill_in 'v[name][]', with: "1 test case"
+    click_on I18n.t(:button_save)
+
+    path = project_test_cases_path(@project)
+    assert_equal path, current_path
+
+    # check whether query is accessible
+    path = project_test_plans_path(@project)
+    visit path
+
+    click_on "query"
+    query_id = TestPlanQuery.last.id
+    query_path = project_test_plans_path(@project) + "?query_id=#{query_id}"
+    assert_current_path query_path
+
+    # check whether filter is applied
+    assert_selector "#test_plans_list tbody tr td.name" do |td|
+      assert_equal test_plans(:test_plans_002).name, td.text
+    end
+
+    click_on I18n.t(:button_edit)
+    fill_in 'query_name', with: "query2"
+    click_on I18n.t(:button_save)
+
+    path = project_test_plans_path(@project)
+    visit path
+
+    click_on "query2"
+    click_on I18n.t(:button_delete)
+    page.accept_confirm I18n.t(:text_are_you_sure)
+    sleep 0.5
+    assert_nil TestPlanQuery.where(id: query_id).first
+  end
+
   private
 
   def login_with_admin
