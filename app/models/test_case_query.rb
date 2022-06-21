@@ -98,7 +98,7 @@ SQL
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :name, :environment, :user, :latest_result, :latest_execution_date, :scenario, :expected]
+    [:id, :name, :scenario, :expected, :latest_result, :latest_execution_date, :environment, :user]
   end
 
   def default_sort_criteria

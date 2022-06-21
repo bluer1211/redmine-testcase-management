@@ -40,12 +40,12 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_equal ['',
                       '#',
                       I18n.t(:field_name),
-                      I18n.t(:field_environment),
-                      I18n.t(:field_user),
-                      I18n.t(:field_latest_result),
-                      I18n.t(:field_execution_date),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected),
+                      I18n.t(:field_latest_result),
+                      I18n.t(:field_execution_date),
+                      I18n.t(:field_environment),
+                      I18n.t(:field_user),
                       ''
                      ],
                      columns
@@ -1167,12 +1167,12 @@ class TestCasesControllerTest < ActionController::TestCase
         assert_equal ['',
                       '#',
                       I18n.t(:field_name),
-                      I18n.t(:field_environment),
-                      I18n.t(:field_user),
-                      I18n.t(:field_latest_result),
-                      I18n.t(:field_execution_date),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected),
+                      I18n.t(:field_latest_result),
+                      I18n.t(:field_execution_date),
+                      I18n.t(:field_environment),
+                      I18n.t(:field_user),
                       ''
                      ],
                      columns
