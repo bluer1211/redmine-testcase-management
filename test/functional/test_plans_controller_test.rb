@@ -43,7 +43,7 @@ class TestPlansControllerTest < ActionController::TestCase
       end
       assert_equal ['',
                     '#',
-                    I18n.t(:field_name),
+                    I18n.t(:label_test_plans),
                     I18n.t(:field_status),
                     I18n.t(:field_estimated_bug),
                     I18n.t(:field_user),
