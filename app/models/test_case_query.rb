@@ -5,7 +5,7 @@ class TestCaseQuery < Query
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestCase.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
-    QueryColumn.new(:name, :sortable => "#{TestCase.table_name}.name"),
+    QueryColumn.new(:name, :sortable => "#{TestCase.table_name}.name", :caption => :label_test_cases),
     QueryColumn.new(:user, :sortable => "#{TestCase.table_name}.user_id"),
     QueryColumn.new(:environment, :sortable => "#{TestCase.table_name}.environment"),
 =begin
