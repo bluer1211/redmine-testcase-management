@@ -1,7 +1,7 @@
 module TestCaseManagement
   module QueriesHelperPatch
     def redirect_to_test_case_query(options)
-      redirect_to project_test_cases_path
+      redirect_to project_test_cases_path(project_id: @project.identifier)
     end
 
     def redirect_to_test_plan_query(options)
