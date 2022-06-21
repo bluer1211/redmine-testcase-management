@@ -268,6 +268,23 @@ class TestPlansTest < ApplicationSystemTestCase
     assert_nil TestPlanQuery.where(id: query_id).first
   end
 
+  test "access to statistics" do
+    generate_user_with_permissions(@project, [:view_project, :view_issues,
+                                              :view_test_plans, :view_test_cases, :view_test_case_executions])
+    log_user(@user.login, "password")
+
+    path = project_test_plans_path(@project)
+    visit path
+
+    click_on I18n.t(:label_test_plan_statistics)
+    assert_current_path project_test_plan_statistics_path(@project)
+
+    visit path
+
+    click_on I18n.t(:label_test_case_statistics)
+    assert_current_path project_test_case_statistics_path(@project)
+  end
+
   private
 
   def login_with_admin
