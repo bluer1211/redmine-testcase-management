@@ -5,6 +5,7 @@ en:
   label_testcase_management: "TestCase Management"
   label_test_plans: "Test Plans"
   label_test_cases: "Test Cases"
+  label_test_case_name: "Test Case Name"
   label_test_case_executions: "Test Case Executions"
   label_test_plan_new: "New Test Plan"
   label_test_plan_edit: "Edit Test Plan"
@@ -71,6 +72,7 @@ en:
   field_end_date: "End Date"
   field_issue_status: "Status"
   field_test_cases: "Test Cases"
+  field_test_plan_name: "Test Plan Name"
 
   field_count_test_cases: "Number of Test Cases"
   field_count_not_executed: "Not Executed"
@@ -84,6 +86,7 @@ en:
 
   # TestCase
   field_test_plan: "Test Plan"
+  field_test_case_name: "Test Case Name"
   field_environment: "Environment"
   field_scenario: "Scenario"
   field_expected: "Expected"
