@@ -1,3 +1,20 @@
+# v1.4.0
+
+## Release v1.4.0 - 2022/06/DD
+
+### Improvements
+
+* test case execution: Changed to show only date in list of test case executions for consistency. MR#62
+* test case: Changed default columns in test case list. MR#63
+* test case: Unified to more meaningful translation for test case label MR#64
+
+### Bug fixes
+
+* test case: Fixed a bug that redirect to test cases list fails when test plan is not associated with 
+test case for bulk updating operation. MR#61
+
+### Miscellaneous
+
 # v1.3.0
 
 ## Release v1.3.0 - 2022/06/08
