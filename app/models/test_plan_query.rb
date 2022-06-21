@@ -5,7 +5,7 @@ class TestPlanQuery < Query
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestPlan.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
-    QueryColumn.new(:name, :sortable => "#{TestPlan.table_name}.name"),
+    QueryColumn.new(:name, :sortable => "#{TestPlan.table_name}.name", :caption => :label_test_plans),
     QueryColumn.new(:issue_status, :sortable => "#{TestPlan.table_name}.issue_status_id"),
     QueryColumn.new(:estimated_bug, :sortable => "#{TestPlan.table_name}.estimated_bug"),
     QueryColumn.new(:user, :sortable => "#{TestPlan.table_name}.user_id"),

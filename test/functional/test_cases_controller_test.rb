@@ -39,7 +39,7 @@ class TestCasesControllerTest < ActionController::TestCase
         end
         assert_equal ['',
                       '#',
-                      I18n.t(:field_name),
+                      I18n.t(:field_test_case_name),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected),
                       I18n.t(:field_latest_result),
@@ -1166,7 +1166,7 @@ class TestCasesControllerTest < ActionController::TestCase
         end
         assert_equal ['',
                       '#',
-                      I18n.t(:field_name),
+                      I18n.t(:field_test_case_name),
                       I18n.t(:field_scenario),
                       I18n.t(:field_expected),
                       I18n.t(:field_latest_result),

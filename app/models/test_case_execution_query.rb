@@ -5,7 +5,7 @@ class TestCaseExecutionQuery < Query
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestCaseExecution.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
-    QueryColumn.new(:test_case, :sortable => "#{TestCaseExecution.table_name}.test_case_id"),
+    QueryColumn.new(:test_case, :sortable => "#{TestCaseExecution.table_name}.test_case_id", :caption => :label_test_case_name),
     QueryColumn.new(:test_plan, :sortable => "#{TestCaseExecution.table_name}.test_plan_id"),
     QueryColumn.new(:result, :sortable => "#{TestCaseExecution.table_name}.result"),
     QueryColumn.new(:user, :sortable => "#{TestCaseExecution.table_name}.user_id"),
