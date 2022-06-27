@@ -40,7 +40,7 @@ class TestPlansImportTest < ApplicationSystemTestCase
       click_on "Next »"
 
       select "eCookbook Subproject 1", :from => "Project"
-      select "Name", :from => "Name"
+      select "Test Plan", :from => "Test Plan"
       select "Status", :from => "Status"
       select "User", :from => "User"
       select "Estimated Bugs", :from => "Estimated Bugs"

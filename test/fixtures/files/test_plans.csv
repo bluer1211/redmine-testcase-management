@@ -1,4 +1,4 @@
-#,Name,Status,Estimated Bugs,User,Begin Date,End Date,Test Cases
+#,Test Plan,Status,Estimated Bugs,User,Begin Date,End Date,Test Cases
 1,Test Plan 1,New,1,Test Plan Owner,2020/01/01 00:00,2020/01/01 00:00,"101,102,103"
 2,Test Plan 2,New,2,Test Plan Owner,2021/01/01 00:00,2021/01/01 00:00,"104,105"
 3,Test Plan 3,New,3,Test Plan Owner,2022/01/01 00:00,2022/01/01 00:00,"106,107"
