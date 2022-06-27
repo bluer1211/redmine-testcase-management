@@ -88,6 +88,120 @@ class TestPlanImportTest < ActiveSupport::TestCase
                  test_plans.collect{ |test_plan| test_plan.test_cases.collect(&:id).sort }
   end
 
+  class Override < self
+    class WithTestPlanId
+      def test_with_test_plan_id
+        import = generate_import
+        import.settings = {
+          "separator" => ",",
+          "wrapper" => '"',
+          "encoding" => "UTF-8",
+          "mapping" => {
+            "project_id" => "1",
+
+            "test_plan_id" => "0",
+            "test_plan" => "1",
+            "issue_status" => "2",
+            "estimated_bug" => "3",
+            "user" => "4",
+            "begin_date" => "5",
+            "end_date" => "6",
+            "test_case_ids" => "7",
+          },
+        }
+        import.save!
+        import.user_id = @user.id
+
+        # test plan which is associated with project 1 is updated,
+        # then, non associated test plan were imported as new 2 test plans.
+        test_plans = new_records(TestPlan, 2) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        assert_equal ["Test Plan 1", [1, 1], ["Test Plan 2", "Test Plan 3"]],
+                     [
+                       test_plans(:test_plans_001).name,
+                       test_plans.pluck(:project_id),
+                       test_plans.pluck(:name),
+                     ]
+      end
+    end
+
+    class WithoutTestPlanId < self
+      def test_new_test_plan
+        import = generate_import("test_plan1_new.csv")
+        import.settings = {
+          "separator" => ",",
+          "wrapper" => '"',
+          "encoding" => "UTF-8",
+          "mapping" => {
+            "project_id" => "1",
+
+            "test_plan" => "1",
+            "issue_status" => "2",
+            "estimated_bug" => "3",
+            "user" => "4",
+            "begin_date" => "5",
+            "end_date" => "6",
+            "test_case_ids" => "7",
+          },
+        }
+        import.save!
+        import.user_id = @user.id
+
+        # No same test plan,
+        test_plans = new_records(TestPlan, 1) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        assert_equal [[1], ["Test Plan 1"]],
+                     [
+                       test_plans.pluck(:project_id),
+                       test_plans.pluck(:name),
+                     ]
+      end
+
+      def test_override_test_plan
+        import = generate_import("test_plan1_override.csv")
+        import.settings = {
+          "separator" => ",",
+          "wrapper" => '"',
+          "encoding" => "UTF-8",
+          "mapping" => {
+            "project_id" => "1",
+
+            "test_plan" => "1",
+            "issue_status" => "2",
+            "estimated_bug" => "3",
+            "user" => "4",
+            "begin_date" => "5",
+            "end_date" => "6",
+            "test_case_ids" => "7",
+          },
+        }
+        import.save!
+        import.user_id = @user.id
+
+        # Override existing test plan
+        test_plans = new_records(TestPlan, 0) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        test_plan = test_plans(:test_plans_001)
+        assert_equal [1, "2022-01-01", "2022-01-01", 100, @user.id, IssueStatus.named("Closed").first.try(:id), 1],
+                     [
+                       test_plan.id,
+                       test_plan.begin_date.strftime("%F"),
+                       test_plan.end_date.strftime("%F"),
+                       test_plan.estimated_bug,
+                       test_plan.user_id,
+                       test_plan.issue_status_id,
+                       test_plan.project_id
+                     ]
+      end
+    end
+  end
+
   private
 
   def prepare_authorized_user
@@ -120,7 +234,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
       "mapping" => {
         "project_id" => "1",
 
-        "name" => "1",
+        "test_plan" => "1",
         "issue_status" => "2",
         "estimated_bug" => "3",
         "user" => "4",

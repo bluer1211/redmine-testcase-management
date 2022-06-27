@@ -1,6 +1,6 @@
 class TestPlanImport < Import
   AUTO_MAPPABLE_FIELDS = {
-    "name" => "field_name",
+    "test_plan" => "field_test_plan",
     "issue_status" => "field_issue_status",
     "estimated_bug" => "field_estimated_bug",
     "user" => "field_user",
@@ -42,8 +42,25 @@ class TestPlanImport < Import
     test_plan.user = user
     test_plan.project_id = mapping["project_id"].to_i
 
+    # If test_plan_id is mapped, allow to override existing test plan
+    test_plan_id = row_value(row, "test_plan_id")
+    if test_plan_id
+      found_test_plan = TestPlan.where(id: test_plan_id, project_id: test_plan.project_id).first
+      if found_test_plan
+        test_plan = found_test_plan
+        test_plan.user = user
+      end
+    else
+      name = row_value(row, "test_plan")
+      found_test_plan = TestPlan.where(name: name, project_id: test_plan.project_id).first
+      if found_test_plan
+        test_plan = found_test_plan
+        test_plan.user = user
+      end
+    end
+
     attributes = {
-      "name" => row_value(row, "name"),
+      "name" => row_value(row, "test_plan"),
     }
 
     status_name = row_value(row, "issue_status")
@@ -73,7 +90,9 @@ class TestPlanImport < Import
         begin
           test_case = TestCase.find(test_case_id.to_i)
           if test_case and test_case.project_id == test_plan.project_id
-            test_plan.test_cases << test_case
+            unless test_plan.test_cases and test_plan.test_cases.pluck(:id).include?(test_case.id)
+              test_plan.test_cases << test_case
+            end
           end
         rescue ActiveRecord::RecordNotFound
         end

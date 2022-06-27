@@ -82,6 +82,11 @@ ja:
   field_progress_rate: "進捗率"
   field_fixed_rate: "バグ対応率"
   field_succeeded_rate: "成功率"
+  field_test_plan_id: "テスト計画ID"
+
+  notice_import_tp_test_plan_id: "既存のテスト計画をIDを特定して更新したい場合のみ、テスト計画のIDを含む列を指定します。例えば、テスト計画名を上書きしたいときに使います。"
+  notice_import_tp_test_plan: "テスト計画を含む列を指定します。既存の同名のテスト計画があれば、上書きします。"
+  notice_import_tp_test_cases: "既存のテスト項目のIDを含む列を指定します。IDはカンマ区切りで複数指定できます。"
 
   # TestCase
   field_test_plan: "テスト計画"
@@ -93,6 +98,11 @@ ja:
   field_latest_execution_date: "実行日"
 
   field_assigned_rate: "担当率"
+  field_test_case_id: "テスト項目ID"
+
+  notice_import_tc_test_case_id: "既存のテスト項目をIDを特定して更新したい場合のみ、テスト項目のIDを含む列を指定します。例えば、同一のテスト項目名を区別して更新したいときに使います。"
+  notice_import_tc_test_plan: "既存のテスト計画に関連付けたい場合に、テスト計画を含む列を指定します。列の値はテスト計画名もしくはテスト計画のIDです。"
+  notice_import_tc_test_case: "テスト項目を含む列を指定します。列の値はテスト項目名です。既存のテスト項目名に同じものがあれば、新規テスト項目として追加せずに、既存のテスト項目を更新します。"
 
   # TestCaseExecution
   field_test_case: "テスト項目"
