@@ -1,4 +1,4 @@
-#,Name,Environment,User,Result,Scenario,Expected
+#,Test Case,Environment,User,Result,Scenario,Expected
 1,Test Case 1,Ubuntu,John Smith,Succeeded,"1. Do this.
 2. Do that.
 3. Do it.","1. Done this.

@@ -5,12 +5,19 @@
         :id => 'import_mapping_project_id' %>
 </p>
 <p>
-  <label for="import_mapping_test_plan"><%= l(:field_test_plan) %></label>
-  <%= mapping_select_tag @import, 'test_plan', :required => false %>
+  <label for="import_mapping_test_case_id"><%= l(:field_test_case_id) %></label>
+  <%= mapping_select_tag @import, 'test_case_id', :required => false %>
+  <span class="icon icon-help"><%= l(:notice_import_tc_test_case_id) %></span>
 </p>
 <p>
-  <label for="import_mapping_name"><%= l(:field_name) %></label>
-  <%= mapping_select_tag @import, 'name', :required => true %>
+  <label for="import_mapping_test_plan"><%= l(:field_test_plan) %></label>
+  <%= mapping_select_tag @import, 'test_plan', :required => false %>
+  <span class="icon icon-help"><%= l(:notice_import_tc_test_plan) %></span>
+</p>
+<p>
+  <label for="import_mapping_test_case"><%= l(:field_test_case) %></label>
+  <%= mapping_select_tag @import, 'test_case', :required => true %>
+  <span class="icon icon-help"><%= l(:notice_import_tc_test_case) %></span>
 </p>
 <p>
   <label for="import_mapping_user"><%= l(:field_user) %></label>

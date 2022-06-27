@@ -99,6 +99,11 @@ en:
   field_latest_execution_date: "Execution Date"
 
   field_assigned_rate: "Assigned Rate"
+  field_test_case_id: "Test Case ID"
+
+  notice_import_tc_test_case_id: "Specify column which contains test case id if you want to override the existing specific test case."
+  notice_import_tc_test_plan: "Specify column which contains test plan. The imported test case will be associated with existing test plans. The value of column must be existing test plan name or id of test plan."
+  notice_import_tc_test_case: "Specify column which contains test case. If test case matches existing one, instead of inserting test case, existing test case will be updated."
 
   # TestCaseExecution
   field_test_case: "Test Case"

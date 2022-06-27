@@ -1,6 +1,7 @@
 class TestCaseImport < Import
   AUTO_MAPPABLE_FIELDS = {
-    "name" => "field_name",
+    "test_case_id" => "field_test_case_id",
+    "test_case" => "field_test_case",
     "user" => "field_user",
     "environment" => "field_environment",
     "scenario" => "field_scenario",
@@ -41,8 +42,36 @@ class TestCaseImport < Import
     test_case.user = user
     test_case.project_id = mapping["project_id"].to_i
 
+    found_test_case = nil
+    if test_case_id = row_value(row, "test_case_id")
+      found_test_case = TestCase.where(id: test_case_id, project_id: test_case.project_id).first
+    end
+
+    found_test_plan = nil
+    if test_plan = row_value(row, "test_plan")
+      found_test_plan = if TestPlan.where(name: test_plan, project_id: test_case.project_id).first
+                          TestPlan.where(name: test_plan, project_id: test_case.project_id).first
+                        elsif TestPlan.where(id: test_plan, project_id: test_case.project_id).first
+                          TestPlan.where(id: test_plan, project_id: test_case.project_id).first
+                        end
+    end
+
+    # If associated test case exists, allow to override existing test case
+    name = row_value(row, "test_case")
+    found_test_case = if found_test_case
+                        found_test_case
+                      elsif found_test_plan
+                        found_test_plan.test_cases.where(name: name).first
+                      else
+                        TestCase.where(name: name, project_id: test_case.project_id).first
+                      end
+    if found_test_case
+      test_case = found_test_case
+      test_case.user = user
+    end
+
     attributes = {
-      "name" => row_value(row, "name"),
+      "name" => row_value(row, "test_case"),
       "environment" => row_value(row, "environment"),
       "scenario" => row_value(row, "scenario"),
       "expected" => row_value(row, "expected"),
@@ -56,15 +85,8 @@ class TestCaseImport < Import
 
     test_case.send :safe_attributes=, attributes, user
 
-    if test_plan = row_value(row, "test_plan")
-      found_test_plan = if TestPlan.where(name: test_plan).first
-                          TestPlan.where(name: test_plan).first
-                        elsif TestPlan.where(id: test_plan).first
-                          TestPlan.where(id: test_plan).first
-                        else
-                          nil
-                        end
-      if found_test_plan and found_test_plan.project_id == test_case.project_id
+    if found_test_plan and found_test_plan.project_id == test_case.project_id
+      unless found_test_plan.test_cases.pluck(:id).include?(test_case.id)
         found_test_plan.test_cases << test_case
       end
     end

@@ -39,7 +39,7 @@ class TestCasesImportTest < ApplicationSystemTestCase
     click_on "Next »"
 
     select "eCookbook Subproject 1", :from => "Project"
-    select "Name", :from => "Name"
+    select "Test Case", :from => "Test Case"
     select "Environment", :from => "Environment"
     select "User", :from => "User"
     select "Scenario", :from => "Scenario"
