@@ -7,11 +7,14 @@
 * test case execution: Changed to show only date in list of test case executions for consistency. MR#62
 * test case: Changed default columns in test case list. MR#63
 * test case: Unified to more meaningful translation for test case label MR#64
+* test plan/test case: Supported to allow overriding existing test plan/test case. MR#67
 
 ### Bug fixes
 
 * test case: Fixed a bug that redirect to test cases list fails when test plan is not associated with 
 test case for bulk updating operation. MR#61
+* test case: Fixed 500 redirect error when editing or deleting test case query. MR#65
+* test case execution: Fixed to show missing statistics in sidebar. MR#66
 
 ### Miscellaneous
 
