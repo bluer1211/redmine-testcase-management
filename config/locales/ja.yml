@@ -4,7 +4,7 @@ ja:
   label_testcase_management: "テスト項目管理"
   label_test_plans: "テスト計画"
   label_test_cases: "テスト項目"
-  label_test_case_name: "テスト項目名"
+  label_test_case: "テスト項目"
   label_test_case_executions: "テスト実行結果"
   label_test_plan_new: "新しいテスト計画"
   label_test_plan_edit: "テスト計画の編集"
@@ -90,7 +90,7 @@ ja:
 
   # TestCase
   field_test_plan: "テスト計画"
-  field_test_case_name: "テスト項目名"
+  field_test_case: "テスト項目"
   field_environment: "環境"
   field_scenario: "シナリオ"
   field_expected: "期待する結果"

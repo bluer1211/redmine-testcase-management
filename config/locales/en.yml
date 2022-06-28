@@ -5,7 +5,7 @@ en:
   label_testcase_management: "TestCase Management"
   label_test_plans: "Test Plans"
   label_test_cases: "Test Cases"
-  label_test_case_name: "Test Case Name"
+  label_test_case: "Test Case"
   label_test_case_executions: "Test Case Executions"
   label_test_plan_new: "New Test Plan"
   label_test_plan_edit: "Edit Test Plan"
@@ -91,7 +91,7 @@ en:
 
   # TestCase
   field_test_plan: "Test Plan"
-  field_test_case_name: "Test Case Name"
+  field_test_case: "Test Case"
   field_environment: "Environment"
   field_scenario: "Scenario"
   field_expected: "Expected"
