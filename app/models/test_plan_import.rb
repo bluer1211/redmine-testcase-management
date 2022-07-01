@@ -73,7 +73,7 @@ class TestPlanImport < Import
       end
     end
 
-    if estimated_bug = row_date(row, "estimated_bug")
+    if estimated_bug = row_value(row, "estimated_bug")
       attributes["estimated_bug"] = estimated_bug
     end
     if begin_date = row_date(row, "begin_date")
@@ -85,7 +85,7 @@ class TestPlanImport < Import
 
     test_plan.send :safe_attributes=, attributes, user
 
-    if test_case_ids = row_date(row, "test_case_ids")
+    if test_case_ids = row_value(row, "test_case_ids")
       test_case_ids.scan(/[1-9][0-9]*/) do |test_case_id|
         begin
           test_case = TestCase.find(test_case_id.to_i)
