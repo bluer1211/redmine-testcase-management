@@ -156,7 +156,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
           assert_successfully_imported(import)
         end
         test_plan = test_plans(:test_plans_001)
-        assert_equal [1, "2022-01-01", "2022-01-01", 100, @user.id, IssueStatus.named("Closed").first.try(:id), 1, [1]],
+        assert_equal [1, "2022-01-01", "2022-01-01", 100, @user.id, IssueStatus.named("Closed").first.try(:id), 1, [5,6]],
                      [
                        test_plan.id,
                        test_plan.begin_date.strftime("%F"),
