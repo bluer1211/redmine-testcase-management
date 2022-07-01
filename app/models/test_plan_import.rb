@@ -85,11 +85,16 @@ class TestPlanImport < Import
 
     test_plan.send :safe_attributes=, attributes, user
 
-    if test_case_ids = row_value(row, "test_case_ids")
+    test_case_ids = row_value(row, "test_case_ids")
+    if found_test_plan and test_case_ids
+      # Clear test cases association (e.g. the value of column (:space:) is treated as nil
+      test_plan.test_cases.destroy_all
+    end
+    if test_case_ids
       test_case_ids.scan(/[1-9][0-9]*/) do |test_case_id|
         begin
-          test_case = TestCase.find(test_case_id.to_i)
-          if test_case and test_case.project_id == test_plan.project_id
+          test_case = TestCase.where(id: test_case_id.to_i, project_id: test_plan.project_id).first
+          if test_case
             unless test_plan.test_cases and test_plan.test_cases.pluck(:id).include?(test_case.id)
               test_plan.test_cases << test_case
             end

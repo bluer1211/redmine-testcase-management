@@ -91,7 +91,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
   class Override < self
     class WithTestPlanId
       def test_with_test_plan_id
-        import = generate_import
+        import = generate_import("test_plans.csv")
         import.settings = {
           "separator" => ",",
           "wrapper" => '"',
@@ -129,27 +129,11 @@ class TestPlanImportTest < ActiveSupport::TestCase
 
     class WithoutTestPlanId < self
       def test_new_test_plan
-        import = generate_import("test_plan1_new.csv")
-        import.settings = {
-          "separator" => ",",
-          "wrapper" => '"',
-          "encoding" => "UTF-8",
-          "mapping" => {
-            "project_id" => "1",
-
-            "test_plan" => "1",
-            "issue_status" => "2",
-            "estimated_bug" => "3",
-            "user" => "4",
-            "begin_date" => "5",
-            "end_date" => "6",
-            "test_case_ids" => "7",
-          },
-        }
-        import.save!
+        import = generate_import_with_mapping("test_plan1_new.csv")
         import.user_id = @user.id
+        import.save!
 
-        # No same test plan,
+        # No same test plan, so newly added
         test_plans = new_records(TestPlan, 1) do
           import.run
           assert_successfully_imported(import)
@@ -162,25 +146,9 @@ class TestPlanImportTest < ActiveSupport::TestCase
       end
 
       def test_override_test_plan
-        import = generate_import("test_plan1_override.csv")
-        import.settings = {
-          "separator" => ",",
-          "wrapper" => '"',
-          "encoding" => "UTF-8",
-          "mapping" => {
-            "project_id" => "1",
-
-            "test_plan" => "1",
-            "issue_status" => "2",
-            "estimated_bug" => "3",
-            "user" => "4",
-            "begin_date" => "5",
-            "end_date" => "6",
-            "test_case_ids" => "7",
-          },
-        }
-        import.save!
+        import = generate_import_with_mapping("test_plan1_override.csv")
         import.user_id = @user.id
+        import.save!
 
         # Override existing test plan
         test_plans = new_records(TestPlan, 0) do
@@ -188,7 +156,7 @@ class TestPlanImportTest < ActiveSupport::TestCase
           assert_successfully_imported(import)
         end
         test_plan = test_plans(:test_plans_001)
-        assert_equal [1, "2022-01-01", "2022-01-01", 100, @user.id, IssueStatus.named("Closed").first.try(:id), 1],
+        assert_equal [1, "2022-01-01", "2022-01-01", 100, @user.id, IssueStatus.named("Closed").first.try(:id), 1, [1]],
                      [
                        test_plan.id,
                        test_plan.begin_date.strftime("%F"),
@@ -196,7 +164,28 @@ class TestPlanImportTest < ActiveSupport::TestCase
                        test_plan.estimated_bug,
                        test_plan.user_id,
                        test_plan.issue_status_id,
-                       test_plan.project_id
+                       test_plan.project_id,
+                       test_plan.test_cases.pluck(:id)
+                     ]
+      end
+
+      def test_ignored_test_case
+        import = generate_import_with_mapping("test_plan1_ignored_test_case.csv")
+        import.user_id = @user.id
+        import.save!
+
+        # Override existing test plan
+        test_plans = new_records(TestPlan, 0) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        test_plan = test_plans(:test_plans_001)
+        # test case 1 belongs to project 3, so it will be ignored.
+        assert_equal [1, 1, []],
+                     [
+                       test_plan.id,
+                       test_plan.project_id,
+                       test_plan.test_cases.pluck(:id)
                      ]
       end
     end
