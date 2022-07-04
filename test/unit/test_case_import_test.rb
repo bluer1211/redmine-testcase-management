@@ -106,25 +106,10 @@ class TestCaseImportTest < ActiveSupport::TestCase
 
   class Override < self
     class WithTestCaseId < self
-      def test_override_existing_test_case
-        import = generate_import("test_cases_with_test_plan.csv")
-        import.settings = {
-          "separator" => ",",
-          "wrapper" => '"',
-          "encoding" => "UTF-8",
-          "mapping" => {
-            "project_id" => "3",
-            "test_plan" => "0",
-            "test_case_id" => "1",
-            "test_case" => "2",
-            "environment" => "3",
-            "user" => "4",
-            "scenario" => "5",
-            "expected" => "6",
-          },
-        }
-        import.save!
+      def test_override_existing_test_cases
+        import = generate_import_with_test_case_id("test_cases_with_test_plan.csv")
         import.user_id = @user.id
+        import.save!
 
         # Existing test cases and association are updated, No new test cases
         test_cases = new_records(TestCase, 0) do
@@ -142,25 +127,11 @@ class TestCaseImportTest < ActiveSupport::TestCase
       end
     end
 
-    class WithoutTestCaseId < self
+    class WithTestPlan < self
       def test_import_new_test_case
-        import = generate_import("test_case1_new.csv")
-        import.settings = {
-          "separator" => ",",
-          "wrapper" => '"',
-          "encoding" => "UTF-8",
-          "mapping" => {
-            "project_id" => "3",
-            "test_plan" => "0",
-            "test_case" => "1",
-            "environment" => "2",
-            "user" => "3",
-            "scenario" => "5",
-            "expected" => "6",
-          },
-        }
-        import.save!
+        import = generate_import_with_test_plan("test_case1_new.csv")
         import.user_id = @user.id
+        import.save!
 
         # test case is not matched, then imported as new test case
         test_cases = new_records(TestCase, 1) do
@@ -177,26 +148,54 @@ class TestCaseImportTest < ActiveSupport::TestCase
                      ]
       end
 
-      def test_override_test_case
-        import = generate_import("test_case1_override.csv")
-        import.settings = {
-          "separator" => ",",
-          "wrapper" => '"',
-          "encoding" => "UTF-8",
-          "mapping" => {
-            "project_id" => "3",
-            "test_plan" => "0",
-            "test_case" => "1",
-            "environment" => "2",
-            "user" => "3",
-            "scenario" => "5",
-            "expected" => "6",
-          },
-        }
-        import.save!
+      def test_found_test_plan_id
+        import = generate_import_with_test_plan("test_case1_new_found_test_plan_id.csv")
         import.user_id = @user.id
+        import.save!
+
+        # test plan is found by id, then imported as new test case
+        test_cases = new_records(TestCase, 1) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        assert_equal [["Test Case 1"], [@user.id], ["Ubuntu"], ["Do this."], ["Done this."]],
+                     [
+                       test_cases.pluck(:name),
+                       test_cases.pluck(:user_id),
+                       test_cases.pluck(:environment),
+                       test_cases.pluck(:scenario),
+                       test_cases.pluck(:expected)
+                     ]
+      end
+
+      def test_override_test_case
+        import = generate_import_with_test_plan("test_case1_override.csv")
+        import.user_id = @user.id
+        import.save!
 
         # test case matched, then override existing test case
+        test_cases = new_records(TestCase, 0) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        test_case = test_cases(:test_cases_001)
+        assert_equal [1, "Test Case 1 (No test case execution)", @user.id, "Ubuntu", "Do this.", "Done this."],
+                     [
+                       test_case.id,
+                       test_case.name,
+                       test_case.user_id,
+                       test_case.environment,
+                       test_case.scenario,
+                       test_case.expected,
+                     ]
+      end
+
+      def test_not_found_test_plan
+        import = generate_import_with_test_plan("test_case1_override_not_found_test_plan.csv")
+        import.user_id = @user.id
+        import.save!
+
+        # test plan is found, but test case is found.
         test_cases = new_records(TestCase, 0) do
           import.run
           assert_successfully_imported(import)
@@ -233,6 +232,48 @@ class TestCaseImportTest < ActiveSupport::TestCase
     import = TestCaseImport.new
     import.user_id = 1 # admin
     import.file = uploaded_test_file(fixture_name, "text/csv")
+    import.save!
+    import
+  end
+
+  def generate_import_with_test_plan(fixture_name="test_case_with_test_plan.csv")
+    import = generate_import(fixture_name)
+    import.settings = {
+      "separator" => ",",
+      "wrapper" => '"',
+      "encoding" => "UTF-8",
+      "mapping" => {
+        "project_id" => "3",
+
+        "test_plan" => "0",
+        "test_case" => "2",
+        "environment" => "3",
+        "user" => "4",
+        "scenario" => "6",
+        "expected" => "7",
+      },
+    }
+    import.save!
+    import
+  end
+
+  def generate_import_with_test_case_id(fixture_name="test_case_with_test_plan.csv")
+    import = generate_import(fixture_name)
+    import.settings = {
+      "separator" => ",",
+      "wrapper" => '"',
+      "encoding" => "UTF-8",
+      "mapping" => {
+        "project_id" => "3",
+        "test_plan" => "0",
+        "test_case_id" => "1",
+        "test_case" => "2",
+        "environment" => "3",
+        "user" => "4",
+        "scenario" => "5",
+        "expected" => "6",
+      },
+    }
     import.save!
     import
   end

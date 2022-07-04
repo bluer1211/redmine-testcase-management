@@ -1,2 +1,2 @@
-#,Test Case,Environment,User,Result,Scenario,Expected
-1,Test Case 1 (No test case execution),Ubuntu,Test Case Owner,Succeeded,Do this.,Done this.
+Test Plan,#,Test Case,Environment,User,Result,Scenario,Expected
+Test Plan (No test case),1,Test Case 1 (No test case execution),Ubuntu,Test Case Owner,Succeeded,Do this.,Done this.
