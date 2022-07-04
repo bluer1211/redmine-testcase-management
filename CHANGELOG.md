@@ -1,13 +1,14 @@
 # v1.4.0
 
-## Release v1.4.0 - 2022/06/DD
+## Release v1.4.0 - 2022/07/DD
 
 ### Improvements
 
 * test case execution: Changed to show only date in list of test case executions for consistency. MR#62
 * test case: Changed default columns in test case list. MR#63
 * test case: Unified to more meaningful translation for test case label MR#64
-* test plan/test case: Supported to allow overriding existing test plan/test case. MR#67
+* test plan/test case: Supported to allow overriding existing test plan/test case. MR#67,MR#68
+* test case execution: Supported to specify test plan name or test case name when importing CSV. MR#71
 
 ### Bug fixes
 
@@ -15,6 +16,7 @@
 test case for bulk updating operation. MR#61
 * test case: Fixed 500 redirect error when editing or deleting test case query. MR#65
 * test case execution: Fixed to show missing statistics in sidebar. MR#66
+* test plan: Fixed a bug that existing associated test cases are not reset when importing CSV with target test case id was specified. MR#70
 
 ### Miscellaneous
 
