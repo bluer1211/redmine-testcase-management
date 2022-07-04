@@ -43,16 +43,30 @@ class TestCaseExecutionImport < Import
     test_case_execution.project_id = mapping["project_id"].to_i
 
     begin
-      test_case = TestCase.find(row_value(row, "test_case"))
-      if test_case and test_case.project_id == test_case_execution.project_id
+      id_or_name = row_value(row, "test_case")
+      test_case = if TestCase.where(name: id_or_name, project_id: test_case_execution.project_id).first
+                    TestCase.where(name: id_or_name, project_id: test_case_execution.project_id).first
+                  elsif TestCase.where(id: id_or_name, project_id: test_case_execution.project_id).first
+                    TestCase.where(id: id_or_name, project_id: test_case_execution.project_id).first
+                  else
+                    nil
+                  end
+      if test_case
         test_case_execution.test_case = test_case
       end
     rescue ActiveRecord::RecordNotFound
     end
 
     begin
-      test_plan = TestPlan.find(row_value(row, "test_plan"))
-      if test_plan and test_plan.project_id == test_case_execution.project_id
+      id_or_name = row_value(row, "test_plan")
+      test_plan = if TestPlan.where(name: id_or_name, project_id: test_case_execution.project_id).first
+                    TestPlan.where(name: id_or_name, project_id: test_case_execution.project_id).first
+                  elsif TestPlan.where(id: id_or_name, project_id: test_case_execution.project_id).first
+                    TestPlan.where(id: id_or_name, project_id: test_case_execution.project_id).first
+                  else
+                    nil
+                  end
+      if test_plan
         test_case_execution.test_plan = test_plan
       end
     rescue ActiveRecord::RecordNotFound

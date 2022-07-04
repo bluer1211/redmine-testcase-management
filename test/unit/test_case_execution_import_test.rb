@@ -106,6 +106,79 @@ class TestCaseExecutionImportTest < ActiveSupport::TestCase
     assert_equal [102], test_case_executions.pluck(:test_case_id)
   end
 
+  class Association < self
+    class WithName < self
+      def test_case_name
+        # test plan id and test case name
+        import = generate_import_with_mapping("test_case_executions_name_test_case.csv")
+        import.user_id = @user.id
+        test_case_executions = new_records(TestCaseExecution, 1) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        assert_equal [103], test_case_executions.pluck(:test_case_id)
+      end
+
+      def test_plan_name
+        # test plan name and test case id
+        import = generate_import_with_mapping("test_case_executions_name_test_plan.csv")
+        import.user_id = @user.id
+        test_case_executions = new_records(TestCaseExecution, 1) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        assert_equal [101], test_case_executions.pluck(:test_plan_id)
+      end
+
+      def test_both_name
+        # test plan name and test case name
+        import = generate_import_with_mapping("test_case_executions_name_both.csv")
+        import.user_id = @user.id
+        test_case_executions = new_records(TestCaseExecution, 1) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        assert_equal [[101], [103]],
+                     [
+                       test_case_executions.pluck(:test_plan_id),
+                       test_case_executions.pluck(:test_case_id)
+                     ]
+      end
+    end
+
+    class Missing < self
+      def test_missing_both
+        import = generate_import_with_mapping("test_case_executions_invalid_both.csv")
+        import.user_id = @user.id
+        test_case_executions = new_records(TestCaseExecution, 0) do
+          import.run
+        end
+        assert_equal ["Test Plan cannot be blank\nTest Case cannot be blank"],
+                     import.unsaved_items.pluck(:message)
+      end
+
+      def test_missing_test_plan
+        import = generate_import_with_mapping("test_case_executions_invalid_test_plan.csv")
+        import.user_id = @user.id
+        test_case_executions = new_records(TestCaseExecution, 0) do
+          import.run
+        end
+        assert_equal ["Test Plan cannot be blank"],
+                     import.unsaved_items.pluck(:message)
+      end
+
+      def test_missing_test_case
+        import = generate_import_with_mapping("test_case_executions_invalid_test_case.csv")
+        import.user_id = @user.id
+        test_case_executions = new_records(TestCaseExecution, 0) do
+          import.run
+        end
+        assert_equal ["Test Case cannot be blank"],
+                     import.unsaved_items.pluck(:message)
+      end
+    end
+  end
+
   private
 
   def prepare_authorized_user
