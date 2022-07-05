@@ -20,6 +20,8 @@ test case for bulk updating operation. MR#61
 
 ### Miscellaneous
 
+* doc: Added CSV import specification
+
 # v1.3.0
 
 ## Release v1.3.0 - 2022/06/08
