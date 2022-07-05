@@ -1,6 +1,6 @@
 # v1.4.0
 
-## Release v1.4.0 - 2022/07/DD
+## Release v1.4.0 - 2022/07/05
 
 ### Improvements
 
@@ -9,6 +9,7 @@
 * test case: Unified to more meaningful translation for test case label MR#64
 * test plan/test case: Supported to allow overriding existing test plan/test case. MR#67,MR#68
 * test case execution: Supported to specify test plan name or test case name when importing CSV. MR#71
+* test case execution: Changed to export test plan name or test case name instead of id when exporting CSV. MR#72
 
 ### Bug fixes
 
