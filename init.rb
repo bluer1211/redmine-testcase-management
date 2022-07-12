@@ -87,3 +87,14 @@ Rails.configuration.to_prepare do
   require_dependency "inherit_issue_permissions"
   require_dependency "safe_attributes"
 end
+
+# For keeping consistent patch reloading behavior, include patch from init.rb
+# (conflicted with redmine dmsf plugin, before)
+require_dependency "tasks/project_patch"
+unless Project.included_modules.include?(TestCaseManagement::ProjectPatch)
+  Project.send(:include, TestCaseManagement::ProjectPatch)
+end
+require_dependency "tasks/queries_helper_patch"
+unless QueriesHelper.included_modules.include?(TestCaseManagement::QueriesHelperPatch)
+  QueriesHelper.send(:include, TestCaseManagement::QueriesHelperPatch)
+end
