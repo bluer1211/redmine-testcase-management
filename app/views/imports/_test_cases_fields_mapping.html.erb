@@ -7,7 +7,8 @@
 <p>
   <label for="import_mapping_test_case_id"><%= l(:field_test_case_id) %></label>
   <%= mapping_select_tag @import, 'test_case_id', :required => false %>
-  <span class="icon icon-help"><%= l(:notice_import_tc_test_case_id) %></span>
+  <span class="icon icon-help"><%= l(:notice_import_tc_test_case_id) %></span><br>
+  <span class="icon icon-warning"><%= l(:notice_import_tc_test_case_id_warning) %></span>
 </p>
 <p>
   <label for="import_mapping_test_plan"><%= l(:field_test_plan) %></label>
@@ -18,6 +19,11 @@
   <label for="import_mapping_test_case"><%= l(:field_test_case) %></label>
   <%= mapping_select_tag @import, 'test_case', :required => true %>
   <span class="icon icon-help"><%= l(:notice_import_tc_test_case) %></span>
+</p>
+<p>
+  <label for="import_mapping_test_case_update"><%= l(:field_test_case_update) %></label>
+  <%= check_box_tag("import_settings[mapping][test_case_update]", 1, false, id: 'import_mapping_test_case_update') %>
+  <span class="icon icon-help"><%= l(:notice_import_tc_test_case_update) %></span>
 </p>
 <p>
   <label for="import_mapping_user"><%= l(:field_user) %></label>

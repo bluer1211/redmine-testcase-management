@@ -2,6 +2,7 @@ class TestCaseImport < Import
   AUTO_MAPPABLE_FIELDS = {
     "test_case_id" => "field_test_case_id",
     "test_case" => "field_test_case",
+    "test_case_update" => "field_test_case_update",
     "user" => "field_user",
     "environment" => "field_environment",
     "scenario" => "field_scenario",
@@ -41,6 +42,7 @@ class TestCaseImport < Import
     test_case = TestCase.new
     test_case.user = user
     test_case.project_id = mapping["project_id"].to_i
+    search_test_case = mapping["test_case_update"].to_i.zero? ? false : true
 
     found_test_case = nil
     if test_case_id = row_value(row, "test_case_id")
@@ -61,9 +63,17 @@ class TestCaseImport < Import
     found_test_case = if found_test_case
                         found_test_case
                       elsif found_test_plan
-                        found_test_plan.test_cases.where(name: name).first
+                        if search_test_case
+                          found_test_plan.test_cases.where(name: name).first
+                        else
+                          nil
+                        end
                       else
-                        TestCase.where(name: name, project_id: test_case.project_id).first
+                        if search_test_case
+                          TestCase.where(name: name, project_id: test_case.project_id).first
+                        else
+                          nil
+                        end
                       end
     if found_test_case
       test_case = found_test_case
