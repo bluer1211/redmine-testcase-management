@@ -91,6 +91,7 @@ ja:
   # TestCase
   field_test_plan: "テスト計画"
   field_test_case: "テスト項目"
+  field_test_case_name: "テスト項目名"
   field_environment: "環境"
   field_scenario: "シナリオ"
   field_expected: "期待する結果"
