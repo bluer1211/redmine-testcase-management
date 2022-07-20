@@ -92,6 +92,7 @@ en:
   # TestCase
   field_test_plan: "Test Plan"
   field_test_case: "Test Case"
+  field_test_case_name: "Test Case Name"
   field_environment: "Environment"
   field_scenario: "Scenario"
   field_expected: "Expected"
