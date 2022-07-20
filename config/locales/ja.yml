@@ -99,10 +99,13 @@ ja:
 
   field_assigned_rate: "担当率"
   field_test_case_id: "テスト項目ID"
+  field_test_case_update: "テスト項目上書き"
 
-  notice_import_tc_test_case_id: "既存のテスト項目をIDを特定して更新したい場合のみ、テスト項目のIDを含む列を指定します。例えば、同一のテスト項目名を区別して更新したいときに使います。"
+  notice_import_tc_test_case_id: "既存のテスト項目をIDを特定して更新したい場合のみ、テスト項目のIDを含む列を指定します。"
+  notice_import_tc_test_case_id_warning: "「テスト項目の上書き」では最初に見つけた同名のテスト項目しか更新できないのを回避するためのオプションです。「テスト項目ID」は同一のテスト項目名が複数ある場合に区別して更新可能です。"
   notice_import_tc_test_plan: "既存のテスト計画に関連付けたい場合に、テスト計画を含む列を指定します。列の値はテスト計画名もしくはテスト計画のIDです。"
-  notice_import_tc_test_case: "テスト項目を含む列を指定します。列の値はテスト項目名です。既存のテスト項目名に同じものがあれば、新規テスト項目として追加せずに、既存のテスト項目を更新します。"
+  notice_import_tc_test_case: "テスト項目を含む列を指定します。列の値はテスト項目名です。"
+  notice_import_tc_test_case_update: "チェックを有効にすると、(既存のテスト項目名に同じものがあれば)新規テスト項目として追加するかわりに、既存のテスト項目を更新します。"
 
   # TestCaseExecution
   field_test_case: "テスト項目"

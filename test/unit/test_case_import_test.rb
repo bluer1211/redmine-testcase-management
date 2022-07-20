@@ -138,13 +138,15 @@ class TestCaseImportTest < ActiveSupport::TestCase
           import.run
           assert_successfully_imported(import)
         end
-        assert_equal [["Test Case 1"], [@user.id], ["Ubuntu"], ["Do this."], ["Done this."]],
+        assert_equal [["Test Case 1"], [@user.id], ["Ubuntu"], ["Do this."], ["Done this."],
+                      [test_plans(:test_plans_002).id]],
                      [
                        test_cases.pluck(:name),
                        test_cases.pluck(:user_id),
                        test_cases.pluck(:environment),
                        test_cases.pluck(:scenario),
-                       test_cases.pluck(:expected)
+                       test_cases.pluck(:expected),
+                       test_cases.collect { |test_case| test_case.test_plan.id }
                      ]
       end
 
@@ -158,18 +160,22 @@ class TestCaseImportTest < ActiveSupport::TestCase
           import.run
           assert_successfully_imported(import)
         end
-        assert_equal [["Test Case 1"], [@user.id], ["Ubuntu"], ["Do this."], ["Done this."]],
+        assert_equal [["Test Case 1 (No test case execution)"],
+                      [@user.id],
+                      ["Ubuntu"], ["Do this."], ["Done this."],
+                      [test_plans(:test_plans_002).id]],
                      [
                        test_cases.pluck(:name),
                        test_cases.pluck(:user_id),
                        test_cases.pluck(:environment),
                        test_cases.pluck(:scenario),
-                       test_cases.pluck(:expected)
+                       test_cases.pluck(:expected),
+                       test_cases.collect { |test_case| test_case.test_plan.id }            
                      ]
       end
 
       def test_override_test_case
-        import = generate_import_with_test_plan("test_case1_override.csv")
+        import = generate_import_with_test_plan("test_case1_override.csv", true)
         import.user_id = @user.id
         import.save!
 
@@ -190,25 +196,89 @@ class TestCaseImportTest < ActiveSupport::TestCase
                      ]
       end
 
-      def test_not_found_test_plan
-        import = generate_import_with_test_plan("test_case1_override_not_found_test_plan.csv")
+      def test_not_override_test_case
+        import = generate_import_with_test_plan("test_case1_override.csv", false)
         import.user_id = @user.id
         import.save!
 
-        # test plan is found, but test case is found.
-        test_cases = new_records(TestCase, 0) do
+        # test case will be matched, but do not override existing test case
+        test_cases = new_records(TestCase, 1) do
           import.run
           assert_successfully_imported(import)
         end
-        test_case = test_cases(:test_cases_001)
-        assert_equal [1, "Test Case 1 (No test case execution)", @user.id, "Ubuntu", "Do this.", "Done this."],
+        test_case = test_cases.first
+        assert_equal ["Test Case 1 (No test case execution)", @user.id, "Ubuntu", "Do this.", "Done this."],
                      [
-                       test_case.id,
                        test_case.name,
                        test_case.user_id,
                        test_case.environment,
                        test_case.scenario,
                        test_case.expected,
+                     ]
+      end
+
+      def test_not_found_test_plan
+        import = generate_import_with_test_plan("test_case1_override_not_found_test_plan.csv")
+        import.user_id = @user.id
+        import.save!
+
+        # test plan is not found, then test case will be added
+        test_cases = new_records(TestCase, 1) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        test_case = test_cases.first
+        assert_equal ["Test Case 1 (No test case execution)", @user.id, "Ubuntu", "Do this.", "Done this."],
+                     [
+                       test_case.name,
+                       test_case.user_id,
+                       test_case.environment,
+                       test_case.scenario,
+                       test_case.expected,
+                     ]
+      end
+    end
+
+    class WithTestCaseUpdate < self
+      def test_import_new_test_case
+        import = generate_import_with_test_case_update("test_case2.csv", false)
+        import.user_id = @user.id
+        import.save!
+
+        # As update flag is false, test cases will be imported as separated test case.
+        test_cases = new_records(TestCase, 2) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        assert_equal [["Test Case 1"] * 2, [@user.id] * 2, ["Ubuntu"] * 2,
+                      ["Do this.", "Do that."],
+                      ["Done this.", "Done that."]],
+                     [
+                       test_cases.pluck(:name),
+                       test_cases.pluck(:user_id),
+                       test_cases.pluck(:environment),
+                       test_cases.pluck(:scenario),
+                       test_cases.pluck(:expected)
+                     ]
+      end
+
+      def test_import_updating_test_case
+        import = generate_import_with_test_case_update("test_case2.csv", true)
+        import.user_id = @user.id
+        import.save!
+
+        # test plan is found by id, then imported as new test case
+        test_cases = new_records(TestCase, 1) do
+          import.run
+          assert_successfully_imported(import)
+        end
+        assert_equal [["Test Case 1"], [@user.id], ["Ubuntu"], ["Do that."], ["Done that."]],
+                     [
+                       test_cases.pluck(:name),
+                       test_cases.pluck(:user_id),
+                       test_cases.pluck(:environment),
+                       test_cases.pluck(:scenario),
+                       test_cases.pluck(:expected)
                      ]
       end
     end
@@ -236,7 +306,7 @@ class TestCaseImportTest < ActiveSupport::TestCase
     import
   end
 
-  def generate_import_with_test_plan(fixture_name="test_case_with_test_plan.csv")
+  def generate_import_with_test_plan(fixture_name="test_case_with_test_plan.csv", test_case_update=nil)
     import = generate_import(fixture_name)
     import.settings = {
       "separator" => ",",
@@ -244,6 +314,31 @@ class TestCaseImportTest < ActiveSupport::TestCase
       "encoding" => "UTF-8",
       "mapping" => {
         "project_id" => "3",
+
+        "test_plan" => "0",
+        "test_case" => "2",
+        "environment" => "3",
+        "user" => "4",
+        "scenario" => "6",
+        "expected" => "7",
+      },
+    }
+    unless test_case_update.nil?
+      import.settings["mapping"]["test_case_update"] = test_case_update ? 1 : 0
+    end
+    import.save!
+    import
+  end
+
+  def generate_import_with_test_case_update(fixture_name="test_case2.csv", test_case_update=true)
+    import = generate_import(fixture_name)
+    import.settings = {
+      "separator" => ",",
+      "wrapper" => '"',
+      "encoding" => "UTF-8",
+      "mapping" => {
+        "project_id" => "3",
+        "test_case_update" => test_case_update ? 1 : 0,
 
         "test_plan" => "0",
         "test_case" => "2",

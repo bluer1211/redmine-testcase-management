@@ -100,10 +100,13 @@ en:
 
   field_assigned_rate: "Assigned Rate"
   field_test_case_id: "Test Case ID"
+  field_test_case_update: "Update existing Test Case"
 
   notice_import_tc_test_case_id: "Specify column which contains test case id if you want to override the existing specific test case."
+  notice_import_tc_test_case_id_warning: "'Test Case ID' is a option to avoid updating only specific test case if there are multiple test cases that name is same."
   notice_import_tc_test_plan: "Specify column which contains test plan. The imported test case will be associated with existing test plans. The value of column must be existing test plan name or id of test plan."
-  notice_import_tc_test_case: "Specify column which contains test case. If test case matches existing one, instead of inserting test case, existing test case will be updated."
+  notice_import_tc_test_case: "Specify column which contains test case."
+  notice_import_tc_test_case_update: "Check If you want to update test case which matches existing one."
 
   # TestCaseExecution
   field_test_case: "Test Case"
