@@ -1,3 +1,21 @@
+# v1.5.0
+
+## Release v1.5.0 - 2022/07/20
+
+### Improvements
+
+* test case: Added checkbox to update existing test cases. In the previous version, if test case matches existing test case name,
+ always import data as a existing test case. In this release, you can switch import mode. (By default, import as a new test case) MR#74
+
+### Bug fixes
+
+* Fixed a bug that saving query causes 500 error. It was caused by conflicting with other plugins (such as redmine dmsf, for example). MR#73
+* test case: Fixed a missing translation for test case name in editing test case form. MR#75
+
+### Miscellaneous
+
+* doc: Updated CSV import specification
+
 # v1.4.0
 
 ## Release v1.4.0 - 2022/07/05
