@@ -1,3 +1,14 @@
+# v1.6.0
+
+## Release v1.6.0 - 2022/MM/DD
+
+### Improvements
+
+### Bug fixes
+
+* Fixed a bug that text of test case name, scenario, expected column is not left aligned.
+  And longer explanation is changed not to be omitted. MR#76
+
 # v1.5.0
 
 ## Release v1.5.0 - 2022/07/20
