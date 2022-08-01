@@ -6,7 +6,7 @@
 
 ### Bug fixes
 
-* Fixed a bug that text of test case name, scenario, expected column is not left aligned.
+* test plan/test case/test case execution: Fixed a bug that text of test case name, scenario, expected column is not left aligned.
   And longer explanation is changed not to be omitted. MR#76
 
 # v1.5.0
