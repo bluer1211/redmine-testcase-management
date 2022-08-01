@@ -50,7 +50,7 @@ module TestPlansQueriesHelper
           l(:label_none)
         end
       when :scenario, :expected
-        column_truncated_text(value)
+        column_truncated_text(value, truncate_line: false)
       else
         super
       end

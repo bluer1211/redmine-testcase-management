@@ -10,7 +10,7 @@ module TestCaseExecutionsQueriesHelper
                                                                     test_case_id: item.test_case.id,
                                                                     id: item.id)
       when :test_case
-        link_to truncate(item.test_case.name),
+        link_to item.test_case.name,
                 project_test_plan_test_case_url(project_id: item.project.identifier,
                                                 test_plan_id: item.test_plan.id,
                                                 test_case_id: item.test_case.id,
@@ -24,9 +24,9 @@ module TestCaseExecutionsQueriesHelper
       when :comment
         truncate(value)
       when :scenario
-        column_truncated_text(item.test_case.scenario)
+        column_truncated_text(item.test_case.scenario, truncate_line: false)
       when :expected
-        column_truncated_text(item.test_case.expected)
+        column_truncated_text(item.test_case.expected, truncate_line: false)
       when :execution_date
         yyyymmdd_date(value)
       else

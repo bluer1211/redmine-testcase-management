@@ -90,7 +90,11 @@
             <tr id="test-case-<%= test_case.id %>" class="hascontextmenu <%= cycle('odd', 'even') %>">
               <td class="checkbox hide-when-print"><%= check_box_tag("ids[]", test_case.id, false, :id => nil) %></td>
               <% @query.inline_columns.each do |column| %>
-                <%= content_tag('td', column_content(column, test_case), :class => column.css_classes) %>
+                <% if [:scenario, :expected, :name].include?(column.css_classes) %>
+                  <%= content_tag('td', column_content(column, test_case), :class => column.css_classes, :style => "text-align: left;") %>
+                <% else %>
+                  <%= content_tag('td', column_content(column, test_case), :class => column.css_classes) %>
+                <% end %>
               <% end %>
               <td class="buttons"><%= link_to_context_menu %></td>
             </tr>
