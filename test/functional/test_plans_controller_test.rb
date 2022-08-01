@@ -211,7 +211,7 @@ class TestPlansControllerTest < ActionController::TestCase
       test_case = test_cases(:test_cases_001).update(scenario: scenario)
       test_plan = test_plans(:test_plans_002)
       get :show, params: { project_id: @project.identifier, id: test_plan.id }
-      expected = 9.times.collect { |i| "<p>#{i+1}</p>\n" }.join + "<p>10\n11</p>"
+      expected = 10.times.collect { |i| "<p>#{i+1}</p>\n" }.join + "<p>11</p>"
       assert_select "table#related_test_cases tbody tr:first-child td.scenario" do |node|
         assert_equal expected, node.first.inner_html
       end
@@ -222,7 +222,7 @@ class TestPlansControllerTest < ActionController::TestCase
       test_case = test_cases(:test_cases_001).update(expected: expected)
       test_plan = test_plans(:test_plans_002)
       get :show, params: { project_id: @project.identifier, id: test_plan.id }
-      expected = 9.times.collect { |i| "<p>#{i+1}</p>\n" }.join + "<p>10\n11</p>"
+      expected = 10.times.collect { |i| "<p>#{i+1}</p>\n" }.join + "<p>11</p>"
       assert_select "table#related_test_cases tbody tr:first-child td.expected" do |node|
         assert_equal expected, node.first.inner_html
       end
