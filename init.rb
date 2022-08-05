@@ -94,7 +94,11 @@ require_dependency "tasks/project_patch"
 unless Project.included_modules.include?(TestCaseManagement::ProjectPatch)
   Project.send(:include, TestCaseManagement::ProjectPatch)
 end
-require_dependency "tasks/queries_helper_patch"
-unless QueriesHelper.included_modules.include?(TestCaseManagement::QueriesHelperPatch)
-  QueriesHelper.send(:include, TestCaseManagement::QueriesHelperPatch)
+
+# To avoid conflict with RedmineDrive plugin, use QueriesControllerPatch instead.
+# Without this fix, you can't save query at all.
+# See https://www.redmine.org/boards/3/topics/66539
+require_dependency "tasks/queries_controller_patch"
+unless QueriesController.included_modules.include?(TestCaseManagement::QueriesControllerPatch)
+  QueriesController.send(:include, TestCaseManagement::QueriesControllerPatch)
 end
