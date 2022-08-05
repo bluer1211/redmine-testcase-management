@@ -2,7 +2,7 @@
 require_dependency File.expand_path(File.join(File.dirname(__FILE__),
                                               "lib/tasks/project_patch.rb"))
 require_dependency File.expand_path(File.join(File.dirname(__FILE__),
-                                              "lib/tasks/queries_helper_patch.rb"))
+                                              "lib/tasks/queries_controller_patch.rb"))
 
 Redmine::Plugin.register :testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
