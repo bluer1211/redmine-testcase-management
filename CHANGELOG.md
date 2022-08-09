@@ -2,10 +2,15 @@
 
 ## Release v1.6.0 - 2022/08/09
 
+### Improvements
+
+* test plan/test case/test case execution: Improved to display text in left align and not to omit content. MR#76
+  * test plan: Changed not to omit text case name in test plan's details.
+  * test case: Changed not to omit content of test case, scenario and expected columns.
+  * test case execution: Changed not to omit content of test case, scenario and expected columns.
+
 ### Bug fixes
 
-* test plan/test case/test case execution: Fixed a bug that text of test case name, scenario, expected column is not left aligned.
-  And longer explanation is changed not to be omitted. MR#76
 * test plan/test case/test case execution: Fixed a bug that saving causes 500 error again.
   It was caused when the specific Redmine plugin was used with this plugin. (For example, Redmine Drive) MR#77
 
