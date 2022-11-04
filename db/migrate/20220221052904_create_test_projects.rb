@@ -1,7 +1,7 @@
 class CreateTestProjects < ActiveRecord::Migration[5.2]
   def change
     create_table :test_projects do |t|
-      t.belongs_to :project, foreign_key: true
+      t.belongs_to :project, foreign_key: true, type: :integer
     end
   end
 end
