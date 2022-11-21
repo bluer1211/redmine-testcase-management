@@ -6,7 +6,8 @@ https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-ma
 
 * Redmine 4.1.0 or later (not Redmine 5.x)
   * TimestampQueryColumn was implemented since 4.1.0.
-* PostgreSQL
+* PostgreSQL 12 or later
+  * MySQL and MariaDB is not supported yet.
 
 ## Install to an existing redmine instance
 
@@ -67,6 +68,7 @@ Up to v1.1.0, the following 3 permissions were used (now deprecated, and removed
 * Not only "View issues" permission, "Add issues", "Edit Issues", "Delete Issues" permissions were also required for
   each adding/editing/deleting actions in testcase management.
   In the future, this restriction will be changed to require only "View issues" about issue permission. (Delegate permission control in plugin's side)
+* MySQL and MariaDB is not supported yet. #8
 
 ## For Developers
 
