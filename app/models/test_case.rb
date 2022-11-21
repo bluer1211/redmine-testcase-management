@@ -75,7 +75,11 @@ SQL
     where(conditions)
     # Avoid syntax error with count()
     if for_count
-      scope.select("test_cases.*")
+      if Redmine::Database.postgresql?
+        scope.select("test_cases.*")
+      else
+        scope.select("*")
+      end
     else
       scope.select(<<-SQL
         test_cases.*,
