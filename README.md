@@ -21,6 +21,28 @@ $ bin/rails redmine:plugins:migrate RAILS_ENV=production
 
 And then restart your Redmine.
 
+## Uninstall from an existing redmine instance
+
+As this plugin does not support `bundle exec rake redmine:plugins:migrate with VERSION=0` because of
+irreversible migration, you need to manually execute the following instruction.
+
+1. Drop related tables from database
+
+First, connect your Redmine database, then execute drop queries.
+
+```console
+DROP TABLE test_plans CASCADE;
+DROP TABLE test_cases CASCADE;
+DROP TABLE test_case_executions;
+DROP TABLE test_case_test_plans;
+```
+
+2, Remove plugins/testcase_management
+
+```console
+$ rm -fr plugins/testcase_management
+```
+
 ## Settings
 
 Not only enabling testcase management module in each project, you need to configure appropriate permissions
