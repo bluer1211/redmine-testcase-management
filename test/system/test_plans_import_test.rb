@@ -3,11 +3,8 @@ require "test_helper"
 require File.expand_path('../../test_helper', __FILE__)
 
 class ApplicationSystemTestCase
-  options = {
-    capabilities: Selenium::WebDriver::Remote::Capabilities.firefox
-  }
   browser = ENV["UI"] ? :firefox : :headless_firefox
-  driven_by :selenium, using: browser, screen_size: [1024, 900], options: options
+  driven_by :selenium, using: browser, screen_size: [1024, 900]
 end
 
 class TestPlansImportTest < ApplicationSystemTestCase
