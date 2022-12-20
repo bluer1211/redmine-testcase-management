@@ -6,11 +6,11 @@ require_dependency File.expand_path(File.join(File.dirname(__FILE__),
 
 Redmine::Plugin.register :testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
-  author 'ClearCode Inc.'
+  author 'SENA Networks Inc.'
   description 'Manage test plans, test cases and execution result'
   version '1.6.0'
   url 'https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management'
-  author_url 'https://www.clear-code.com'
+  author_url 'https://redmine-test-management.sena-networks.co.jp'
 
   project_module :testcase_management do
     #permission :manage_test_cases, {
