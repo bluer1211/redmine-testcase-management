@@ -1,3 +1,12 @@
+# v1.6.2
+
+## Release v1.6.2 - 2022/12/20
+
+### Miscellaneous
+
+* Update plugin information about url and author_url
+  promotion page should be shown as url.
+
 # v1.6.1
 
 ## Release v1.6.1 - 2022/12/20
