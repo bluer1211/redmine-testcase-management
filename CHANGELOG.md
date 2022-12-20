@@ -1,3 +1,20 @@
+# v1.6.1
+
+## Release v1.6.1 - 2022/12/20
+
+### Bug fixes
+
+* Fixed db:migration error when using MariaDB/MySQL. MR#78
+* Fix 500 error when this plugin is deployed for MariaDB/MySQL.
+  This is just a workaround not to crash. Thus, it doesn't mean that this plugin supports MariaDB/MySQL. Note that MariaDB/MySQL support is still work-in-progress. See #8 about details.
+
+### Miscellaneous
+
+* Describe plugin information about author, author_url
+  because SENA Networks Inc. is the stakeholder of this plugin. MR#79
+* doc: Describe supported database explicitly.
+* doc: Describe the procedure how to uninstall this plugin.
+
 # v1.6.0
 
 ## Release v1.6.0 - 2022/08/09
