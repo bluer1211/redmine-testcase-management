@@ -8,9 +8,9 @@ Redmine::Plugin.register :testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
   author 'SENA Networks Inc.'
   description 'Manage test plans, test cases and execution result'
-  version '1.6.1'
-  url 'https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management'
-  author_url 'https://redmine-test-management.sena-networks.co.jp'
+  version '1.6.2'
+  url 'https://redmine-test-management.sena-networks.co.jp'
+  author_url 'https://www.sena-networks.co.jp'
 
   project_module :testcase_management do
     #permission :manage_test_cases, {
