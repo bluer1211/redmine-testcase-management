@@ -23,6 +23,13 @@
           - redmine:plugins:test:functionals
           - redmine:plugins:test:integration
           - redmine:plugins:test:system
+  # run CI when branch name begin with feature or issue only.
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^feature/
+      when: always
+    - if: $CI_COMMIT_REF_NAME =~ /^issue/
+      when: always
+    - when: never
 
 sqlite3:
   extends: .template
