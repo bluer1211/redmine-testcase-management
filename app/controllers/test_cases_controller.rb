@@ -269,9 +269,9 @@ SQL
       select_query = <<-SQL
                       test_plans.user_id,
                       count(test_plans.user_id) AS count_assigned_test_cases,
-                      (SELECT count(*) FROM "test_cases"
-                        INNER JOIN "test_case_test_plans" ON "test_case_test_plans"."test_case_id" = "test_cases"."id"
-                        INNER JOIN "test_plans" ON "test_plans"."id" = "test_case_test_plans"."test_plan_id"
+                      (SELECT count(*) FROM test_cases
+                        INNER JOIN test_case_test_plans ON test_case_test_plans.test_case_id = test_cases.id
+                        INNER JOIN test_plans ON test_plans.id = test_case_test_plans.test_plan_id
                         AND test_plans.project_id = #{@project.id}
                         INNER JOIN issue_statuses AS CTPIS ON test_plans.issue_status_id = CTPIS.id
                         AND CTPIS.is_closed = '0') AS count_test_cases,
