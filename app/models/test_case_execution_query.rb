@@ -28,7 +28,7 @@ class TestCaseExecutionQuery < Query
       "user_id",
       :type => :list, :values => lambda { author_values }
     )
-    add_available_filter "result", :type => :list, :values => lambda { [[l(:label_succeed), true], [l(:label_failure), false]] }
+    add_available_filter "result", :type => :list, :values => lambda { [[l(:label_succeed), 1], [l(:label_failure), 0]] }
     add_available_filter "comment", :type => :text
     add_available_filter "execution_date", :type => :date
     add_available_filter "issue_id", :type => :integer, :label => :label_issue
