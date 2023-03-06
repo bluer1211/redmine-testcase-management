@@ -548,9 +548,15 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_result_order_by_desc
-        ids = test_cases(:test_cases_001, :test_cases_002, :test_cases_003).pluck(:id)
-        ids.unshift(@test_case.id)
-        # should be listed in none (desc), true, false
+        ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
+        none_ids = [@test_case.id, test_cases(:test_cases_001).id]
+        if Redmine::Database.mysql?
+          # should be listed in true, false, N/A
+          ids.append(none_ids).flatten!
+        else
+          # should be listed in N/A, true, false
+          ids.unshift(none_ids).flatten!
+        end
         get :index, params: @order_params.merge({ sort: "latest_result:desc,id:desc" })
         assert_response :success
         assert_equal ids,
@@ -558,9 +564,15 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_result_order_by_asc
-        ids = test_cases(:test_cases_003, :test_cases_002, :test_cases_001).pluck(:id)
-        ids.push(@test_case.id)
-        # should be listed in false, true, none (desc)
+        ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
+        none_ids = [test_cases(:test_cases_001).id, @test_case.id]
+        if Redmine::Database.mysql?
+          # should be listed in N/A, false, true
+          ids.unshift(none_ids).flatten!
+        else
+          # should be listed in false, true, N/A
+          ids.append(none_ids).flatten!
+        end
         get :index, params: @order_params.merge({ sort: "latest_result:asc, id:asc" })
         assert_response :success
         assert_equal ids,
@@ -569,9 +581,14 @@ class TestCasesControllerTest < ActionController::TestCase
 
       def test_execution_date_order_by_desc
         ids = test_cases(:test_cases_003, :test_cases_002).pluck(:id)
-        ids.unshift(@test_case.id)
-        ids.unshift(test_cases(:test_cases_001).id)
-        # should be listed in none, execution_date
+        none_ids = [test_cases(:test_cases_001).id, @test_case.id]
+        if Redmine::Database.mysql?
+          # should be listed in execution_date, N/A
+          ids.append(none_ids).flatten!
+        else
+          # should be listed in N/A, execution_date
+          ids.unshift(none_ids).flatten!
+        end
         get :index, params: @order_params.merge({ sort: "latest_execution_date:desc" })
         assert_response :success
         assert_equal ids,
@@ -579,9 +596,15 @@ class TestCasesControllerTest < ActionController::TestCase
       end
 
       def test_execution_date_order_by_asc
-        ids = test_cases(:test_cases_002, :test_cases_003, :test_cases_001).pluck(:id)
-        ids.push(@test_case.id)
-        # should be listed in execution_date, none
+        ids = test_cases(:test_cases_002, :test_cases_003).pluck(:id)
+        none_ids = [test_cases(:test_cases_001).id, @test_case.id]
+        if Redmine::Database.mysql?
+          # should be listed in N/A, execution_date
+          ids.unshift(none_ids).flatten!
+        else
+          # should be listed in execution_date, N/A
+          ids.append(none_ids).flatten!
+        end
         get :index, params: @order_params.merge({ sort: "latest_execution_date:asc" })
         assert_response :success
         assert_equal ids,
