@@ -1,8 +1,8 @@
 # Apply ProjectPatch to extend relation between Project and TestProject
 require_dependency File.expand_path(File.join(File.dirname(__FILE__),
-                                              "lib/tasks/project_patch.rb"))
+                                              "lib/test_case_management/project_patch.rb"))
 require_dependency File.expand_path(File.join(File.dirname(__FILE__),
-                                              "lib/tasks/queries_controller_patch.rb"))
+                                              "lib/test_case_management/queries_controller_patch.rb"))
 
 Redmine::Plugin.register :testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
@@ -80,12 +80,6 @@ Redmine::Plugin.register :testcase_management do
              "test_plans_export_limit" => 10000,
              "test_case_executions_export_limit" => 100000,
            }
-end
-
-Rails.configuration.to_prepare do
-  require_dependency "menu_manager_hook"
-  require_dependency "inherit_issue_permissions"
-  require_dependency "safe_attributes"
 end
 
 # For keeping consistent patch reloading behavior, include patch from init.rb
