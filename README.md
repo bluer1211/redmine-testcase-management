@@ -21,6 +21,20 @@ $ bin/rails redmine:plugins:migrate RAILS_ENV=production
 
 And then restart your Redmine.
 
+### Additional settings for Redmine5
+
+* There is a problem with the image link, please correct it by typing directly
+
+There is a condition that must be entered, which exists in config/routes.rb.
+```routes.rb.
+315  constraints object_type: /(issues|versions|news|messages|wiki_pages|projects|documents|journals)/ do
+```
+Please add the following conditions in these brackets
+```
+|test_cases|test_case_executions
+```
+Restart Redmine afterwards.
+
 ## Uninstall from an existing redmine instance
 
 As this plugin does not support `bundle exec rake redmine:plugins:migrate with VERSION=0` because of
