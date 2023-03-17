@@ -25,7 +25,11 @@
   </p>
   <p>
     <%= form.label :result %>
-    <%= form.select :result, { l(:label_failure) => false, l(:label_succeed) => true } %>
+    <% if action_name == "edit" %>
+      <%= form.select :result, { l(:label_succeed) => true,l(:label_failure) => false }%>
+    <% else %>
+      <%= form.select :result, { l(:label_succeed) => true,l(:label_failure) => false }, selected: l(:label_succeed) %>
+    <% end %>
   </p>
   <p>
     <%= form.label :user %>
