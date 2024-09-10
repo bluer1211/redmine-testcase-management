@@ -4,7 +4,7 @@ https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-ma
 
 ## Requirements
 
-* Redmine 4.1.0 or later (not Redmine 5.x)
+* Redmine 4.1.0 or later (also compatible with Series 5)
   * TimestampQueryColumn was implemented since 4.1.0.
 * PostgreSQL 12 or later
 * MySQL 8 or later
