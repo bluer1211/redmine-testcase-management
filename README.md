@@ -170,6 +170,15 @@ $ cd /path/to/redmine
 $ cp -r plugins/testcase_management/test/fixtures/* test/fixtures/
 $ bin/rails redmine:plugins:test RAILS_ENV=test NAME=testcase_management
 ```
+## Authors
+
+* **Kentaro Hayashi** - *Initial work* - [ClearCode Inc.](https://github.com/clear-code)
+* **優人 岡田** - *Contributor* - [Sena Networks](https://sena-networks.co.jp)
+
+## Contributors
+
+* **Jason Liu** - *Redmine 6.0.6 & Rails 7.2.2.1 upgrade* - [bluer1211@gmail.com](mailto:bluer1211@gmail.com)
+
 ## License
 
 GPL v2 or later. (same as Redmine)
