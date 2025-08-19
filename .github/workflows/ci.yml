@@ -1,0 +1,191 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: redmine_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        bundler-cache: true
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libpq-dev build-essential
+
+    - name: Clone Redmine
+      run: |
+        git clone --depth 1 --branch 6.0-stable https://github.com/redmine/redmine.git redmine
+        cd redmine
+        ln -s ../ plugins/testcase_management
+
+    - name: Setup database
+      run: |
+        cd redmine
+        cp plugins/testcase_management/config/database.yml.example.postgresql config/database.yml
+        cp plugins/testcase_management/test/fixtures/*.yml test/fixtures/
+        cp plugins/testcase_management/test/fixtures/files/*.csv test/fixtures/files/
+
+    - name: Install dependencies
+      run: |
+        cd redmine
+        bundle install
+
+    - name: Setup Redmine
+      run: |
+        cd redmine
+        bin/rails db:create
+        bin/rails generate_secret_token
+        bin/rails db:migrate
+        bin/rails redmine:load_default_data REDMINE_LANG=en
+        bin/rails redmine:plugins:migrate
+
+    - name: Run tests
+      run: |
+        cd redmine
+        NAME=testcase_management PSQLRC=/tmp/nonexistent RAILS_ENV=test bin/rails redmine:plugins:test
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: redmine/log/test.log
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        bundler-cache: true
+
+    - name: Install RuboCop
+      run: gem install rubocop
+
+    - name: Run RuboCop
+      run: |
+        rubocop app/ lib/ --format github
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        bundler-cache: true
+
+    - name: Install Brakeman
+      run: gem install brakeman
+
+    - name: Run security scan
+      run: |
+        brakeman -f json -o brakeman-report.json || true
+
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-report
+        path: brakeman-report.json
+
+  documentation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check README links
+      uses: lycheeverse/lychee-action@v1.7.0
+      with:
+        args: --base-url https://github.com/bluer1211/redmine-testcase-management
+
+    - name: Validate markdown
+      uses: DavidAnson/markdownlint-cli2-action@v12
+      with:
+        globs: "**/*.md"
+
+  release:
+    needs: [test, lint, security]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        bundler-cache: true
+
+    - name: Get version
+      id: get_version
+      run: |
+        VERSION=$(grep "version '" init.rb | sed "s/.*version '\(.*\)'.*/\1/")
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.version }}
+        release_name: Release v${{ steps.get_version.outputs.version }}
+        body: |
+          ## What's Changed
+          
+          See [CHANGELOG.md](CHANGELOG.md) for detailed information.
+          
+          ## Installation
+          
+          ```bash
+          cd /path/to/redmine/plugins
+          git clone https://github.com/bluer1211/redmine-testcase-management.git testcase_management
+          cd ..
+          bundle install
+          bin/rails redmine:plugins:migrate RAILS_ENV=production
+          ```
+          
+          ## Requirements
+          
+          - Redmine 6.0.6+
+          - PostgreSQL 12+ or MySQL 8+ or MariaDB 10.2+
+        draft: false
+        prerelease: false
