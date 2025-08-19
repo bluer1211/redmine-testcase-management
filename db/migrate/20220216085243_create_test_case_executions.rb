@@ -1,4 +1,4 @@
-class CreateTestCaseExecutions < ActiveRecord::Migration[5.2]
+class CreateTestCaseExecutions < ActiveRecord::Migration[7.2]
   def change
     create_table :test_case_executions do |t|
       t.boolean :result, null: false, default: false

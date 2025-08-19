@@ -1,4 +1,4 @@
-class RemoveScheduledDateFromTestCases < ActiveRecord::Migration[5.2]
+class RemoveScheduledDateFromTestCases < ActiveRecord::Migration[7.2]
   def change
     remove_column :test_cases, :scheduled_date
   end

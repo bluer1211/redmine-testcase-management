@@ -1,4 +1,4 @@
-class AddTestPlansRefToTestCases < ActiveRecord::Migration[5.2]
+class AddTestPlansRefToTestCases < ActiveRecord::Migration[7.2]
   def change
     remove_reference :test_cases, :test_plan
     create_table :test_case_test_plans do |t|

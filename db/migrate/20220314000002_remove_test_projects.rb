@@ -1,4 +1,4 @@
-class RemoveTestProjects < ActiveRecord::Migration[5.2]
+class RemoveTestProjects < ActiveRecord::Migration[7.2]
   def change
     remove_reference :test_cases, :test_project
     remove_reference :test_case_executions, :test_project

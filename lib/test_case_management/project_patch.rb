@@ -1,4 +1,4 @@
-require_dependency 'project'
+require 'project'
 
 module TestCaseManagement
   module ProjectPatch

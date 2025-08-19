@@ -4,7 +4,7 @@ https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-ma
 
 ## Requirements
 
-* Redmine 4.1.0 or later (also compatible with Series 5)
+* Redmine 6.0.6 or later
   * TimestampQueryColumn was implemented since 4.1.0.
 * PostgreSQL 12 or later
 * MySQL 8 or later
@@ -22,7 +22,7 @@ $ bin/rails redmine:plugins:migrate RAILS_ENV=production
 
 And then restart your Redmine.
 
-### Additional settings for Redmine5
+### Additional settings for Redmine 6.0.6
 
 * There is a problem with the image link, please correct it by typing directly
 
@@ -143,7 +143,7 @@ Now you are ready to setup development environment Redmine. In another shell ses
 $ sudo apt install bundler ruby-dev libpq-dev build-essential
 $ git clone \
     --depth 1 \
-    --branch 4.2-stable \
+    --branch 6.0-stable \
     https://github.com/redmine/redmine.git \
     redmine
 $ cd redmine

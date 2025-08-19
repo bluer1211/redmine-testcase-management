@@ -1,3 +1,21 @@
+# v1.6.3
+
+## Release v1.6.3 - 2025/08/19
+
+### Improvements
+
+* Updated to support Redmine 6.0.6
+* Updated development environment setup instructions for Redmine 6.0-stable branch
+* Modernized Rails 6.1 compatibility by replacing `require_dependency` with `require`
+* Updated `send(:include)` to modern `include` syntax for better Rails 6.1 compatibility
+* Added Traditional Chinese (zh-TW) localization support
+* Updated all database migration files from Rails 5.2 to Rails 7.2.2.1 syntax for better compatibility with Redmine 6.0.6
+* Fixed `acts_as_attachable` compatibility issue with Rails 7.2.2.1 by adding conditional loading
+
+### Miscellaneous
+
+* Updated plugin version and compatibility information
+
 # v1.6.2
 
 ## Release v1.6.2 - 2022/12/20

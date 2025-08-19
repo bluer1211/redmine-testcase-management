@@ -1,14 +1,14 @@
 # Apply ProjectPatch to extend relation between Project and TestProject
-require_dependency File.expand_path(File.join(File.dirname(__FILE__),
-                                              "lib/test_case_management/project_patch.rb"))
-require_dependency File.expand_path(File.join(File.dirname(__FILE__),
-                                              "lib/test_case_management/queries_controller_patch.rb"))
+require File.expand_path(File.join(File.dirname(__FILE__),
+                                   "lib/test_case_management/project_patch.rb"))
+require File.expand_path(File.join(File.dirname(__FILE__),
+                                   "lib/test_case_management/queries_controller_patch.rb"))
 
 Redmine::Plugin.register :testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
   author 'SENA Networks Inc.'
   description 'Manage test plans, test cases and execution result'
-  version '1.6.2'
+  version '1.6.3'
   url 'https://redmine-test-management.sena-networks.co.jp'
   author_url 'https://www.sena-networks.co.jp'
 
@@ -85,12 +85,12 @@ end
 # For keeping consistent patch reloading behavior, include patch from init.rb
 # (conflicted with redmine dmsf plugin, before)
 unless Project.included_modules.include?(TestCaseManagement::ProjectPatch)
-  Project.send(:include, TestCaseManagement::ProjectPatch)
+  Project.include(TestCaseManagement::ProjectPatch)
 end
 
 # To avoid conflict with RedmineDrive plugin, use QueriesControllerPatch instead.
 # Without this fix, you can't save query at all.
 # See https://www.redmine.org/boards/3/topics/66539
 unless QueriesController.included_modules.include?(TestCaseManagement::QueriesControllerPatch)
-  QueriesController.send(:include, TestCaseManagement::QueriesControllerPatch)
+  QueriesController.include(TestCaseManagement::QueriesControllerPatch)
 end

@@ -1,0 +1,30 @@
+# 備份文件
+Gemfile.backup
+db/backup_*/
+
+# 臨時文件
+*.tmp
+*.temp
+*.log
+
+# 系統文件
+.DS_Store
+Thumbs.db
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 測試文件
+coverage/
+*.coverage
+
+# 環境文件
+.env
+.env.local
+
+# 驗證腳本（臨時文件）
+*_validation.rb
+update_*.rb
