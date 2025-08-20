@@ -1,0 +1,148 @@
+# Cursor Rules for Redmine Testcase Management Plugin
+
+## 日期和時間規範
+
+### 日期格式
+- 使用本機日期格式：YYYY-MM-DD
+- 時間格式：HH:MM:SS CST
+- 範例：2025-08-20 16:04:36 CST
+
+### 日期更新規則
+- 所有新功能開發和版本發布都必須使用本機日期
+- 在 CHANGELOG.md 中記錄變更時使用本機日期
+- 在 README.md 和其他文件中提及日期時使用本機日期
+- 提交訊息中的日期使用本機日期
+
+## 版本管理規範
+
+### 版本號格式
+- 使用語義化版本：MAJOR.MINOR.PATCH
+- 範例：1.6.4
+
+### 版本發布流程
+1. 更新版本號
+2. 更新 CHANGELOG.md 使用本機日期
+3. 創建 Git Tag
+4. 發布到 GitHub
+
+## 文件更新規範
+
+### 必須更新的文件
+- README.md
+- CHANGELOG.md
+- init.rb (版本號)
+- 相關的 .md 文件
+
+### 日期更新檢查清單
+- [ ] CHANGELOG.md 中的版本日期
+- [ ] README.md 中的版本資訊
+- [ ] init.rb 中的版本號
+- [ ] 提交訊息中的日期
+
+## 原作者致謝規範
+
+### 必須保留的資訊
+- 原始作者：優人 岡田 (okada@sena-networks.co.jp)
+- 原始公司：SENA Networks Inc.
+- 原始授權：GPL v2+
+- 延伸開發：基於 v1.6.2 版本
+
+### 致謝文件
+- README.md
+- CHANGELOG.md
+- init.rb
+- CONTRIBUTING.md
+- SECURITY.md
+- CODE_OF_CONDUCT.md
+
+## 程式碼規範
+
+### Ruby 程式碼
+- 使用 2 個空格縮排
+- 行長度限制在 80 字元內
+- 遵循 Ruby Style Guide
+
+### 提交訊息格式
+```
+type: 簡短描述
+
+詳細描述（可選）
+
+- 變更項目 1
+- 變更項目 2
+```
+
+### 類型 (type)
+- feat: 新功能
+- fix: 錯誤修復
+- docs: 文件更新
+- style: 程式碼格式調整
+- refactor: 重構
+- test: 測試相關
+- chore: 建置過程或輔助工具的變動
+
+## 本地化規範
+
+### 語言支援
+- 繁體中文 (zh-TW)
+- 英文 (en)
+- 日文 (ja)
+
+### 翻譯文件位置
+- config/locales/zh-TW.yml
+- config/locales/en.yml
+- config/locales/ja.yml
+
+## 測試規範
+
+### 測試覆蓋率
+- 單元測試覆蓋率 > 80%
+- 整合測試覆蓋率 > 70%
+
+### 測試執行
+```bash
+bundle exec rake test
+bundle exec rake redmine:plugins:test RAILS_ENV=test NAME=testcase_management
+```
+
+## 安全規範
+
+### 安全檢查
+- 定期執行安全掃描
+- 更新依賴套件
+- 檢查已知漏洞
+
+### 安全報告
+- 使用 GitHub Security Advisories
+- 遵循負責任的漏洞揭露原則
+
+## 文件維護
+
+### 必須維護的文件
+- README.md
+- CHANGELOG.md
+- CONTRIBUTING.md
+- SECURITY.md
+- CODE_OF_CONDUCT.md
+- .cursorrules
+
+### 文件更新頻率
+- 每次版本發布時更新
+- 重大變更時立即更新
+- 定期檢查和維護
+
+## 品質保證
+
+### 程式碼品質
+- 使用 RuboCop 檢查程式碼風格
+- 使用 Brakeman 檢查安全漏洞
+- 使用 SimpleCov 檢查測試覆蓋率
+
+### 發布前檢查
+- [ ] 所有測試通過
+- [ ] 程式碼風格檢查通過
+- [ ] 安全掃描通過
+- [ ] 文件更新完成
+- [ ] 日期使用本機時間
+- [ ] 版本號正確
+- [ ] 原作者致謝完整
