@@ -5,7 +5,7 @@ class TestCasesController < ApplicationController
   before_action :find_project_id
   before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
   before_action :find_test_case, :only => [:show, :edit, :update, :destroy]
-  before_action :authorize_with_issues_permission
+  before_action :authorize_with_issues_permission, :except => [:template]
   before_action :find_test_cases, :only => [:list_context_menu, :bulk_edit, :bulk_update, :bulk_delete]
 
   before_action do
@@ -198,6 +198,20 @@ class TestCasesController < ApplicationController
     user_id = test_case_params[:user].to_i
     user = user_id > 0 ? User.find_by(id: user_id) : nil
     update_params[:user_id] = user.id if user.present?
+    
+    # 處理測試計劃關聯
+    if test_case_params[:test_plan_id].present?
+      test_plan_id = test_case_params[:test_plan_id].to_i
+      if test_plan_id > 0
+        test_plan = TestPlan.find_by(id: test_plan_id, project: @project)
+        if test_plan
+          # 清除現有的測試計劃關聯並添加新的
+          @test_case.test_plans.clear
+          @test_case.test_plans << test_plan
+        end
+      end
+    end
+    
     # 附件功能暫時停用，避免 acts_as_attachable 錯誤
     # if params[:attachments].present?
     #   @test_case.save_attachments params.require(:attachments).permit!
@@ -397,6 +411,32 @@ SQL
     @safe_attributes = @test_cases.map(&:safe_attribute_names).reduce(:&)
     @assignables = @project.users
     render :layout => false
+  end
+
+  # GET /projects/:project_id/test_cases/template
+  def template
+    # 完全移除權限檢查，讓模板下載對所有用戶開放
+    
+    template_file = case params[:type]
+    when 'test_cases'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_cases.csv')
+    when 'test_plans'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_plans.csv')
+    when 'test_case_executions'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_case_executions.csv')
+    else
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_cases.csv')
+    end
+
+    if File.exist?(template_file)
+      send_file template_file,
+                filename: "#{params[:type]}_template.csv",
+                type: 'text/csv',
+                disposition: 'attachment'
+    else
+      flash[:error] = l(:error_template_not_found)
+      redirect_to project_test_cases_path(@project)
+    end
   end
 
   private

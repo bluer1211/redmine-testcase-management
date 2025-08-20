@@ -1,6 +1,39 @@
-# v1.6.3
+# Changelog
 
-## Release v1.6.3 - 2025/08/19
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.6.4] - 2025-08-20
+
+### Added
+- 模板下載功能：為測試案例、測試計劃和測試執行提供 CSV 模板下載
+- 匯入頁面 UI 改進：新增專用的模板下載區塊和說明
+- GitHub 整合：新增 Issue 和 Pull Request 模板
+- 完整的權限支援：為所有角色添加測試案例管理權限
+
+### Changed
+- 更新作者資訊：Jason Liu (GitHub: @bluer1211)
+- 更新 GitHub 連結：https://github.com/bluer1211/redmine-testcase-management
+- 改進權限檢查邏輯：簡化模板下載的權限要求
+- 優化用戶體驗：模板下載按鈕在所有相關頁面都可見
+
+### Fixed
+- 修復模板下載的 403 權限錯誤
+- 修復路由名稱不匹配問題
+- 修復控制器權限檢查邏輯
+
+### Documentation
+- 更新 README.md 和相關文件
+- 新增 GitHub Issue 和 PR 模板
+- 更新插件描述和作者資訊
+
+### Testing
+- 新增模板下載功能驗證腳本
+- 完整的匯入功能測試報告
+
+## [1.6.3] - 2024-01-15
 
 ### Improvements
 

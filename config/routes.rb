@@ -8,6 +8,11 @@ Rails.application.routes.draw do |map|
     get 'test_plans/statistics', to: 'test_plans#statistics', as: 'test_plan_statistics'
     get 'test_cases/statistics', to: 'test_cases#statistics', as: 'test_case_statistics'
 
+    # 添加模板下載路由
+    get 'test_cases/template', to: 'test_cases#template', as: 'test_cases_template'
+    get 'test_plans/template', to: 'test_plans#template', as: 'test_plans_template'
+    get 'test_case_executions/template', to: 'test_case_executions#template', as: 'test_case_executions_template'
+
     match 'test_cases/context_menu', :to => 'test_cases#list_context_menu', :as => :test_case_list_context_menu, :via => [:get, :post]
     resources :test_cases do
       resources :test_case_executions

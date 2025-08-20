@@ -6,7 +6,7 @@ class TestPlansController < ApplicationController
   before_action :find_test_plan, :only => [:show, :edit, :update, :destroy]
   before_action :find_test_plan_id, :only => [:assign_test_case, :unassign_test_case]
   before_action :find_test_cases, :only => [:show_context_menu, :unassign_test_case]
-  before_action :authorize_with_issues_permission
+  before_action :authorize_with_issues_permission, :except => [:template]
   before_action :find_test_plans, :only => [:list_context_menu, :bulk_edit, :bulk_update, :bulk_delete]
 
   before_action do
@@ -63,6 +63,9 @@ class TestPlansController < ApplicationController
 
     retrieve_query(TestCaseQuery, false)
     if @query.valid?
+      # 在測試計劃詳細頁面，設定不包含測試計劃欄位的欄位列表
+      @query.column_names = [:id, :name, :scenario, :expected, :latest_result, :latest_execution_date, :environment, :user]
+      
       @test_case_count = @query.test_case_count(params[:id], true)
       @test_case_pages = Paginator.new @test_case_count, per_page_option, params["page"]
       @test_cases = @query.test_cases(test_plan_id: params[:id],
@@ -322,6 +325,32 @@ SQL
       flash[:notice] = l(:error_delete_failure)
     end
     redirect_to params[:back_url]
+  end
+
+  # GET /projects/:project_id/test_plans/template
+  def template
+    # 完全移除權限檢查，讓模板下載對所有用戶開放
+    
+    template_file = case params[:type]
+    when 'test_plans'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_plans.csv')
+    when 'test_cases'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_cases.csv')
+    when 'test_case_executions'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_case_executions.csv')
+    else
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_plans.csv')
+    end
+
+    if File.exist?(template_file)
+      send_file template_file,
+                filename: "#{params[:type]}_template.csv",
+                type: 'text/csv',
+                disposition: 'attachment'
+    else
+      flash[:error] = l(:error_template_not_found)
+      redirect_to project_test_plans_path(@project)
+    end
   end
 
   private

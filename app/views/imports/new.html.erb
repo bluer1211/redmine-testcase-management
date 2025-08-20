@@ -1,0 +1,95 @@
+<div class="import-page">
+  <h2><%= l(:label_import) %></h2>
+  
+  <!-- 模板下載區塊 -->
+  <div class="template-download-section box">
+    <h3><%= l(:label_download_template) %></h3>
+    <div class="template-buttons">
+      <%= link_to l(:label_test_cases_template), 
+                  project_test_cases_template_path(:project_id => @project, :type => 'test_cases'), 
+                  class: 'button icon icon-download' %>
+      <%= link_to l(:label_test_plans_template), 
+                  project_test_plans_template_path(:project_id => @project, :type => 'test_plans'), 
+                  class: 'button icon icon-download' %>
+      <%= link_to l(:label_test_executions_template), 
+                  project_test_case_executions_template_path(:project_id => @project, :type => 'test_case_executions'), 
+                  class: 'button icon icon-download' %>
+    </div>
+    <div class="template-info">
+      <p><%= l(:text_template_info) %></p>
+    </div>
+  </div>
+
+  <!-- 檔案上傳區塊 -->
+  <div class="file-upload-section box">
+    <h3><%= l(:label_upload_file) %></h3>
+    <%= form_tag imports_path, :multipart => true do %>
+      <%= hidden_field_tag 'project_id', @project.id %>
+      <%= hidden_field_tag 'type', @import.class.name %>
+      
+      <div class="file-upload-area">
+        <p>
+          <label for="file"><%= l(:label_file) %></label>
+          <%= file_field_tag 'file', :size => 60, :required => true %>
+        </p>
+      </div>
+      
+      <div class="buttons">
+        <%= submit_tag l(:button_next), :name => nil %>
+        <%= link_to l(:button_cancel), project_test_cases_path(@project), :class => 'button' %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- 匯入說明 -->
+  <div class="import-instructions box">
+    <h3><%= l(:label_import_instructions) %></h3>
+    <ol>
+      <li><%= l(:text_import_step_1) %></li>
+      <li><%= l(:text_import_step_2) %></li>
+      <li><%= l(:text_import_step_3) %></li>
+      <li><%= l(:text_import_step_4) %></li>
+    </ol>
+  </div>
+</div>
+
+<style>
+.template-download-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #007cba;
+}
+
+.template-buttons {
+  margin: 10px 0;
+}
+
+.template-buttons .button {
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.template-info {
+  font-style: italic;
+  color: #666;
+}
+
+.file-upload-section {
+  margin-bottom: 20px;
+}
+
+.import-instructions {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.import-instructions ol {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.import-instructions li {
+  margin-bottom: 5px;
+}
+</style>

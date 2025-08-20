@@ -196,3 +196,11 @@ zh-TW:
   
   # 確認訊息翻譯
   text_are_you_sure: "您確定嗎？"
+
+  # 模板下載相關
+  label_download_template: "下載模板"
+  label_test_cases_template: "測試案例模板"
+  label_test_plans_template: "測試計劃模板"
+  label_test_executions_template: "測試執行模板"
+  text_template_info: "下載 CSV 模板檔案，填入您的資料後即可匯入系統"
+  error_template_not_found: "找不到指定的模板檔案"

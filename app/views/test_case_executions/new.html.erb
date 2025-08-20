@@ -2,7 +2,10 @@
 
 <%= form_with model: @test_case_execution, url: project_test_plan_test_case_test_case_executions_path do |f| %>
   <%= render partial: 'test_case_executions/form', locals: {form: f} %>
-  <%= f.submit l(:button_create) %>
+  <div class="buttons">
+    <%= f.submit l(:button_create) %>
+    <%= f.submit l(:button_create_and_continue), name: 'continue', type: 'submit' %>
+  </div>
 <% end %>
 
 <% content_for :sidebar do %>

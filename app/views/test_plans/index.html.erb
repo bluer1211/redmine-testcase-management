@@ -7,6 +7,9 @@
       <%= link_to l(:button_import),
                   new_test_plans_import_path(:project_id => @project),
                   :class => "icon icon-import" %>
+      <%= link_to l(:label_download_template),
+                  project_test_plans_template_path(:project_id => @project, :type => 'test_plans'),
+                  :class => "icon icon-download" %>
     <% end %>
     <%= link_to l(:label_test_plan_statistics),
                 project_test_plan_statistics_path,

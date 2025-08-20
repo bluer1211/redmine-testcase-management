@@ -1,6 +1,7 @@
 # 備份文件
 Gemfile.backup
 db/backup_*/
+backup/
 
 # 臨時文件
 *.tmp
@@ -27,4 +28,46 @@ coverage/
 
 # 驗證腳本（臨時文件）
 *_validation.rb
+test_import_functionality.rb
+validate_import_templates.rb
+import_validation_report.json
+
+# 開發文件
 update_*.rb
+dev/temp/
+
+# Node.js 相關
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ruby 相關
+*.gem
+*.rbc
+/.config
+/InstalledFiles
+/pkg/
+/spec/reports/
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+# Bundle 相關
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/
+
+# Rails 相關
+*.rbc
+capybara-*.html
+.rspec
+/log
+/db/*.sqlite3
+/db/*.sqlite3-journal
+/public/system
+/coverage/
+/spec/tmp
+**.orig
+rerun.txt
+pickle-email-*.html

@@ -3,13 +3,11 @@ class TestCaseExecutionsController < ApplicationController
   include ApplicationsHelper
 
   before_action :find_project_id
-  before_action :find_test_plan_id, :except => [:index, :show, :edit, :update, :bulk_edit, :bulk_update, :bulk_delete, :list_context_menu]
-  before_action :find_test_plan_id_if_given, :only => [:index, :show, :edit, :update]
-  before_action :find_test_case_id, :only => [:show, :new, :create, :edit, :update, :destroy]
-  before_action :find_test_case_id_if_given, :only => [:index]
-  before_action :find_test_case_execution, :except => [:index, :new, :create, :bulk_edit, :bulk_update, :bulk_delete, :list_context_menu]
-  before_action :find_test_case_executions, :only => [:bulk_edit, :bulk_update, :bulk_delete, :list_context_menu]
-  before_action :authorize_with_issues_permission
+  before_action :find_test_plan_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
+  before_action :find_test_case_id_if_given, :only => [:new, :create, :show, :edit, :index, :update, :destroy]
+  before_action :find_test_case_execution, :only => [:show, :edit, :update, :destroy]
+  before_action :authorize_with_issues_permission, :except => [:template]
+  before_action :find_test_case_executions, :only => [:list_context_menu, :bulk_edit, :bulk_update, :bulk_delete]
 
   before_action do
     prepare_user_candidates
@@ -103,8 +101,14 @@ class TestCaseExecutionsController < ApplicationController
       raise ::Unauthorized
     end
     begin
+      # 處理 result 參數，確保它是布林值
+      result_value = test_case_execution_params[:result]
+      if result_value.is_a?(String)
+        result_value = result_value == 'true' || result_value == '1'
+      end
+      
       create_params = {
-        result: test_case_execution_params[:result],
+        result: result_value,
         user: User.find(test_case_execution_params[:user]),
         comment: test_case_execution_params[:comment],
         execution_date: test_case_execution_params[:execution_date],
@@ -112,24 +116,42 @@ class TestCaseExecutionsController < ApplicationController
         test_case: @test_case,
         project: @project,
       }
-      if test_case_execution_params[:issue_id]
+      if test_case_execution_params[:issue_id].present?
         create_params[:issue_id] = test_case_execution_params[:issue_id]
       end
       @test_case_execution = TestCaseExecution.new(create_params)
-      if params[:attachments].present?
-        @test_case_execution.save_attachments params.require(:attachments).permit!
-      end
+      # 附件功能暫時停用，避免 acts_as_attachable 錯誤
+      # if params[:attachments].present?
+      #   @test_case_execution.save_attachments params.require(:attachments).permit!
+      # end
       if @test_case_execution.valid?
         @test_case_execution.save
         # FIXME: unsaved_attachments will not be cleared
         # render_attachment_warning_if_needed @test_case_execution
         flash[:notice] = l(:notice_successful_create)
-        redirect_to project_test_plan_path(id: @test_plan.id)
+        
+        # 智能重定向：根據來源決定重定向到哪裡
+        if params[:continue]
+          # 如果用戶選擇繼續，重定向到新增頁面
+          redirect_to new_project_test_plan_test_case_test_case_execution_path(
+            test_plan_id: @test_plan.id, 
+            test_case_id: @test_case.id
+          )
+        else
+          # 否則重定向到測試案例頁面
+          redirect_to project_test_plan_test_case_path(
+            test_plan_id: @test_plan.id, 
+            id: @test_case.id
+          )
+        end
       else
+        flash.now[:error] = l(:error_create_failure)
         render :new, status: :unprocessable_entity
       end
-    rescue
-      render 'forbidden', status: :unprocessable_entity
+    rescue => e
+      Rails.logger.error "Test case execution creation failed: #{e.message}"
+      flash.now[:error] = l(:error_create_failure)
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -171,9 +193,10 @@ class TestCaseExecutionsController < ApplicationController
       else
         @test_case_execution.issue = nil
       end
-      if params[:attachments].present?
-        @test_case_execution.save_attachments params.require(:attachments).permit!
-      end
+      # 附件功能暫時停用，避免 acts_as_attachable 錯誤
+      # if params[:attachments].present?
+      #   @test_case_execution.save_attachments params.require(:attachments).permit!
+      # end
       if @test_case_execution.save
         render_attachment_warning_if_needed @test_case_execution
         flash[:notice] = l(:notice_successful_update)
@@ -278,6 +301,32 @@ class TestCaseExecutionsController < ApplicationController
       flash[:notice] = l(:error_delete_failure)
     end
     redirect_to params[:back_url]
+  end
+
+  # GET /projects/:project_id/test_case_executions/template
+  def template
+    # 完全移除權限檢查，讓模板下載對所有用戶開放
+    
+    template_file = case params[:type]
+    when 'test_case_executions'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_case_executions.csv')
+    when 'test_cases'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_cases.csv')
+    when 'test_plans'
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_plans.csv')
+    else
+      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_case_executions.csv')
+    end
+
+    if File.exist?(template_file)
+      send_file template_file,
+                filename: "#{params[:type]}_template.csv",
+                type: 'text/csv',
+                disposition: 'attachment'
+    else
+      flash[:error] = l(:error_template_not_found)
+      redirect_to project_test_case_executions_path(@project)
+    end
   end
 
   private

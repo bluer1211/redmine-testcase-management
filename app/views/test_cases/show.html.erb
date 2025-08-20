@@ -11,17 +11,20 @@
   <div class="attributes">
     <div class="splitcontent">
       <div class="splitcontentleft">
-        <% if @test_plan_given %>
-          <div class="status attribute">
-            <div class="label"><%=l(:field_test_plan)%></div>
-            <div id="test_plan" class="value">
-              <% if @test_case.test_plan %>
-                <%= link_to @test_case.test_plan.name,
-                            project_test_plan_path(:project_id => @project.name, :id => @test_case.test_plan.id) %>
+        <div class="status attribute">
+          <div class="label"><%=l(:field_test_plans)%></div>
+          <div id="test_plans" class="value">
+            <% if @test_case.test_plans.any? %>
+              <% @test_case.test_plans.each_with_index do |test_plan, index| %>
+                <%= link_to test_plan.name,
+                            project_test_plan_path(:project_id => @project.name, :id => test_plan.id) %>
+                <%= ', ' unless index == @test_case.test_plans.length - 1 %>
               <% end %>
-            </div>
+            <% else %>
+              <span class="nodata"><%= l(:label_none) %></span>
+            <% end %>
           </div>
-        <% end %>
+        </div>
         <div class="assigned-to attribute">
           <div class="label"><%=l(:field_user)%></div>
           <div id="user" class="value"><%= @test_case.user.name if @test_case.user %></div>

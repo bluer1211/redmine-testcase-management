@@ -9,6 +9,9 @@
       <%= link_to l(:button_import),
                   new_test_case_executions_import_path(:project_id => @project),
                   :class => "icon icon-import" %>
+      <%= link_to l(:label_download_template),
+                  project_test_case_executions_template_path(:project_id => @project, :type => 'test_case_executions'),
+                  :class => "icon icon-download" %>
     <% end %>
   <% end %>
 </div>
