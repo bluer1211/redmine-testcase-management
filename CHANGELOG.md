@@ -5,20 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 維護交接說明
+## 延伸開發說明
 
-本插件基於 SENA Networks Inc. 的原始工作開發，自 v1.6.4 版本開始由 Jason Liu (@bluer1211) 接手維護。
+本插件基於 SENA Networks Inc. 的開源專案進行延伸開發，自 v1.6.2 版本開始由 Jason Liu (@bluer1211) 進行功能擴展和改進。
 
 - **原始作者**: 優人 岡田 (okada@sena-networks.co.jp)
 - **原始公司**: SENA Networks Inc.
 - **原始授權**: GPL v2+
-- **維護交接**: 2025-08-20 開始由 Jason Liu 接手維護
+- **延伸開發**: 2022-12-20 開始基於 v1.6.2 版本進行功能擴展
 
 ## [1.6.4] - 2025-08-20 11:40:05 CST
 
 ### Maintenance
-- **維護交接**: 自本版本開始由 Jason Liu (@bluer1211) 接手維護
-- **原作者致謝**: 基於 SENA Networks Inc. 的原始工作開發
+- **延伸開發**: 基於 v1.6.2 版本進行功能擴展和改進
+- **原作者致謝**: 基於 SENA Networks Inc. 的開源專案開發
 - **原始作者**: 優人 岡田 (okada@sena-networks.co.jp)
 
 ### Added

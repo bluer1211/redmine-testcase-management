@@ -10,10 +10,10 @@
 # 版本: 1.6.4
 # 支援: Redmine 6.0.6+, Rails 7.2.2.1+
 #
-# 基於 SENA Networks Inc. 的原始工作開發
+# 基於 SENA Networks Inc. 的開源專案進行延伸開發
 # 原始作者: 優人 岡田 (okada@sena-networks.co.jp)
 # 原始授權: GPL v2+
-# 維護交接: 自 v1.6.4 版本開始由 Jason Liu 接手維護
+# 延伸開發: 基於 v1.6.2 版本進行功能擴展和改進
 
 # 載入必要的擴展模組
 require_relative 'lib/test_case_management/project_patch'
