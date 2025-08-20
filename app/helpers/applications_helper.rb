@@ -16,7 +16,12 @@ module ApplicationsHelper
 
   def prepare_test_plan_candidates
     @test_plan_candidates = {}
-    TestPlan.all.each do |test_plan|
+    if @project
+      test_plans = TestPlan.where(project: @project)
+    else
+      test_plans = TestPlan.all
+    end
+    test_plans.each do |test_plan|
       @test_plan_candidates[test_plan.name] = test_plan.id
     end
   end

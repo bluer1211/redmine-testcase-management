@@ -59,6 +59,11 @@ module TestCasesQueriesHelper
         else
           l(:label_none)
         end
+      when :test_plans
+        item.test_plans.map do |test_plan|
+          link_to test_plan.name, 
+                  project_test_plan_path(project_id: item.project.identifier, id: test_plan.id)
+        end.join(', ').html_safe
       else
         super
       end

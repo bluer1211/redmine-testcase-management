@@ -1,15 +1,13 @@
 <div class="box tabular">
-  <% if @test_plan_given %>
-    <p>
-      <%= form.label l(:field_test_plan) %>
-      <% if @test_plan %>
-        <%= @test_plan.name %>
-        <%= form.hidden_field :test_plan_id, :value => @test_plan.id %>
-      <% else %>
-        <%= form.select :test_plan_id, @test_plan_candidates %>
-      <% end %>
-    </p>
-  <% end %>
+  <p>
+    <%= form.label l(:field_test_plan) %>
+    <% if @test_plan_given && @test_plan %>
+      <%= @test_plan.name %>
+      <%= form.hidden_field :test_plan_id, :value => @test_plan.id %>
+    <% else %>
+      <%= form.select :test_plan_id, @test_plan_candidates, { include_blank: true }, { class: 'select2' } %>
+    <% end %>
+  </p>
   <p>
     <%= form.label l(:field_test_case_name) %>
     <%= form.text_field :name, size: 80, required: true, id: "name" %>

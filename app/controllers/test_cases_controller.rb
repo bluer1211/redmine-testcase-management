@@ -11,9 +11,7 @@ class TestCasesController < ApplicationController
   before_action do
     prepare_user_candidates
     prepare_issue_status_candidates
-    if @test_plan
-      prepare_test_plan_candidates
-    end
+    prepare_test_plan_candidates
   end
 
   helper :attachments
@@ -75,11 +73,13 @@ class TestCasesController < ApplicationController
     @test_case.user = User.current  # 設定預設使用者為當前使用者
     if params.permit(:test_plan_id)[:test_plan_id]
       @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
+      @test_plan_given = true
       @title = html_title(l(:label_test_case_new),
                           "##{@test_plan.id} #{@test_plan.name}",
                           l(:label_test_plans))
     else
       @test_plan = nil
+      @test_plan_given = false
       @title = html_title(l(:label_test_case_new))
     end
   end
@@ -109,7 +109,17 @@ class TestCasesController < ApplicationController
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected])
-      @test_case.test_plans << @test_plan if @test_plan
+      
+      # 處理測試計劃關聯
+      if test_case_params[:test_plan_id].present?
+        test_plan_id = test_case_params[:test_plan_id].to_i
+        if test_plan_id > 0
+          test_plan = TestPlan.find_by(id: test_plan_id, project: @project)
+          @test_case.test_plans << test_plan if test_plan
+        end
+      elsif @test_plan
+        @test_case.test_plans << @test_plan
+      end
       if @test_case.valid?
         @test_case.save
         # 附件功能暫時停用，避免 acts_as_attachable 錯誤

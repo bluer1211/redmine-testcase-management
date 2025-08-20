@@ -6,6 +6,7 @@ class TestCaseQuery < Query
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestCase.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
     QueryColumn.new(:name, :sortable => "#{TestCase.table_name}.name", :caption => :field_test_case_name),
+    QueryColumn.new(:test_plans, :sortable => false, :caption => :field_test_plans, :groupable => false),
     QueryColumn.new(:user, :sortable => "#{TestCase.table_name}.user_id", :caption => :field_user),
     QueryColumn.new(:environment, :sortable => "#{TestCase.table_name}.environment", :caption => :field_environment),
 =begin
@@ -98,7 +99,7 @@ SQL
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :name, :scenario, :expected, :latest_result, :latest_execution_date, :environment, :user]
+    [:id, :name, :test_plans, :scenario, :expected, :latest_result, :latest_execution_date, :environment, :user]
   end
 
   def default_sort_criteria
@@ -165,6 +166,8 @@ SQL
         .count
     end
   end
+
+
 
   # override default statement for .result
   def sql_for_latest_result_field(field, operator, value)

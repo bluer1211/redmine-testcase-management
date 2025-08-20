@@ -91,6 +91,7 @@ zh-TW:
 
   # TestCase
   field_test_plan: "測試計劃"
+  field_test_plans: "測試計劃"
   field_test_case: "測試案例"
   field_test_case_name: "測試案例名稱"
   field_environment: "環境"
