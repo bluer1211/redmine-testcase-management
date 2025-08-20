@@ -99,7 +99,7 @@ class TestCaseExecutionsController < ApplicationController
 
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions
   def create
-    unless User.current.allowed_to?(:add_issues, @project, :global => true)
+    unless User.current.allowed_to?(:add_test_case_executions, @project, :global => true)
       raise ::Unauthorized
     end
     begin

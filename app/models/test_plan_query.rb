@@ -5,12 +5,12 @@ class TestPlanQuery < Query
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestPlan.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
-    QueryColumn.new(:name, :sortable => "#{TestPlan.table_name}.name", :caption => :label_test_plans),
-    QueryColumn.new(:issue_status, :sortable => "#{TestPlan.table_name}.issue_status_id"),
-    QueryColumn.new(:estimated_bug, :sortable => "#{TestPlan.table_name}.estimated_bug"),
-    QueryColumn.new(:user, :sortable => "#{TestPlan.table_name}.user_id"),
-    QueryColumn.new(:begin_date, :sortable => "#{TestPlan.table_name}.begin_date"),
-    QueryColumn.new(:end_date, :sortable => "#{TestPlan.table_name}.end_date"),
+    QueryColumn.new(:name, :sortable => "#{TestPlan.table_name}.name", :caption => :field_test_plan_name),
+    QueryColumn.new(:issue_status, :sortable => "#{TestPlan.table_name}.issue_status_id", :caption => :field_issue_status),
+    QueryColumn.new(:estimated_bug, :sortable => "#{TestPlan.table_name}.estimated_bug", :caption => :field_estimated_bug),
+    QueryColumn.new(:user, :sortable => "#{TestPlan.table_name}.user_id", :caption => :field_user),
+    QueryColumn.new(:begin_date, :sortable => "#{TestPlan.table_name}.begin_date", :caption => :field_begin_date),
+    QueryColumn.new(:end_date, :sortable => "#{TestPlan.table_name}.end_date", :caption => :field_end_date),
   ]
 
   def initialize(attributes=nil, *args)

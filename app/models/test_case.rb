@@ -10,7 +10,7 @@ class TestCase < ActiveRecord::Base
   has_many :test_case_executions, dependent: :destroy
   
   # 確保 Redmine 附件功能已載入
-  if respond_to?(:acts_as_attachable)
+  if defined?(ActsAsAttachable)
     acts_as_attachable
   end
 

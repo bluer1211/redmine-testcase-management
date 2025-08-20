@@ -5,15 +5,15 @@ class TestCaseExecutionQuery < Query
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestCaseExecution.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
-    QueryColumn.new(:test_case, :sortable => "#{TestCaseExecution.table_name}.test_case_id", :caption => :label_test_case),
-    QueryColumn.new(:test_plan, :sortable => "#{TestCaseExecution.table_name}.test_plan_id"),
-    QueryColumn.new(:result, :sortable => "#{TestCaseExecution.table_name}.result"),
-    QueryColumn.new(:user, :sortable => "#{TestCaseExecution.table_name}.user_id"),
-    QueryColumn.new(:issue, :sortable => "#{TestCaseExecution.table_name}.issue_id"),
-    QueryColumn.new(:comment, :sortable => "#{TestCaseExecution.table_name}.comment"),
-    QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
-    QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected"),
-    TimestampQueryColumn.new(:execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date", :default_order => 'desc')
+    QueryColumn.new(:test_case, :sortable => "#{TestCaseExecution.table_name}.test_case_id", :caption => :field_test_case),
+    QueryColumn.new(:test_plan, :sortable => "#{TestCaseExecution.table_name}.test_plan_id", :caption => :field_test_plan),
+    QueryColumn.new(:result, :sortable => "#{TestCaseExecution.table_name}.result", :caption => :field_result),
+    QueryColumn.new(:user, :sortable => "#{TestCaseExecution.table_name}.user_id", :caption => :field_user),
+    QueryColumn.new(:issue, :sortable => "#{TestCaseExecution.table_name}.issue_id", :caption => :field_issue),
+    QueryColumn.new(:comment, :sortable => "#{TestCaseExecution.table_name}.comment", :caption => :field_comment),
+    QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario", :caption => :field_scenario),
+    QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected", :caption => :field_expected),
+    TimestampQueryColumn.new(:execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date", :default_order => 'desc', :caption => :field_execution_date)
   ]
 
   def initialize(attributes=nil, *args)

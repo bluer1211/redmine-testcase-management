@@ -109,7 +109,7 @@ class TestPlansController < ApplicationController
 
   # POST /projects/:project_id/test_plans
   def create
-    unless User.current.allowed_to?(:add_issues, @project, :global => true)
+    unless User.current.allowed_to?(:add_test_plans, @project, :global => true)
       raise ::Unauthorized
     end
     @test_plan = TestPlan.new(:name => test_plan_params[:name],

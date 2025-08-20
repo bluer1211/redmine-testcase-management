@@ -5,18 +5,18 @@ class TestCaseQuery < Query
 
   self.available_columns = [
     QueryColumn.new(:id, :sortable => "#{TestCase.table_name}.id", :default_order => 'desc', :caption => '#', :frozen => true),
-    QueryColumn.new(:name, :sortable => "#{TestCase.table_name}.name", :caption => :label_test_case),
-    QueryColumn.new(:user, :sortable => "#{TestCase.table_name}.user_id"),
-    QueryColumn.new(:environment, :sortable => "#{TestCase.table_name}.environment"),
+    QueryColumn.new(:name, :sortable => "#{TestCase.table_name}.name", :caption => :field_test_case_name),
+    QueryColumn.new(:user, :sortable => "#{TestCase.table_name}.user_id", :caption => :field_user),
+    QueryColumn.new(:environment, :sortable => "#{TestCase.table_name}.environment", :caption => :field_environment),
 =begin
     # FIXME: deactivate unstable feature
     QueryColumn.new(:latest_result, :sortable => "#{TestCaseExecution.table_name}.result"),
     QueryColumn.new(:latest_execution_date, :sortable => "#{TestCaseExecution.table_name}.execution_date"),
 =end
-    QueryColumn.new(:latest_result, :sortable => "latest_result"),
-    QueryColumn.new(:latest_execution_date, :sortable => "latest_execution_date"),
-    QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario"),
-    QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected")
+    QueryColumn.new(:latest_result, :sortable => "latest_result", :caption => :field_latest_result),
+    QueryColumn.new(:latest_execution_date, :sortable => "latest_execution_date", :caption => :field_latest_execution_date),
+    QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario", :caption => :field_scenario),
+    QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected", :caption => :field_expected)
   ]
 
   def initialize(attributes=nil, *args)

@@ -1,7 +1,7 @@
 module TestCaseManagement
   module InheritIssuePermissions
     def visible?(user=User.current)
-      user.allowed_to?(:view_issues, project) do |role, allowed_user|
+      user.allowed_to?(:view_test_cases, project) do |role, allowed_user|
         if allowed_user.logged?
           case role.issues_visibility
           when "all"
@@ -18,7 +18,7 @@ module TestCaseManagement
             false
           end
         else
-          role.permissions_all_trackers?(:view_issues)
+          role.permissions_all_trackers?(:view_test_cases)
         end
       end
     end
@@ -28,13 +28,13 @@ module TestCaseManagement
     end
 
     def attributes_editable?(user=User.current)
-      user_permission?(user, :edit_issues) || (
-        user_permission?(user, :edit_own_issues) && self.user == user
+      user_permission?(user, :edit_test_cases) || (
+        user_permission?(user, :edit_test_cases) && self.user == user
       )
     end
 
     def deletable?(user=User.current)
-      user_permission?(user, :delete_issues)
+      user_permission?(user, :delete_test_cases)
     end
 
     def ownable_users
@@ -75,7 +75,7 @@ module TestCaseManagement
     module_function
 
     def self.visible_condition(user, options={})
-      Project.allowed_to_condition(user, :view_issues, options) do |role, allowed_user|
+      Project.allowed_to_condition(user, :view_test_cases, options) do |role, allowed_user|
         sql =
           if allowed_user.id && allowed_user.logged?
             case role.issues_visibility
@@ -93,7 +93,7 @@ module TestCaseManagement
           else
             "projects.is_public = (1=1)"
           end
-        unless role.permissions_all_trackers?(:view_issues)
+        unless role.permissions_all_trackers?(:view_test_cases)
           sql = "1=0"
         end
         sql

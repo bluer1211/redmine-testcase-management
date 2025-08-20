@@ -1,7 +1,7 @@
 <h2 class="inline-flex"><%= breadcrumb %><%=l(:label_test_plan_statistics)%></h2>
 
 <% if @test_plans.empty? %>
-  <p class="nodata"><%= l(:nodata) %></p>
+  <p class="nodata"><%= l(:label_no_data) %></p>
 <% else %>
   <div class="autoscroll">
     <table id="statistics" class="list issues odd-even sort-by-id sort-desc">

@@ -29,7 +29,14 @@ module ApplicationsHelper
       users = User.all
     end
     users.each do |user|
-      @user_candidates[user.name] = user.id
+      # 只包含有權限查看測試案例的用戶
+      if user.allowed_to?(:view_test_cases, @project)
+        @user_candidates[user.name] = user.id
+      end
+    end
+    # 確保當前用戶在候選列表中
+    if User.current.allowed_to?(:view_test_cases, @project) && !@user_candidates.has_value?(User.current.id)
+      @user_candidates[User.current.name] = User.current.id
     end
   end
 

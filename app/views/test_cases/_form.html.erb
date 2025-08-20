@@ -1,7 +1,7 @@
 <div class="box tabular">
   <% if @test_plan_given %>
     <p>
-      <%= form.label :test_plan %>
+      <%= form.label l(:field_test_plan) %>
       <% if @test_plan %>
         <%= @test_plan.name %>
         <%= form.hidden_field :test_plan_id, :value => @test_plan.id %>
@@ -11,11 +11,11 @@
     </p>
   <% end %>
   <p>
-    <%= form.label :test_case_name %>
+    <%= form.label l(:field_test_case_name) %>
     <%= form.text_field :name, size: 80, required: true, id: "name" %>
   </p>
   <p>
-    <%= form.label :user %>
+    <%= form.label l(:field_user) %>
     <% if @test_case and @test_case.user %>
       <%= form.select :user, @user_candidates, selected: @test_case.user.id %>
     <% else %>
@@ -23,15 +23,15 @@
     <% end %>
   </p>
   <p>
-    <%= form.label :environment %>
+    <%= form.label l(:field_environment) %>
     <%= form.text_field :environment, size: 80, id: "environment" %>
   </p>
   <p>
-    <%= form.label :scenario %>
+    <%= form.label l(:field_scenario) %>
     <%= form.text_area :scenario, required: true, id: "scenario", cols: 60, rows: [[10, @test_case.scenario.to_s.length / 50].max, 20].min %>
   </p>
   <p>
-    <%= form.label :expected %>
+    <%= form.label l(:field_expected) %>
     <%= form.text_area :expected, required: true, id: "expected", cols: 60, rows: [[10, @test_case.expected.to_s.length / 50].max, 20].min %>
   </p>
 </div>

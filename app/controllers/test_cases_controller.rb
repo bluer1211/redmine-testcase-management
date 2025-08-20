@@ -72,6 +72,7 @@ class TestCasesController < ApplicationController
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/new
   def new
     @test_case = TestCase.new
+    @test_case.user = User.current  # 設定預設使用者為當前使用者
     if params.permit(:test_plan_id)[:test_plan_id]
       @test_plan = TestPlan.find(params.permit(:test_plan_id)[:test_plan_id])
       @title = html_title(l(:label_test_case_new),
@@ -86,22 +87,35 @@ class TestCasesController < ApplicationController
   # POST /projects/:project_id/test_cases
   # POST /projects/:project_id/test_plans/:test_plan_id/test_cases
   def create
-    unless User.current.allowed_to?(:add_issues, @project, :global => true)
+    unless User.current.allowed_to?(:add_test_cases, @project, :global => true)
       raise ::Unauthorized
     end
     begin
+      # 處理用戶設定，確保用戶有權限查看該測試案例
+      user_id = test_case_params[:user].to_i
+      if user_id > 0
+        user = User.find_by(id: user_id)
+        # 如果指定的用戶不存在或沒有權限，使用當前用戶
+        if user.nil? || !user.allowed_to?(:view_test_cases, @project)
+          user = User.current
+        end
+      else
+        user = User.current
+      end
+      
       @test_case = TestCase.new(:project_id => @project.id,
                                 :name => test_case_params[:name],
-                                :user => User.find(test_case_params[:user]),
+                                :user => user,
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected])
       @test_case.test_plans << @test_plan if @test_plan
-      if params[:attachments].present?
-        @test_case.save_attachments params.require(:attachments).permit!
-      end
       if @test_case.valid?
         @test_case.save
+        # 附件功能暫時停用，避免 acts_as_attachable 錯誤
+        # if params[:attachments].present?
+        #   @test_case.save_attachments params.require(:attachments).permit!
+        # end
         flash[:notice] = l(:notice_successful_create)
         if @test_plan
           if params[:continue]
@@ -119,7 +133,8 @@ class TestCasesController < ApplicationController
       else
         render :new, status: :unprocessable_entity
       end
-    rescue
+    rescue => e
+      Rails.logger.error "Test case creation failed: #{e.message}"
       render :new, status: :unprocessable_entity
     end
   end
@@ -127,16 +142,22 @@ class TestCasesController < ApplicationController
   # GET /projects/:project_id/test_cases/:id
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:id
   def show
-    if @test_plan_given
-      @test_case_executions = @test_case.test_case_executions_for(@test_plan)
-      @title = html_title("##{@test_case.id} #{@test_case.name}",
-                          l(:label_test_cases),
-                          "##{@test_plan.id} #{@test_plan.name}",
-                          l(:label_test_plans))
-    else
-      @test_case_executions = @test_case.test_case_executions
-      @title = html_title("##{@test_case.id} #{@test_case.name}",
-                          l(:label_test_cases))
+    begin
+      if @test_plan_given
+        @test_case_executions = @test_case.test_case_executions_for(@test_plan)
+        @title = html_title("##{@test_case.id} #{@test_case.name}",
+                            l(:label_test_cases),
+                            "##{@test_plan.id} #{@test_plan.name}",
+                            l(:label_test_plans))
+      else
+        @test_case_executions = @test_case.test_case_executions
+        @title = html_title("##{@test_case.id} #{@test_case.name}",
+                            l(:label_test_cases))
+      end
+    rescue => e
+      Rails.logger.error "Test case show error: #{e.message}"
+      flash[:error] = l(:error_test_case_not_found)
+      redirect_to project_test_cases_path
     end
   end
 
@@ -164,11 +185,13 @@ class TestCasesController < ApplicationController
       expected: test_case_params[:expected],
       environment: test_case_params[:environment]
     }
-    user = User.find(test_case_params[:user])
+    user_id = test_case_params[:user].to_i
+    user = user_id > 0 ? User.find_by(id: user_id) : nil
     update_params[:user_id] = user.id if user.present?
-    if params[:attachments].present?
-      @test_case.save_attachments params.require(:attachments).permit!
-    end
+    # 附件功能暫時停用，避免 acts_as_attachable 錯誤
+    # if params[:attachments].present?
+    #   @test_case.save_attachments params.require(:attachments).permit!
+    # end
     if @test_case.update(update_params)
       flash[:notice] = l(:notice_successful_update)
       if params[:test_plan_id].present?
@@ -208,7 +231,7 @@ class TestCasesController < ApplicationController
   # GET /projects/:project_id/test_cases/auto_complete
   def auto_complete
     test_cases = []
-    unless User.current.allowed_to?(:view_issues, @project, :global => true)
+    unless User.current.allowed_to?(:view_test_cases, @project, :global => true)
       render :json => test_cases
       return
     end
@@ -240,7 +263,7 @@ class TestCasesController < ApplicationController
 
   # GET /projects/:project_id/test_cases/statistics
   def statistics
-    return unless authorize_with_issues_permission(params[:controller], :index)
+    return unless authorize_with_issues_permission(params[:controller], :statistics)
     begin
       # 1. Generate every TP - TC - TCE set
       # 2. Group by test plan id and test case id using PARTITION BY

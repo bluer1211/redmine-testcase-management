@@ -1,30 +1,30 @@
 <div class="box tabular">
   <p>
-    <%= form.label :test_plan %>
+    <%= form.label l(:field_test_plan) %>
     <%= (@test_plan || @test_case_execution.test_plan).name %>
   </p>
   <p>
-    <%= form.label :test_case %>
+    <%= form.label l(:field_test_case) %>
     <%= (@test_case || @test_case_execution.test_case).name %>
   </p>
   <p>
-    <%= form.label :environment %>
+    <%= form.label l(:field_environment) %>
     <%= @test_case.environment %>
   </p>
   <p>
-    <%= form.label :scenario %>
+    <%= form.label l(:field_scenario) %>
     <%= form.text_area :scenario, readonly: true, id: "scenario",
         cols: 60, rows: [[10, @test_case.scenario.to_s.length / 50].max, 20].min,
         value: @test_case.scenario %>
   </p>
   <p>
-    <%= form.label :expected %>
+    <%= form.label l(:field_expected) %>
     <%= form.text_area :expected, readonly: true, id: "expected",
         cols: 60, rows: [[10, @test_case.expected.to_s.length / 50].max, 20].min,
         value: @test_case.expected %>
   </p>
   <p>
-    <%= form.label :result %>
+    <%= form.label l(:field_result) %>
     <% if action_name == "edit" %>
       <%= form.select :result, { l(:label_succeed) => true,l(:label_failure) => false }%>
     <% else %>
@@ -32,7 +32,7 @@
     <% end %>
   </p>
   <p>
-    <%= form.label :user %>
+    <%= form.label l(:field_user) %>
     <% if @test_case_execution and @test_case_execution.user %>
       <%= form.select :user, @user_candidates, selected: @test_case_execution.user.id %>
     <% else %>
@@ -40,12 +40,12 @@
     <% end %>
   </p>
   <p>
-    <%= form.label :execution_date %>
+    <%= form.label l(:field_execution_date) %>
     <%= form.date_field :execution_date,
         value: (@test_case_execution.execution_date ? @test_case_execution.execution_date.strftime("%F") : Time.now.strftime("%F")), required: true %>
   </p>
   <p>
-    <%= form.label :issue %>
+    <%= form.label l(:field_issue) %>
     <%= form.text_field :issue_id, id: 'issue_id' %>
     <%= link_to l(:label_issue_new),
                 @issue_template_uri,
@@ -53,7 +53,7 @@
                 :class => "icon icon-add new-issue" %>
   </p>
   <p>
-    <%= form.label :comment %>
+    <%= form.label l(:field_comment) %>
     <%= form.text_area :comment,
         cols: 60, rows: [[10, @test_case.expected.to_s.length / 50].max, 20].min %>
   </p>
