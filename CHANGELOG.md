@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.4] - 2025-08-20
+## [1.6.4] - 2025-08-20 11:40:05 CST
 
 ### Added
 - 模板下載功能：為測試案例、測試計劃和測試執行提供 CSV 模板下載
