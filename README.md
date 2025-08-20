@@ -22,6 +22,15 @@
 
 **Jason Liu** ([GitHub: @bluer1211](https://github.com/bluer1211))
 
+## 致謝
+
+本插件基於 SENA Networks Inc. 的原始工作開發。
+
+- **原始作者**: 優人 岡田 (okada@sena-networks.co.jp)
+- **原始公司**: SENA Networks Inc.
+- **原始授權**: GPL v2+
+- **維護交接**: 自 v1.6.4 版本開始由 Jason Liu 接手維護
+
 ## 問題回報與功能建議
 
 - 🐛 [回報 Bug](https://github.com/bluer1211/redmine-testcase-management/issues/new?template=bug_report.md)

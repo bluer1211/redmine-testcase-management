@@ -1,6 +1,21 @@
 # 貢獻指南
 
-感謝您對 Redmine Testcase Management Plugin 的關注！我們歡迎所有形式的貢獻。
+## 原作者致謝
+
+本插件基於 SENA Networks Inc. 的原始工作開發。
+
+- **原始作者**: 優人 岡田 (okada@sena-networks.co.jp)
+- **原始公司**: SENA Networks Inc.
+- **原始授權**: GPL v2+
+- **維護交接**: 自 v1.6.4 版本開始由 Jason Liu (@bluer1211) 接手維護
+
+感謝您對 Redmine Testcase Management Plugin 的貢獻！我們歡迎所有形式的貢獻，包括但不限於：
+
+- 🐛 回報 Bug
+- 💡 功能建議
+- 📝 文件改進
+- 🔧 程式碼優化
+- 🌐 翻譯貢獻
 
 ## 🚀 如何貢獻
 
