@@ -8,7 +8,11 @@ class TestCase < ActiveRecord::Base
   has_many :test_case_test_plans, dependent: :destroy
   has_many :test_plans, through: :test_case_test_plans
   has_many :test_case_executions, dependent: :destroy
-  acts_as_attachable
+  
+  # 確保 Redmine 附件功能已載入
+  if defined?(ActsAsAttachable)
+    acts_as_attachable
+  end
 
   validates :name, presence: true
   validates :scenario, presence: true

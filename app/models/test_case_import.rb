@@ -24,13 +24,75 @@ class TestCaseImport < Import
   end
 
   def allowed_target_projects
-    Project.allowed_to(user, :add_test_cases)
+    # 修復: 確保 user 存在，如果沒有則使用 User.current
+    current_user = user || User.current
+    if current_user && !current_user.is_a?(AnonymousUser)
+      Project.allowed_to(current_user, :add_test_cases)
+    else
+      # 如果沒有有效用戶，返回所有專案（僅用於調試）
+      Project.all
+    end
   end
 
   def project
-    project_id = mapping["project_id"].to_i
-    allowed_target_projects.find_by_id(project_id) || allowed_target_projects.first
+    # 修復: 優先使用 settings 中的 project_id，然後是 mapping
+    project_id = nil
+    
+    # 優先從 settings 獲取
+    if settings && settings['project_id']
+      project_id = settings['project_id']
+    end
+    
+    # 如果沒有，從 mapping 獲取
+    if project_id.nil? && mapping && mapping["project_id"]
+      project_id = mapping["project_id"]
+    end
+    
+    # 如果還是沒有，使用自身的 project_id
+    if project_id.nil? && self.project_id
+      project_id = self.project_id
+    end
+    
+    # 嘗試查找專案
+    if project_id
+      # 嘗試按 ID 或標識符查找
+      found_project = if project_id.to_s.match?(/^\d+$/)
+                        Project.find_by(id: project_id.to_i)
+                      else
+                        Project.find_by(identifier: project_id.to_s)
+                      end
+      
+      # 檢查專案是否在允許的專案列表中
+      if found_project && allowed_target_projects.include?(found_project)
+        return found_project
+      end
+    end
+    
+    # 回退到第一個可用專案
+    allowed_target_projects.first
   end
+
+  # 新增: 確保專案上下文正確設置
+  def ensure_project_context
+    if self.project_id.nil? || self.project_id == 0
+      # 從 settings 中獲取 project_id
+      if settings && settings['project_id']
+        project_id = settings['project_id']
+        # 嘗試按 ID 或標識符查找
+        found_project = if project_id.to_s.match?(/^\d+$/)
+                          Project.find_by(id: project_id.to_i)
+                        else
+                          Project.find_by(identifier: project_id.to_s)
+                        end
+        if found_project
+          self.project_id = found_project.id
+        end
+      end
+    end
+  end
+
+  # 新增: 在保存前確保專案上下文
+  before_save :ensure_project_context
 
   def mappable_custom_fields
     []
@@ -40,7 +102,7 @@ class TestCaseImport < Import
 
   def build_object(row, item)
     test_case = TestCase.new
-    test_case.user = user
+    test_case.user = user || User.current
     test_case.project_id = mapping["project_id"].to_i
     search_test_case = mapping["test_case_update"].to_i.zero? ? false : true
 
@@ -77,7 +139,7 @@ class TestCaseImport < Import
                       end
     if found_test_case
       test_case = found_test_case
-      test_case.user = user
+      test_case.user = user || User.current
     end
 
     attributes = {
@@ -93,7 +155,7 @@ class TestCaseImport < Import
       end
     end
 
-    test_case.send :safe_attributes=, attributes, user
+    test_case.send :safe_attributes=, attributes, user || User.current
 
     if found_test_plan and found_test_plan.project_id == test_case.project_id
       unless found_test_plan.test_cases.pluck(:id).include?(test_case.id)

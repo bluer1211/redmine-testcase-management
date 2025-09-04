@@ -8,7 +8,11 @@ class TestCaseExecution < ActiveRecord::Base
   belongs_to :issue
   belongs_to :test_plan
   belongs_to :test_case
-  acts_as_attachable
+  
+  # 確保 Redmine 附件功能已載入
+  if defined?(ActsAsAttachable)
+    acts_as_attachable
+  end
 
   validates :result, inclusion: { in: [true, false] }
   validates :user, presence: true

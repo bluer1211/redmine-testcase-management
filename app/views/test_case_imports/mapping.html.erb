@@ -1,0 +1,30 @@
+<h2><%= l(:label_import_test_cases) %></h2>
+
+<%= form_tag(import_mapping_path(@import), :id => "import-form") do %>
+  <fieldset class="box tabular">
+    <legend><%= l(:label_field_mapping) %></legend>
+    <p><%= l(:text_import_field_mapping) %></p>
+    
+    <table class="list">
+      <thead>
+        <tr>
+          <th><%= l(:field_csv_column) %></th>
+          <th><%= l(:field_redmine_field) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @import.columns.each do |column| %>
+          <tr>
+            <td><%= column %></td>
+            <td>
+              <%= select_tag "import_settings[mapping][#{column}]",
+                    options_for_select(@import.mappable_fields, @import.mapping[column]),
+                    :include_blank => true %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </fieldset>
+  <p><%= submit_tag l(:label_next).html_safe + " &#187;".html_safe, :name => nil %></p>
+<% end %>

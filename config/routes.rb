@@ -47,20 +47,37 @@ Rails.application.routes.draw do |map|
         delete 'bulk_delete'
       end
     end
+    
+    # 使用自定義的匯入控制器
+    resources :test_case_imports, :only => [:new, :create]
+    resources :test_plan_imports, :only => [:new, :create]
+    resources :test_case_execution_imports, :only => [:new, :create]
   end
 
+  # 測試案例匯入的完整流程路由
   get 'projects/:project_id/test_cases/imports/new',
-      :to => 'imports#new',
-      :defaults => {:type => 'TestCaseImport'},
+      :to => 'test_case_imports#new',
       :as => 'new_test_cases_import'
+      
+  post 'projects/:project_id/test_cases/imports',
+      :to => 'test_case_imports#create',
+      :as => 'test_case_imports'
 
+  # 測試計劃匯入的完整流程路由
   get 'projects/:project_id/test_plans/imports/new',
-      :to => 'imports#new',
-      :defaults => {:type => 'TestPlanImport'},
+      :to => 'test_plan_imports#new',
       :as => 'new_test_plans_import'
+      
+  post 'projects/:project_id/test_plans/imports',
+      :to => 'test_plan_imports#create',
+      :as => 'test_plan_imports'
 
+  # 測試執行匯入的完整流程路由
   get 'projects/:project_id/test_case_executions/imports/new',
-      :to => 'imports#new',
-      :defaults => {:type => 'TestCaseExecutionImport'},
+      :to => 'test_case_execution_imports#new',
       :as => 'new_test_case_executions_import'
+      
+  post 'projects/:project_id/test_case_executions/imports',
+      :to => 'test_case_execution_imports#create',
+      :as => 'test_case_execution_imports'
 end

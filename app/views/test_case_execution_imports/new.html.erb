@@ -1,0 +1,13 @@
+<h2><%= l(:label_import_test_case_executions) %></h2>
+
+<%= form_tag(project_test_case_execution_imports_path(@project), :multipart => true) do %>
+  <%= hidden_field_tag 'type', 'TestCaseExecutionImport' %>
+  <%= hidden_field_tag 'project_id', @project.id %>
+  <fieldset class="box">
+    <legend><%= l(:label_select_file_to_import) %> (CSV)</legend>
+    <p>
+      <%= file_field_tag 'file' %>
+    </p>
+  </fieldset>
+  <p><%= submit_tag l(:label_next).html_safe + " &#187;".html_safe, :name => nil %></p>
+<% end %>

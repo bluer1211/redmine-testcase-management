@@ -51,7 +51,7 @@
       <%= textilizable(@test_case.expected) %>
     </div>
   </div>
-  <% if @test_case.attachments.any? %>
+  <% if @test_case.respond_to?(:attachments) && @test_case.attachments.any? %>
     <p><strong><%=l(:label_attachment_plural)%></strong></p>
     <%= link_to_attachments @test_case, :thumbnails => true %>
     <hr/>

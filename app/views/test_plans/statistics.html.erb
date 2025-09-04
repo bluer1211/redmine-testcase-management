@@ -25,8 +25,8 @@
       <tbody>
         <% @test_plans.each do |test_plan| %>
         <tr>
-          <td class="id"><%= link_to test_plan.id, "/projects/#{@project.name}/test_plans/#{test_plan.id}" %></td>
-          <td class="name"><%= link_to test_plan.name, "/projects/#{@project.name}/test_plans/#{test_plan.id}" %></td>
+          <td class="id"><%= link_to test_plan.id, project_test_plan_path(@project, test_plan) %></td>
+          <td class="name"><%= link_to test_plan.name, project_test_plan_path(@project, test_plan) %></td>
           <td class="user"><%= link_to test_plan.user.name, "/users/#{test_plan.user.id}" %></td>
           <td class="test_cases"><%= test_plan.test_cases.size %></td>
           <td class="count_not_executed"><%= test_plan.count_not_executed %></td>

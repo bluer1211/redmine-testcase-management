@@ -1,8 +1,12 @@
+require 'redmine'
+
 # Apply ProjectPatch to extend relation between Project and TestProject
 require_dependency File.expand_path(File.join(File.dirname(__FILE__),
                                               "lib/test_case_management/project_patch.rb"))
 require_dependency File.expand_path(File.join(File.dirname(__FILE__),
                                               "lib/test_case_management/queries_controller_patch.rb"))
+require_dependency File.expand_path(File.join(File.dirname(__FILE__),
+                                              "lib/test_case_management/test_case_import_concern.rb"))
 
 Redmine::Plugin.register :testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
@@ -12,6 +16,7 @@ Redmine::Plugin.register :testcase_management do
   url 'https://redmine-test-management.sena-networks.co.jp'
   author_url 'https://www.sena-networks.co.jp'
 
+  # Plugin's modules
   project_module :testcase_management do
     #permission :manage_test_cases, {
     #  :test_cases => [:index, :show, :new, :create, :edit, :update, :destroy, :statistics, :auto_complete, :bulk_edit, :bulk_update],
@@ -82,15 +87,14 @@ Redmine::Plugin.register :testcase_management do
            }
 end
 
-# For keeping consistent patch reloading behavior, include patch from init.rb
-# (conflicted with redmine dmsf plugin, before)
-unless Project.included_modules.include?(TestCaseManagement::ProjectPatch)
-  Project.send(:include, TestCaseManagement::ProjectPatch)
-end
+# Apply patches
+Project.send(:include, TestCaseManagement::ProjectPatch)
+QueriesController.send(:include, TestCaseManagement::QueriesControllerPatch)
 
-# To avoid conflict with RedmineDrive plugin, use QueriesControllerPatch instead.
-# Without this fix, you can't save query at all.
-# See https://www.redmine.org/boards/3/topics/66539
-unless QueriesController.included_modules.include?(TestCaseManagement::QueriesControllerPatch)
-  QueriesController.send(:include, TestCaseManagement::QueriesControllerPatch)
+# 包含 TestCaseImportConcern 到 ImportsController
+require_dependency 'application_controller'
+require_dependency 'imports_controller'
+
+ImportsController.class_eval do
+  include TestCaseManagement::TestCaseImportConcern
 end

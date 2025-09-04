@@ -1,0 +1,46 @@
+<h2><%= l(:label_import_test_cases) %></h2>
+
+<div class="box">
+  <h3><%= l(:label_import_summary) %></h3>
+  
+  <table class="list">
+    <tr>
+      <td><%= l(:label_total_items) %></td>
+      <td><%= @import.total_items %></td>
+    </tr>
+    <tr>
+      <td><%= l(:label_imported_items) %></td>
+      <td><%= @import.imported_items.count %></td>
+    </tr>
+    <tr>
+      <td><%= l(:label_failed_items) %></td>
+      <td><%= @import.failed_items.count %></td>
+    </tr>
+  </table>
+  
+  <% if @import.imported_items.any? %>
+    <h3><%= l(:label_imported_items) %></h3>
+    <div class="imported-items">
+      <% @import.imported_items.each do |item| %>
+        <div class="imported-item">
+          <%= link_to item.obj.name, test_case_path(item.obj) if item.obj %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  
+  <% if @import.failed_items.any? %>
+    <h3><%= l(:label_failed_items) %></h3>
+    <div class="failed-items">
+      <% @import.failed_items.each do |item| %>
+        <div class="failed-item">
+          <strong><%= item.position %></strong>: <%= item.message %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="buttons">
+  <%= link_to l(:button_back), project_test_cases_path(@project), :class => 'button' %>
+</div>

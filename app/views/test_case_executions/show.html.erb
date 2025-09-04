@@ -66,7 +66,7 @@
       <pre id="expected" class="wiki"><%= @test_case.expected %></pre>
     </div>
   </div>
-  <% if @test_case_execution.attachments.any? %>
+  <% if @test_case_execution.respond_to?(:attachments) && @test_case_execution.attachments.any? %>
     <hr />
     <p><strong><%=l(:label_attachment_plural)%></strong></p>
     <%= link_to_attachments @test_case_execution, :thumbnails => true %>
