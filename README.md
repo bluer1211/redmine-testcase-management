@@ -1,26 +1,59 @@
 # Redmine Plugin Testcase Management
 
-https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management
+一個功能完整的 Redmine 測試案例管理插件，支援測試計劃、測試案例和測試執行的完整生命週期管理。
 
-## Requirements
+## 🌟 主要功能
 
-* Redmine 4.1.0 or later (also compatible with Series 5)
-  * TimestampQueryColumn was implemented since 4.1.0.
-* PostgreSQL 12 or later
-* MySQL 8 or later
-* MariaDB 10.2 or later
+- **測試計劃管理** - 創建、編輯、刪除測試計劃
+- **測試案例管理** - 完整的測試案例 CRUD 操作
+- **測試執行追蹤** - 記錄和管理測試執行結果
+- **統計報表** - 提供測試相關的統計數據
+- **匯入/匯出功能** - 支援 CSV 格式的數據匯入匯出
+- **多語言支援** - 支援英文、日文、繁體中文
 
-## Install to an existing redmine instance
+## 📋 系統需求
 
-```console
-$ cd /path/to/redmine/plugins
-$ git clone https://gitlab.com/redmine-plugin-testcase-management/redmine-plugin-testcase-management.git testcase_management
-$ cd ..
-$ bundle install
-$ bin/rails redmine:plugins:migrate RAILS_ENV=production
+* **Redmine**: 4.1.0 或更高版本（也相容於 Series 5）
+  * TimestampQueryColumn 自 4.1.0 版本開始實作
+* **資料庫**:
+  * PostgreSQL 12 或更高版本
+  * MySQL 8 或更高版本
+  * MariaDB 10.2 或更高版本
+* **Ruby**: 2.7 或更高版本
+* **Rails**: 5.2 或更高版本
+
+## 🚀 安裝指南
+
+### 安裝到現有的 Redmine 實例
+
+```bash
+# 1. 進入 Redmine 插件目錄
+cd /path/to/redmine/plugins
+
+# 2. 克隆插件
+git clone https://github.com/your-username/redmine-plugin-testcase-management.git testcase_management
+
+# 3. 返回 Redmine 根目錄
+cd ..
+
+# 4. 安裝依賴
+bundle install
+
+# 5. 執行資料庫遷移
+bin/rails redmine:plugins:migrate RAILS_ENV=production
+
+# 6. 重啟 Redmine 服務
 ```
 
-And then restart your Redmine.
+### 使用 Docker 安裝
+
+```bash
+# 1. 克隆插件到 plugins 目錄
+git clone https://github.com/your-username/redmine-plugin-testcase-management.git redmine/plugins/testcase_management
+
+# 2. 重啟 Docker 容器
+docker-compose restart
+```
 
 ### Additional settings for Redmine5
 

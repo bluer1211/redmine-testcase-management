@@ -12,9 +12,18 @@ Redmine::Plugin.register :testcase_management do
   name 'Redmine Plugin Testcase Management plugin'
   author 'SENA Networks Inc.'
   description 'Manage test plans, test cases and execution result'
-  version '1.6.2'
+  version '1.6.3'
   url 'https://redmine-test-management.sena-networks.co.jp'
   author_url 'https://www.sena-networks.co.jp'
+
+  # 支援的語言
+  directory File.dirname(__FILE__)
+  locales_path = File.join(directory, 'config', 'locales')
+  Dir.glob(File.join(locales_path, '*.yml')).each do |locale_file|
+    locale = File.basename(locale_file, '.yml')
+    I18n.load_path << locale_file
+    I18n.backend.store_translations(locale, YAML.load_file(locale_file))
+  end
 
   # Plugin's modules
   project_module :testcase_management do

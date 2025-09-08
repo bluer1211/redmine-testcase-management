@@ -22,15 +22,12 @@ module ApplicationsHelper
   end
 
   def prepare_user_candidates
-    @user_candidates = {}
     if @project
       users = @project.users
     else
       users = User.all
     end
-    users.each do |user|
-      @user_candidates[user.name] = user.id
-    end
+    @user_candidates = users.map { |user| [user.name, user.id] }
   end
 
   def yyyymmdd_date(date, separator="/")

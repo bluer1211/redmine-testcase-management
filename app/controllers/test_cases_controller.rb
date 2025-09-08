@@ -92,12 +92,12 @@ class TestCasesController < ApplicationController
     begin
       @test_case = TestCase.new(:project_id => @project.id,
                                 :name => test_case_params[:name],
-                                :user => User.find(test_case_params[:user]),
+                                :user => User.find(test_case_params[:user].to_i),
                                 :environment => test_case_params[:environment],
                                 :scenario => test_case_params[:scenario],
                                 :expected => test_case_params[:expected])
       @test_case.test_plans << @test_plan if @test_plan
-      if params[:attachments].present?
+      if params[:attachments].present? && @test_case.respond_to?(:save_attachments)
         @test_case.save_attachments params.require(:attachments).permit!
       end
       if @test_case.valid?
@@ -119,7 +119,10 @@ class TestCasesController < ApplicationController
       else
         render :new, status: :unprocessable_entity
       end
-    rescue
+    rescue => e
+      Rails.logger.error "Test case creation failed: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      flash.now[:error] = l(:error_create_failure)
       render :new, status: :unprocessable_entity
     end
   end
