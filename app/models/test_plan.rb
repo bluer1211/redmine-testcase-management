@@ -46,4 +46,9 @@ class TestPlan < ActiveRecord::Base
     joins(:project).
     where(TestCaseManagement::InheritIssuePermissions.visible_condition(args.shift || User.current, *args))
   end)
+
+  # 返回測試案例 ID 列表，用於顯示
+  def test_case_ids
+    test_cases.pluck(:id).join(', ')
+  end
 end

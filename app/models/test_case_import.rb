@@ -124,14 +124,30 @@ class TestCaseImport < Import
         I18n.t('field_test_plan', locale: :en),
         I18n.t('field_test_plan', locale: :'zh-TW'),
         I18n.t('field_test_plan', locale: :ja)
+      ],
+      'issue_status' => [
+        'status', 'issue_status',
+        I18n.t('field_issue_status', locale: :en),
+        I18n.t('field_issue_status', locale: :'zh-TW'),
+        I18n.t('field_issue_status', locale: :ja)
       ]
     }
     
     field_mappings.each do |field, possible_names|
+      # 優先選擇完全匹配的欄位
       matched_header = headers.find do |header|
         header_clean = header.strip.downcase
-        possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+        possible_names.compact.any? { |name| header_clean == name.downcase }
       end
+      
+      # 如果沒有完全匹配，再選擇包含匹配的欄位
+      unless matched_header
+        matched_header = headers.find do |header|
+          header_clean = header.strip.downcase
+          possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+        end
+      end
+      
       mapping[field] = matched_header if matched_header
     end
     mapping
@@ -142,11 +158,12 @@ class TestCaseImport < Import
   def build_object(row, item)
     test_case = TestCase.new
     test_case.user = user
-    test_case.project_id = mapping["project_id"].to_i
+    test_case.project_id = project_id
     # 根據 test_case_id 自動判斷是否更新現有測試案例
 
     found_test_case = nil
-    if test_case_id = row_value(row, "test_case_id")
+    test_case_id = row_value(row, "test_case_id")
+    if test_case_id.present? && test_case_id.to_s.strip.present?
       found_test_case = TestCase.where(id: test_case_id, project_id: test_case.project_id).first
     end
 
@@ -187,6 +204,10 @@ class TestCaseImport < Import
         attributes["user_id"] = found_user.id
       end
     end
+
+    status_name = row_value(row, "issue_status")
+    status_id = IssueStatus.named(status_name).first.try(:id)
+    attributes["issue_status_id"] = status_id
 
     test_case.send :safe_attributes=, attributes, user
 

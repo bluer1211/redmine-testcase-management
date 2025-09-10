@@ -181,7 +181,21 @@ class Import < ActiveRecord::Base
 
   def row_value(row, field_name)
     return nil unless mapping[field_name]
-    row[mapping[field_name]]
+    column_name = mapping[field_name]
+    
+    # 特殊處理 # 符號，因為可能有 BOM 字元
+    if column_name == '#'
+      # 使用 each 來找到 # 欄位的值，處理可能的 BOM 字元
+      row.each do |key, value|
+        # 檢查是否為 # 符號（可能有 BOM 前綴）
+        if key.bytes.last == 35  # 35 是 # 的 ASCII 碼
+          return value
+        end
+      end
+      return nil
+    else
+      row[column_name]
+    end
   end
 
   def row_date(row, field_name)

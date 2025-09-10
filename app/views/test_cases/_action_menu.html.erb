@@ -1,7 +1,7 @@
 <div class="contextual">
   <% if @test_plan_given %>
     <%= link_to l(:button_list),
-                project_test_plan_path(id: @test_plan.id),
+                project_test_plan_path(project_id: @project.identifier, id: @test_plan.id),
                 class: 'icon icon-list' %>
     <%= link_to l(:button_edit), edit_project_test_plan_test_case_path,
                 :onclick => 'showAndScrollTo("update", "issue_notes"); return false;',

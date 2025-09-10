@@ -11,6 +11,7 @@ class TestPlanQuery < Query
     QueryColumn.new(:user, :sortable => "#{TestPlan.table_name}.user_id", :caption => :field_user),
     QueryColumn.new(:begin_date, :sortable => "#{TestPlan.table_name}.begin_date", :caption => :field_begin_date),
     QueryColumn.new(:end_date, :sortable => "#{TestPlan.table_name}.end_date", :caption => :field_end_date),
+    QueryColumn.new(:test_case_ids, :sortable => false, :caption => :field_test_case_ids, :groupable => false),
   ]
 
   def initialize(attributes=nil, *args)
@@ -75,7 +76,7 @@ class TestPlanQuery < Query
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :name, :issue_status, :estimated_bug, :user, :begin_date, :end_date]
+    [:id, :name, :issue_status, :estimated_bug, :user, :begin_date, :end_date, :test_case_ids]
   end
 
   def default_sort_criteria

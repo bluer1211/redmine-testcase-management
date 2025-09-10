@@ -130,10 +130,20 @@ class TestCaseExecutionImport < Import
     }
     
     field_mappings.each do |field, possible_names|
+      # 優先選擇完全匹配的欄位
       matched_header = headers.find do |header|
         header_clean = header.strip.downcase
-        possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+        possible_names.compact.any? { |name| header_clean == name.downcase }
       end
+      
+      # 如果沒有完全匹配，再選擇包含匹配的欄位
+      unless matched_header
+        matched_header = headers.find do |header|
+          header_clean = header.strip.downcase
+          possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+        end
+      end
+      
       mapping[field] = matched_header if matched_header
     end
     mapping
@@ -148,7 +158,7 @@ class TestCaseExecutionImport < Import
 
     # If test_case_execution_id is mapped, allow to override existing test case execution
     test_case_execution_id = row_value(row, "test_case_execution_id")
-    if test_case_execution_id
+    if test_case_execution_id.present? && test_case_execution_id.to_s.strip.present?
       found_test_case_execution = TestCaseExecution.where(id: test_case_execution_id, project_id: test_case_execution.project_id).first
       if found_test_case_execution
         test_case_execution = found_test_case_execution
@@ -191,8 +201,12 @@ class TestCaseExecutionImport < Import
     }
 
     if result = row_value(row, "result")
-      if [l(:label_succeed), l(:label_failure)].include?(result)
-        attributes["result"] = (result == l(:label_succeed))
+      # 使用 I18n 直接翻譯，避免 l() 方法問題
+      succeed_label = I18n.t(:label_succeed, default: '成功')
+      failure_label = I18n.t(:label_failure, default: '失敗')
+      
+      if [succeed_label, failure_label, '成功', '失敗', 'true', 'false', 'TRUE', 'FALSE'].include?(result)
+        attributes["result"] = (result == succeed_label || result == '成功' || result == 'true' || result == 'TRUE')
       else
         attributes["result"] = nil
       end

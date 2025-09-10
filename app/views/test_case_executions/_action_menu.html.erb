@@ -1,13 +1,25 @@
 <div class="contextual">
   <% if @test_case_execution %>
-    <%= link_to l(:button_list),
-                project_test_plan_test_case_test_case_executions_path,
-                class: 'icon icon-list' %>
-    <%= link_to l(:button_edit), edit_project_test_plan_test_case_test_case_execution_path,
-        :onclick => 'showAndScrollTo("update", "issue_notes"); return false;',
-    :class => 'icon icon-edit', :accesskey => accesskey(:edit) if @test_case_execution.editable? %>
-    <%= link_to l(:button_delete), project_test_plan_test_case_test_case_execution_path,
-        :data => {:confirm => test_case_destroy_confirmation_message(@test_case_execution)},
-    :method => :delete, :class => 'icon icon-del' if @test_case_execution.deletable? %>
+    <% if @test_plan_given && @test_plan %>
+      <%= link_to l(:button_list),
+                  project_test_plan_test_case_test_case_executions_path,
+                  class: 'icon icon-list' %>
+      <%= link_to l(:button_edit), edit_project_test_plan_test_case_test_case_execution_path,
+          :onclick => 'showAndScrollTo("update", "issue_notes"); return false;',
+      :class => 'icon icon-edit', :accesskey => accesskey(:edit) if @test_case_execution.editable? %>
+      <%= link_to l(:button_delete), project_test_plan_test_case_test_case_execution_path,
+          :data => {:confirm => test_case_destroy_confirmation_message(@test_case_execution)},
+      :method => :delete, :class => 'icon icon-del' if @test_case_execution.deletable? %>
+    <% else %>
+      <%= link_to l(:button_list),
+                  project_test_case_test_case_executions_path,
+                  class: 'icon icon-list' %>
+      <%= link_to l(:button_edit), edit_project_test_case_test_case_execution_path,
+          :onclick => 'showAndScrollTo("update", "issue_notes"); return false;',
+      :class => 'icon icon-edit', :accesskey => accesskey(:edit) if @test_case_execution.editable? %>
+      <%= link_to l(:button_delete), project_test_case_test_case_execution_path,
+          :data => {:confirm => test_case_destroy_confirmation_message(@test_case_execution)},
+      :method => :delete, :class => 'icon icon-del' if @test_case_execution.deletable? %>
+    <% end %>
   <% end %>
 </div>

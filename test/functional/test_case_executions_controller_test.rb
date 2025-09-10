@@ -1542,4 +1542,48 @@ class TestCaseExecutionsControllerTest < ActionController::TestCase
       assert_response :forbidden
     end
   end
+
+  class CSVExport < self
+    def setup
+      super
+      activate_module_for_projects
+      @project = projects(:projects_003)
+      login_with_permissions(projects(:projects_001, :projects_002, :projects_003), [:view_project, :view_issues, :view_test_case_executions])
+    end
+
+    def test_csv_export_with_proper_formatting
+      get :index, params: {
+            project_id: @project.identifier,
+            format: 'csv'
+          }
+      
+      assert_response :success
+      assert_equal 'text/csv; header=present', response.content_type
+      
+      csv_data = CSV.parse(response.body)
+      assert csv_data.length > 1, "CSV should have header and at least one data row"
+      
+      # 檢查表頭
+      headers = csv_data[0]
+      assert_includes headers, '#', "CSV should have ID column"
+      assert_includes headers, 'Test Plan', "CSV should have Test Plan column"
+      assert_includes headers, 'Test Case', "CSV should have Test Case column"
+      
+      # 檢查資料行（如果有資料的話）
+      if csv_data.length > 1
+        data_row = csv_data[1]
+        # 檢查測試計劃和測試案例欄位不是物件表示法
+        test_plan_index = headers.index('Test Plan')
+        test_case_index = headers.index('Test Case')
+        
+        if test_plan_index && data_row[test_plan_index]
+          assert_not_match /#<TestPlan:/, data_row[test_plan_index], "Test Plan should not show object representation"
+        end
+        
+        if test_case_index && data_row[test_case_index]
+          assert_not_match /#<TestCase:/, data_row[test_case_index], "Test Case should not show object representation"
+        end
+      end
+    end
+  end
 end

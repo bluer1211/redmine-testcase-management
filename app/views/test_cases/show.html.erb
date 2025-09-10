@@ -17,7 +17,7 @@
             <% if @test_case.test_plans.any? %>
               <% @test_case.test_plans.each_with_index do |test_plan, index| %>
                 <%= link_to test_plan.name,
-                            project_test_plan_path(:project_id => @project.name, :id => test_plan.id) %>
+                            project_test_plan_path(:project_id => @project.identifier, :id => test_plan.id) %>
                 <%= ', ' unless index == @test_case.test_plans.length - 1 %>
               <% end %>
             <% else %>
@@ -97,7 +97,7 @@
                           id: test_case_execution.id) %></td>
         <% unless @test_plan_given %>
         <td><%= link_to test_case_execution.test_plan.name,
-                        project_test_plan_path(id: test_case_execution.test_plan.id) %></td>
+                        project_test_plan_path(project_id: @project.identifier, id: test_case_execution.test_plan.id) %></td>
         <% end %>
         <td>
           <% if test_case_execution.result %>

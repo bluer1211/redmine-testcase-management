@@ -17,7 +17,8 @@ class TestCaseQuery < Query
     QueryColumn.new(:latest_result, :sortable => "latest_result", :caption => :field_latest_result),
     QueryColumn.new(:latest_execution_date, :sortable => "latest_execution_date", :caption => :field_latest_execution_date),
     QueryColumn.new(:scenario, :sortable => "#{TestCase.table_name}.scenario", :caption => :field_scenario),
-    QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected", :caption => :field_expected)
+    QueryColumn.new(:expected, :sortable => "#{TestCase.table_name}.expected", :caption => :field_expected),
+    QueryColumn.new(:issue_status, :sortable => "#{TestCase.table_name}.issue_status_id", :caption => :field_issue_status)
   ]
 
   def initialize(attributes=nil, *args)
@@ -99,7 +100,7 @@ SQL
 
   # Specify selected columns by default
   def default_columns_names
-    [:id, :name, :test_plans, :scenario, :expected, :latest_result, :latest_execution_date, :environment, :user]
+    [:id, :name, :test_plans, :scenario, :expected, :latest_result, :latest_execution_date, :environment, :user, :issue_status]
   end
 
   def default_sort_criteria
@@ -134,14 +135,12 @@ SQL
   #   :test_plan_id :test_case_id :limit :offset
   def test_cases(options={})
     order_option = [sort_clause]
-    conditions = [
-      sql_for_field("id", "=", [options[:test_plan_id]], TestPlan.table_name, 'id')
-    ]
     if options[:test_plan_id]
-      base_scope
+      # 使用與 test_case_count 相同的查詢邏輯，確保一致性
+      TestCase.visible
         .joins(:test_plans)
+        .where("test_case_test_plans.test_plan_id = ?", options[:test_plan_id])
         .with_latest_result(options[:test_plan_id])
-        .where(conditions.join(" AND "))
         .order(order_option)
         .limit(options[:limit])
         .offset(options[:offset])
@@ -156,13 +155,15 @@ SQL
 
   def test_case_count(test_plan_id=nil, for_count=false)
     if test_plan_id
-      base_scope
+      # 直接使用簡單的查詢來計算測試案例數量，避免複雜的條件和 JOIN
+      TestCase.visible
         .joins(:test_plans)
-        .with_latest_result(test_plan_id, for_count)
+        .where("test_case_test_plans.test_plan_id = ?", test_plan_id)
+        .distinct
         .count
     else
-      base_scope
-        .with_latest_result(nil, for_count)
+      TestCase.visible
+        .distinct
         .count
     end
   end

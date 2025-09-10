@@ -70,8 +70,10 @@ class TestCaseExecutionsController < ApplicationController
           if params[:test_case_id].present?
             test_case_executions_params[:test_case_id] = params[:test_case_id]
           end
+          # 確保載入必要的關聯物件
           @test_case_executions = @query.test_case_executions(test_case_executions_params).visible
-          send_data(query_to_csv(@test_case_executions, @query, params[:csv]),
+            .includes(:test_plan, :test_case, :user, :issue)
+          send_data(custom_csv_export(@test_case_executions, @query),
                     :type => 'text/csv; header=present', :filename => 'test_case_executions.csv')
         end
       end
@@ -157,22 +159,34 @@ class TestCaseExecutionsController < ApplicationController
 
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id
   def show
-    @title = html_title("#{l(:label_test_case_executions)} ##{@test_case_execution.id}",
-                        "##{@test_case.id} #{@test_case.name}",
-                        l(:label_test_cases),
-                        "##{@test_plan.id} #{@test_plan.name}",
-                        l(:label_test_plans))
+    if @test_plan_given && @test_plan
+      @title = html_title("#{l(:label_test_case_executions)} ##{@test_case_execution.id}",
+                          "##{@test_case.id} #{@test_case.name}",
+                          l(:label_test_cases),
+                          "##{@test_plan.id} #{@test_plan.name}",
+                          l(:label_test_plans))
+    else
+      @title = html_title("#{l(:label_test_case_executions)} ##{@test_case_execution.id}",
+                          "##{@test_case.id} #{@test_case.name}",
+                          l(:label_test_cases))
+    end
   end
 
   # GET /projects/:project_id/test_case_executions/:id/edit
   # GET /projects/:project_id/test_cases/:test_case_id:/test_case_executions/:id/edit
   # GET /projects/:project_id/test_plans/:test_plan_id/test_cases/:test_case_id:/test_case_executions/:id/edit
   def edit
-    @title = html_title("#{l(:label_test_case_execution_edit)} ##{@test_case_execution.id}",
-                        "##{@test_case.id} #{@test_case.name}",
-                        l(:label_test_cases),
-                        "##{@test_plan.id} #{@test_plan.name}",
-                        l(:label_test_plans))
+    if @test_plan_given && @test_plan
+      @title = html_title("#{l(:label_test_case_execution_edit)} ##{@test_case_execution.id}",
+                          "##{@test_case.id} #{@test_case.name}",
+                          l(:label_test_cases),
+                          "##{@test_plan.id} #{@test_plan.name}",
+                          l(:label_test_plans))
+    else
+      @title = html_title("#{l(:label_test_case_execution_edit)} ##{@test_case_execution.id}",
+                          "##{@test_case.id} #{@test_case.name}",
+                          l(:label_test_cases))
+    end
     set_issue_template_uri
   end
 
@@ -437,16 +451,31 @@ class TestCaseExecutionsController < ApplicationController
     @issue_template_uri = new_project_issue_path(@project) + "?"
     case Setting.text_formatting
     when "markdown"
-      description =<<-EOS
+      if @test_plan_given && @test_plan
+        description =<<-EOS
 # #{@test_plan.name} #{@test_case.name}
 
 [#{@test_case.name}](#{project_test_plan_test_case_url(id: @test_case.id)})
 EOS
+      else
+        description =<<-EOS
+# #{@test_case.name}
+
+[#{@test_case.name}](#{project_test_case_url(id: @test_case.id)})
+EOS
+      end
       if @test_case_execution.id
-        description +=<<EOS
+        if @test_plan_given && @test_plan
+          description +=<<EOS
 [#{l(:label_test_case_executions)}](#{project_test_plan_test_case_test_case_execution_url(id: @test_case_execution.id)})
 
 EOS
+        else
+          description +=<<EOS
+[#{l(:label_test_case_executions)}](#{project_test_case_test_case_execution_url(id: @test_case_execution.id)})
+
+EOS
+        end
       end
       description +=<<-EOS
 ## #{l(:field_environment)}
@@ -466,15 +495,29 @@ EOS
 #{@test_case_execution.comment}
 EOS
     else
-      description =<<-EOS
+      if @test_plan_given && @test_plan
+        description =<<-EOS
 h1. #{@test_plan.name} #{@test_case.name}
 
 "#{@test_case.name}":#{project_test_plan_test_case_url(id: @test_case.id)}
 EOS
+      else
+        description =<<-EOS
+h1. #{@test_case.name}
+
+"#{@test_case.name}":#{project_test_case_url(id: @test_case.id)}
+EOS
+      end
       if @test_case_execution.id
-        description +=<<EOS
+        if @test_plan_given && @test_plan
+          description +=<<EOS
 "#{l(:label_test_case_executions)}":#{project_test_plan_test_case_test_case_execution_url(id: @test_case_execution.id)}
 EOS
+        else
+          description +=<<EOS
+"#{l(:label_test_case_executions)}":#{project_test_case_test_case_execution_url(id: @test_case_execution.id)}
+EOS
+        end
       end
       description +=<<-EOS
 
@@ -495,8 +538,13 @@ h2. #{l(:field_comment)}
 #{@test_case_execution.comment}
 EOS
     end
+    subject = if @test_plan_given && @test_plan
+                "#{@test_plan.name} #{@test_case.name}"
+              else
+                @test_case.name
+              end
     values = [["issue[assigned_to_id]", @test_case_execution.user ? @test_case_execution.user.id : User.current.id ],
-              ["issue[subject]", "#{@test_plan.name} #{@test_case.name}"],
+              ["issue[subject]", subject],
               ["issue[description]", description]]
     @issue_template_uri << URI.encode_www_form(values)
   end
@@ -512,18 +560,26 @@ EOS
                                                 :issue_id)
   end
 
-  def csv_value(column, test_case, value)
+  def csv_value(column, item, value)
     case column.name
-    when :test_plan, :test_case
-      value.name
+    when :test_plan
+      value&.name || value.to_s
+    when :test_case
+      value&.name || value.to_s
     when :result
       value ? l(:label_succeed) : l(:label_failure)
+    when :execution_date
+      value ? format_time(value) : ''
+    when :issue
+      value ? "##{value.id}" : ''
+    when :user
+      value&.name || value.to_s
     else
-      super
+      nil
     end
   end
 
-  def query_to_csv(items, query, options={})
+  def custom_query_to_csv(items, query, options={})
     columns = query.columns
 
     Redmine::Export::CSV.generate(:encoding => params[:encoding]) do |csv|
@@ -531,13 +587,151 @@ EOS
       csv << columns.map {|c| c.caption.to_s}
       # csv lines
       items.each do |item|
-        csv << columns.map {|c| csv_content(c, item)}
+        csv << columns.map {|c| csv_content_for_export_direct(c, item)}
       end
+    end
+  end
+
+  def csv_content_for_export_direct(column, item)
+    value = item.send(column.name) if item.respond_to?(column.name)
+    
+    # 直接處理特殊欄位
+    case column.name
+    when :test_plan
+      return value&.name || value.to_s
+    when :test_case
+      return value&.name || value.to_s
+    when :result
+      return value ? l(:label_succeed) : l(:label_failure)
+    when :execution_date
+      return value ? format_time(value) : ''
+    when :issue
+      return value ? "##{value.id}" : ''
+    when :user
+      return value&.name || value.to_s
+    end
+    
+    case value
+    when Date
+      format_date(value)
+    when Time
+      format_time(value)
+    when Array
+      value.join(', ')
+    else
+      value.to_s
+    end
+  end
+
+  # 覆蓋 Redmine 的 query_to_csv 方法
+  alias_method :original_query_to_csv, :query_to_csv
+
+  def custom_csv_export(items, query)
+    columns = query.columns
+
+    Redmine::Export::CSV.generate(:encoding => params[:encoding]) do |csv|
+      # csv header fields
+      csv << columns.map {|c| c.caption.to_s}
+      # csv lines
+      items.each do |item|
+        csv << columns.map {|c| custom_csv_content(c, item)}
+      end
+    end
+  end
+
+  def custom_csv_content(column, item)
+    value = item.send(column.name) if item.respond_to?(column.name)
+    
+    # 直接處理特殊欄位
+    case column.name
+    when :test_plan
+      # 確保載入關聯物件並取得名稱
+      if value.respond_to?(:name)
+        return value.name
+      elsif value.is_a?(String) && value.include?('#<')
+        # 如果已經是物件表示法，嘗試重新載入
+        test_plan = item.test_plan
+        return test_plan&.name || "Test Plan ##{item.test_plan_id}"
+      else
+        return value.to_s
+      end
+    when :test_case
+      # 確保載入關聯物件並取得名稱
+      if value.respond_to?(:name)
+        return value.name
+      elsif value.is_a?(String) && value.include?('#<')
+        # 如果已經是物件表示法，嘗試重新載入
+        test_case = item.test_case
+        return test_case&.name || "Test Case ##{item.test_case_id}"
+      else
+        return value.to_s
+      end
+    when :result
+      return value ? l(:label_succeed) : l(:label_failure)
+    when :execution_date
+      return value ? format_time(value) : ''
+    when :issue
+      return value ? "##{value.id}" : ''
+    when :user
+      return value&.name || value.to_s
+    end
+    
+    case value
+    when Date
+      format_date(value)
+    when Time
+      format_time(value)
+    when Array
+      value.join(', ')
+    else
+      value.to_s
+    end
+  end
+
+  def csv_content_for_export(column, item)
+    value = item.send(column.name) if item.respond_to?(column.name)
+    
+    # 直接處理特殊欄位
+    case column.name
+    when :test_plan
+      result = value&.name || value.to_s
+      Rails.logger.info "CSV Export - Test Plan: #{result}"
+      return result
+    when :test_case
+      result = value&.name || value.to_s
+      Rails.logger.info "CSV Export - Test Case: #{result}"
+      return result
+    when :result
+      return value ? l(:label_succeed) : l(:label_failure)
+    when :execution_date
+      return value ? format_time(value) : ''
+    when :issue
+      return value ? "##{value.id}" : ''
+    when :user
+      return value&.name || value.to_s
+    end
+    
+    case value
+    when Date
+      format_date(value)
+    when Time
+      format_time(value)
+    when Array
+      value.join(', ')
+    else
+      value.to_s
     end
   end
 
   def csv_content(column, item)
     value = item.send(column.name) if item.respond_to?(column.name)
+    
+    # 使用 csv_value 方法處理特殊欄位
+    if respond_to?(:csv_value)
+      special_value = csv_value(column, item, value)
+      return special_value unless special_value.nil?
+    end
+    
     case value
     when Date
       format_date(value)

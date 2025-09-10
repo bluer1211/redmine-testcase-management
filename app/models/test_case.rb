@@ -5,6 +5,7 @@ class TestCase < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :project
+  belongs_to :issue_status, optional: true
   has_many :test_case_test_plans, dependent: :destroy
   has_many :test_plans, through: :test_case_test_plans
   has_many :test_case_executions, dependent: :destroy
@@ -31,6 +32,7 @@ class TestCase < ActiveRecord::Base
     "environment",
     "scenario",
     "expected",
+    "issue_status_id",
     :if => lambda {|instance, user| instance.new_record? || instance.attributes_editable?(user)})
 
   def safe_attribute_names(user=nil)
@@ -76,7 +78,8 @@ class TestCase < ActiveRecord::Base
         #{ test_plan_id ? 'AND tce.test_plan_id = test_case_test_plans.test_plan_id' : '' }
 SQL
     ).
-    where(conditions)
+    where(conditions).
+    distinct
     # Avoid syntax error with count()
     if for_count
       if Redmine::Database.postgresql?

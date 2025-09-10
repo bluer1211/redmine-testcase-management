@@ -445,11 +445,19 @@ SQL
     columns = query.columns
 
     Redmine::Export::CSV.generate(:encoding => params[:encoding]) do |csv|
-      # csv header fields
-      csv << columns.map {|c| c.caption.to_s} + [l(:field_test_cases)]
+      # csv header fields - 如果已經包含 test_case_ids 欄位，就不需要額外添加 test_cases 欄位
+      if columns.any? {|c| c.name == :test_case_ids}
+        csv << columns.map {|c| c.caption.to_s}
+      else
+        csv << columns.map {|c| c.caption.to_s} + [l(:field_test_cases)]
+      end
       # csv lines
       items.each do |item|
-        csv << columns.map {|c| csv_content(c, item)} + [item.test_cases.map(&:id).join(",")]
+        if columns.any? {|c| c.name == :test_case_ids}
+          csv << columns.map {|c| csv_content(c, item)}
+        else
+          csv << columns.map {|c| csv_content(c, item)} + [item.test_cases.map(&:id).join(",")]
+        end
       end
     end
   end

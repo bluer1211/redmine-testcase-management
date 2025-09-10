@@ -17,6 +17,12 @@ module TestPlansQueriesHelper
         else
           l(:label_none)
         end
+      when :test_case_ids
+        if value.present?
+          value
+        else
+          l(:label_none)
+        end
       else
         super
       end

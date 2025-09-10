@@ -29,10 +29,15 @@ class TestPlanImport < Import
 
   def project
     return @project if @project.present?
-    return nil unless mapping.present?
     
-    project_id = mapping["project_id"].to_i
-    allowed_target_projects.find_by_id(project_id) || allowed_target_projects.first
+    # 如果沒有 mapping，使用 project_id
+    if mapping.present?
+      project_id = mapping["project_id"].to_i
+      allowed_target_projects.find_by_id(project_id) || allowed_target_projects.first
+    else
+      # 使用直接存儲的 project_id
+      Project.find_by_id(self.project_id) if self.project_id.present?
+    end
   end
 
   def mappable_custom_fields
@@ -133,10 +138,20 @@ class TestPlanImport < Import
     }
     
     field_mappings.each do |field, possible_names|
+      # 優先選擇完全匹配的欄位
       matched_header = headers.find do |header|
         header_clean = header.strip.downcase
-        possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+        possible_names.compact.any? { |name| header_clean == name.downcase }
       end
+      
+      # 如果沒有完全匹配，再選擇包含匹配的欄位
+      unless matched_header
+        matched_header = headers.find do |header|
+          header_clean = header.strip.downcase
+          possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+        end
+      end
+      
       mapping[field] = matched_header if matched_header
     end
     mapping
@@ -147,11 +162,11 @@ class TestPlanImport < Import
   def build_object(row, item)
     test_plan = TestPlan.new
     test_plan.user = user
-    test_plan.project_id = mapping["project_id"].to_i
+    test_plan.project_id = project_id
 
     # If test_plan_id is mapped, allow to override existing test plan
     test_plan_id = row_value(row, "test_plan_id")
-    if test_plan_id
+    if test_plan_id.present? && test_plan_id.to_s.strip.present?
       found_test_plan = TestPlan.where(id: test_plan_id, project_id: test_plan.project_id).first
       if found_test_plan
         test_plan = found_test_plan
