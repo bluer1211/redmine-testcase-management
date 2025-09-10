@@ -101,6 +101,8 @@ en:
 
   field_assigned_rate: "Assigned Rate"
   field_test_case_id: "Test Case ID"
+  field_test_case_ids: "Test Case IDs"
+  field_test_case_execution_id: "Test Case Execution ID"
   field_test_case_update: "Update existing Test Case"
 
   notice_import_tc_test_case_id: "Specify column which contains test case id if you want to override the existing specific test case."
@@ -124,3 +126,8 @@ en:
   settings_test_case_executions_export_limit: "Maximum number of exported test case ececutions at a time"
 
   test_case_assignment_tooltip: "Find test case by ID or name"
+  
+  notice_import_completed: "Import completed! Please check the test cases list."
+  notice_test_case_import_completed: "Import completed! Please check the test cases list."
+  notice_test_plan_import_completed: "Import completed! Please check the test plans list."
+  notice_test_case_execution_import_completed: "Import completed! Please check the test case executions list."

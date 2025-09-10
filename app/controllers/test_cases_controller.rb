@@ -417,29 +417,106 @@ SQL
   def template
     # 完全移除權限檢查，讓模板下載對所有用戶開放
     
-    template_file = case params[:type]
+    case params[:type]
     when 'test_cases'
-      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_cases.csv')
+      generate_test_cases_template
     when 'test_plans'
-      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_plans.csv')
+      generate_test_plans_template
     when 'test_case_executions'
-      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_case_executions.csv')
+      generate_test_case_executions_template
     else
-      Rails.root.join('plugins/testcase_management/test/fixtures/files/test_cases.csv')
-    end
-
-    if File.exist?(template_file)
-      send_file template_file,
-                filename: "#{params[:type]}_template.csv",
-                type: 'text/csv',
-                disposition: 'attachment'
-    else
-      flash[:error] = l(:error_template_not_found)
-      redirect_to project_test_cases_path(@project)
+      generate_test_cases_template
     end
   end
 
   private
+
+  def generate_test_cases_template
+    # 使用與 CSV 匯出相同的查詢和欄位定義
+    @query = TestCaseQuery.new
+    @query.project = @project
+    columns = @query.available_columns
+    
+    csv_data = Redmine::Export::CSV.generate(encoding: 'UTF-8') do |csv|
+      # 使用與 CSV 匯出相同的表頭，但添加 test_case_id 欄位
+      headers = columns.map {|c| c.caption.to_s}
+      headers.unshift(l(:field_test_case_id))  # 在開頭添加測試案例 ID 欄位
+      csv << headers
+      # 添加範例資料行
+      csv << [
+        "1",  # test_case_id
+        "1",  # id
+        "範例測試案例 1",  # name
+        "Ubuntu",  # environment
+        User.current.name,  # user
+        l(:label_succeed),  # latest_result
+        "2024-01-01",  # latest_execution_date
+        "執行測試步驟...",  # scenario
+        "預期結果..."  # expected
+      ]
+    end
+    
+    send_data csv_data,
+              filename: "test_cases_template.csv",
+              type: 'text/csv; charset=utf-8',
+              disposition: 'attachment'
+  end
+
+  def generate_test_plans_template
+    @query = TestPlanQuery.new
+    @query.project = @project
+    columns = @query.available_columns
+    
+    csv_data = Redmine::Export::CSV.generate(encoding: 'UTF-8') do |csv|
+      # 使用與 CSV 匯出相同的表頭
+      csv << columns.map {|c| c.caption.to_s} + [l(:field_test_cases)]
+      # 添加範例資料行
+      csv << [
+        "1",
+        "範例測試計劃 1",
+        l(:label_new),
+        "1",
+        User.current.name,
+        "2024-01-01",
+        "2024-01-31",
+        "101,102,103"
+      ]
+    end
+    
+    send_data csv_data,
+              filename: "test_plans_template.csv",
+              type: 'text/csv; charset=utf-8',
+              disposition: 'attachment'
+  end
+
+  def generate_test_case_executions_template
+    @query = TestCaseExecutionQuery.new
+    @query.project = @project
+    columns = @query.available_columns
+    
+    csv_data = Redmine::Export::CSV.generate(encoding: 'UTF-8') do |csv|
+      # 使用與 CSV 匯出相同的表頭
+      csv << columns.map {|c| c.caption.to_s}
+      # 添加範例資料行
+      csv << [
+        "1",
+        "範例測試案例 1",
+        "範例測試計劃 1",
+        l(:label_succeed),
+        User.current.name,
+        "1",
+        "執行備註",
+        "測試步驟...",
+        "預期結果...",
+        "2024-01-01 10:00:00"
+      ]
+    end
+    
+    send_data csv_data,
+              filename: "test_case_executions_template.csv",
+              type: 'text/csv; charset=utf-8',
+              disposition: 'attachment'
+  end
 
   def format_test_cases_json(test_cases)
     test_cases.map do |test_case|
@@ -472,6 +549,43 @@ SQL
         yyyymmdd_date(value)
     else
       super
+    end
+  end
+
+  def query_to_csv(items, query, options={})
+    columns = query.columns
+
+    Redmine::Export::CSV.generate(:encoding => params[:encoding]) do |csv|
+      # csv header fields
+      csv << columns.map {|c| c.caption.to_s}
+      # csv lines
+      items.each do |item|
+        csv << columns.map {|c| csv_content(c, item)}
+      end
+    end
+  end
+
+  def csv_content(column, item)
+    value = item.send(column.name) if item.respond_to?(column.name)
+    case value
+    when Date
+      format_date(value)
+    when Time
+      format_time(value)
+    when Array
+      value.join(', ')
+    when ActiveRecord::Associations::CollectionProxy
+      # 處理測試計劃關聯，返回測試計劃名稱
+      if column.name == :test_plans
+        value.map(&:name).join(', ')
+      else
+        value.to_s
+      end
+    when TestPlan
+      # 處理單個測試計劃對象
+      value.name
+    else
+      value.to_s
     end
   end
 end

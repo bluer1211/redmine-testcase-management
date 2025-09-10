@@ -1,5 +1,6 @@
 class TestPlanImport < Import
   AUTO_MAPPABLE_FIELDS = {
+    "test_plan_id" => "field_test_plan_id",
     "test_plan" => "field_test_plan",
     "issue_status" => "field_issue_status",
     "estimated_bug" => "field_estimated_bug",
@@ -27,12 +28,118 @@ class TestPlanImport < Import
   end
 
   def project
+    return @project if @project.present?
+    return nil unless mapping.present?
+    
     project_id = mapping["project_id"].to_i
     allowed_target_projects.find_by_id(project_id) || allowed_target_projects.first
   end
 
   def mappable_custom_fields
     []
+  end
+
+  def import_result
+    @import_result || {}
+  end
+
+  def run
+    return false unless parsed?
+    
+    success_count = 0
+    error_count = 0
+    
+    parsed_data.each_with_index do |row, index|
+      begin
+        object = build_object(row, index)
+        if object.save
+          success_count += 1
+        else
+          error_count += 1
+          Rails.logger.error "Import error at row #{index + 1}: #{object.errors.full_messages.join(', ')}"
+        end
+      rescue => e
+        error_count += 1
+        Rails.logger.error "Import error at row #{index + 1}: #{e.message}"
+      end
+    end
+    
+    @import_result = {
+      success_count: success_count,
+      error_count: error_count,
+      total_count: parsed_data.length
+    }
+    
+    true
+  end
+
+  def auto_mapping
+    return {} unless headers.present?
+    mapping = {}
+    
+    # 使用 Redmine 的 i18n 翻譯機制來獲取不同語系的欄位名稱
+    field_mappings = {
+      'test_plan_id' => [
+        '#', 'id',
+        I18n.t('field_test_plan_id', locale: :en),
+        I18n.t('field_test_plan_id', locale: :'zh-TW'),
+        I18n.t('field_test_plan_id', locale: :ja)
+      ],
+      'test_plan' => [
+        'test_plan', 'plan', 'name',
+        I18n.t('field_test_plan', locale: :en),
+        I18n.t('field_test_plan', locale: :'zh-TW'),
+        I18n.t('field_test_plan', locale: :ja)
+      ],
+      'issue_status' => [
+        'status', 'issue_status',
+        I18n.t('field_issue_status', locale: :en),
+        I18n.t('field_issue_status', locale: :'zh-TW'),
+        I18n.t('field_issue_status', locale: :ja)
+      ],
+      'estimated_bug' => [
+        'estimated_bug', 'bug',
+        I18n.t('field_estimated_bug', locale: :en),
+        I18n.t('field_estimated_bug', locale: :'zh-TW'),
+        I18n.t('field_estimated_bug', locale: :ja)
+      ],
+      'user' => [
+        'user', 'executor',
+        I18n.t('field_user', locale: :en),
+        I18n.t('field_user', locale: :'zh-TW'),
+        I18n.t('field_user', locale: :ja)
+      ],
+      'begin_date' => [
+        'begin_date', 'start_date',
+        I18n.t('field_begin_date', locale: :en),
+        I18n.t('field_begin_date', locale: :'zh-TW'),
+        I18n.t('field_begin_date', locale: :ja)
+      ],
+      'end_date' => [
+        'end_date', 'finish_date',
+        I18n.t('field_end_date', locale: :en),
+        I18n.t('field_end_date', locale: :'zh-TW'),
+        I18n.t('field_end_date', locale: :ja)
+      ],
+      'test_case_ids' => [
+        'test_case_ids', 'test_cases', 'test_case_id', 'test_case_ids',
+        I18n.t('field_test_cases', locale: :en),
+        I18n.t('field_test_cases', locale: :'zh-TW'),
+        I18n.t('field_test_cases', locale: :ja),
+        I18n.t('field_test_case_ids', locale: :en),
+        I18n.t('field_test_case_ids', locale: :'zh-TW'),
+        I18n.t('field_test_case_ids', locale: :ja)
+      ]
+    }
+    
+    field_mappings.each do |field, possible_names|
+      matched_header = headers.find do |header|
+        header_clean = header.strip.downcase
+        possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+      end
+      mapping[field] = matched_header if matched_header
+    end
+    mapping
   end
 
   private

@@ -1,0 +1,104 @@
+<div class="import-mapping">
+  <h2><%= l(:label_import) %> - <%= l(:label_field_mapping) %></h2>
+  
+  <%= form_tag mapping_project_import_path(@project, @import), method: :post do %>
+  <div class="box">
+    <h3><%= l(:label_map_fields) %></h3>
+    <p><%= l(:text_field_mapping_help) %></p>
+      
+      <table class="list mapping-table">
+        <thead>
+          <tr>
+            <th><%= l(:label_field) %></th>
+            <th><%= l(:label_csv_column) %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @import.class::AUTO_MAPPABLE_FIELDS.each do |field, label| %>
+            <tr>
+              <td><%= l(label) %></td>
+              <td>
+                <%= select_tag "mapping[#{field}]", 
+                               options_for_select([
+                                 [l(:label_ignore), '']] + 
+                                 @import.headers.map { |h| [h.strip, h.strip] },
+                               @import.mapping&.[](field) || @import.auto_mapping[field]),
+                               class: 'mapping-select' %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="import-actions">
+      <%= submit_tag l(:button_submit), class: 'button icon icon-next' %>
+      <%= link_to l(:button_back), settings_project_import_path(@project, @import), 
+                  class: 'button' %>
+      <%= link_to l(:button_cancel), project_test_cases_path(@project), 
+                  class: 'button' %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.mapping-table {
+  width: 100%;
+  max-width: 600px;
+}
+
+.mapping-table th,
+.mapping-table td {
+  padding: 6px 12px;
+  vertical-align: middle;
+}
+
+.mapping-table th:first-child,
+.mapping-table td:first-child {
+  width: 40%;
+  text-align: right;
+  padding-right: 20px;
+}
+
+.mapping-table th:last-child,
+.mapping-table td:last-child {
+  width: 60%;
+  text-align: left;
+  padding-left: 0;
+}
+
+.mapping-select {
+  width: 180px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.import-actions .button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 10px;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #333;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.import-actions .button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.import-actions .button.icon-next {
+  background-color: #007cba;
+  color: white;
+  border-color: #007cba;
+}
+
+.import-actions .button.icon-next:hover {
+  background-color: #005a87;
+  border-color: #005a87;
+}
+</style>

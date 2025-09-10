@@ -1,18 +1,18 @@
 <div class="import-page">
-  <h2><%= l(:label_import) %></h2>
+  <h2><%= l(:label_import) %> - <%= l("label_import_#{@import.class.name.underscore}") %></h2>
   
   <!-- 模板下載區塊 -->
   <div class="template-download-section box">
     <h3><%= l(:label_download_template) %></h3>
     <div class="template-buttons">
       <%= link_to l(:label_test_cases_template), 
-                  project_test_cases_template_path(:project_id => @project, :type => 'test_cases'), 
+                  project_project_test_cases_template_path(:project_id => @project, :type => 'test_cases'), 
                   class: 'button icon icon-download' %>
       <%= link_to l(:label_test_plans_template), 
-                  project_test_plans_template_path(:project_id => @project, :type => 'test_plans'), 
+                  project_project_test_plans_template_path(:project_id => @project, :type => 'test_plans'), 
                   class: 'button icon icon-download' %>
       <%= link_to l(:label_test_executions_template), 
-                  project_test_case_executions_template_path(:project_id => @project, :type => 'test_case_executions'), 
+                  project_project_test_case_executions_template_path(:project_id => @project, :type => 'test_case_executions'), 
                   class: 'button icon icon-download' %>
     </div>
     <div class="template-info">
@@ -23,19 +23,19 @@
   <!-- 檔案上傳區塊 -->
   <div class="file-upload-section box">
     <h3><%= l(:label_upload_file) %></h3>
-    <%= form_tag imports_path, :multipart => true do %>
+    <%= form_tag project_imports_path(@project), :multipart => true do %>
       <%= hidden_field_tag 'project_id', @project.id %>
       <%= hidden_field_tag 'type', @import.class.name %>
       
       <div class="file-upload-area">
         <p>
-          <label for="file"><%= l(:label_file) %></label>
+          <label for="file"><%= l(:label_attachment) %></label>
           <%= file_field_tag 'file', :size => 60, :required => true %>
         </p>
       </div>
       
-      <div class="buttons">
-        <%= submit_tag l(:button_next), :name => nil %>
+      <div class="import-actions">
+        <%= submit_tag l(:button_submit), :name => nil, class: 'button icon icon-next' %>
         <%= link_to l(:button_cancel), project_test_cases_path(@project), :class => 'button' %>
       </div>
     <% end %>
@@ -91,5 +91,34 @@
 
 .import-instructions li {
   margin-bottom: 5px;
+}
+
+.import-actions .button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 10px;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #333;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.import-actions .button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.import-actions .button.icon-next {
+  background-color: #007cba;
+  color: white;
+  border-color: #007cba;
+}
+
+.import-actions .button.icon-next:hover {
+  background-color: #005a87;
+  border-color: #005a87;
 }
 </style>

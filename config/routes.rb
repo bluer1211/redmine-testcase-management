@@ -9,9 +9,9 @@ Rails.application.routes.draw do |map|
     get 'test_cases/statistics', to: 'test_cases#statistics', as: 'test_case_statistics'
 
     # 添加模板下載路由
-    get 'test_cases/template', to: 'test_cases#template', as: 'test_cases_template'
-    get 'test_plans/template', to: 'test_plans#template', as: 'test_plans_template'
-    get 'test_case_executions/template', to: 'test_case_executions#template', as: 'test_case_executions_template'
+    get 'test_cases/template', to: 'test_cases#template', as: 'project_test_cases_template'
+    get 'test_plans/template', to: 'test_plans#template', as: 'project_test_plans_template'
+    get 'test_case_executions/template', to: 'test_case_executions#template', as: 'project_test_case_executions_template'
 
     match 'test_cases/context_menu', :to => 'test_cases#list_context_menu', :as => :test_case_list_context_menu, :via => [:get, :post]
     resources :test_cases do
@@ -50,6 +50,20 @@ Rails.application.routes.draw do |map|
         get 'bulk_edit'
         post 'bulk_update'
         delete 'bulk_delete'
+      end
+    end
+  end
+
+  # 導入功能路由
+  resources :projects do
+    resources :imports, :only => [:new, :create, :show, :settings, :mapping, :run] do
+      member do
+        get 'settings'
+        post 'settings'
+        get 'mapping'
+        post 'mapping'
+        get 'run'
+        post 'run'
       end
     end
   end

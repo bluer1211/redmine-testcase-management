@@ -1,0 +1,105 @@
+<div class="import-run">
+  <h2><%= l(:label_import) %> - <%= l(:label_execute) %></h2>
+  
+  <div class="box">
+    <h3><%= l(:label_import_summary) %></h3>
+    <p><strong><%= l(:label_attachment) %>:</strong> <%= @import.original_filename %></p>
+    <p><strong><%= l(:label_project) %>:</strong> <%= @import.project.name %></p>
+    <p><strong><%= l(:label_rows_to_import) %>:</strong> <%= @import.parsed_data.length %></p>
+  </div>
+
+  <div class="box">
+    <h3><%= l(:label_field_mapping) %></h3>
+    <table class="list mapping-table">
+      <thead>
+        <tr>
+          <th><%= l(:label_field) %></th>
+          <th><%= l(:label_csv_column) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @import.mapping.present? %>
+          <% @import.mapping.each do |field, column| %>
+            <% next if column.blank? %>
+            <tr>
+              <td><%= l(@import.class::AUTO_MAPPABLE_FIELDS[field]) %></td>
+              <td><%= column %></td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="2"><%= l(:text_no_mapping_configured) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="import-actions">
+    <%= form_tag run_project_import_path(@project, @import), method: :post do %>
+      <%= submit_tag l(:button_import), 
+                     class: 'button icon icon-import',
+                     confirm: l(:text_confirm_import) %>
+    <% end %>
+    <%= link_to l(:button_back), mapping_project_import_path(@project, @import), 
+                class: 'button' %>
+    <%= link_to l(:button_cancel), project_test_cases_path(@project), 
+                class: 'button' %>
+  </div>
+</div>
+
+<style>
+.mapping-table {
+  width: 100%;
+  max-width: 600px;
+}
+
+.mapping-table th,
+.mapping-table td {
+  padding: 6px 12px;
+  vertical-align: middle;
+}
+
+.mapping-table th:first-child,
+.mapping-table td:first-child {
+  width: 40%;
+  text-align: right;
+  padding-right: 20px;
+}
+
+.mapping-table th:last-child,
+.mapping-table td:last-child {
+  width: 60%;
+  text-align: left;
+  padding-left: 0;
+}
+
+.import-actions .button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 10px;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #333;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.import-actions .button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.import-actions .button.icon-import {
+  background-color: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.import-actions .button.icon-import:hover {
+  background-color: #1e7e34;
+  border-color: #1e7e34;
+}
+</style>

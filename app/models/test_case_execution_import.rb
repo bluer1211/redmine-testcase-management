@@ -1,5 +1,6 @@
 class TestCaseExecutionImport < Import
   AUTO_MAPPABLE_FIELDS = {
+    "test_case_execution_id" => "field_test_case_execution_id",
     "test_case" => "field_test_case",
     "test_plan" => "field_test_plan",
     "result" => "field_result",
@@ -27,6 +28,9 @@ class TestCaseExecutionImport < Import
   end
 
   def project
+    return @project if @project.present?
+    return nil unless mapping.present?
+    
     project_id = mapping["project_id"].to_i
     allowed_target_projects.find_by_id(project_id) || allowed_target_projects.first
   end
@@ -35,12 +39,122 @@ class TestCaseExecutionImport < Import
     []
   end
 
+  def import_result
+    @import_result || {}
+  end
+
+  def run
+    return false unless parsed?
+    
+    success_count = 0
+    error_count = 0
+    
+    parsed_data.each_with_index do |row, index|
+      begin
+        object = build_object(row, index)
+        if object.save
+          success_count += 1
+        else
+          error_count += 1
+          Rails.logger.error "Import error at row #{index + 1}: #{object.errors.full_messages.join(', ')}"
+        end
+      rescue => e
+        error_count += 1
+        Rails.logger.error "Import error at row #{index + 1}: #{e.message}"
+      end
+    end
+    
+    @import_result = {
+      success_count: success_count,
+      error_count: error_count,
+      total_count: parsed_data.length
+    }
+    
+    true
+  end
+
+  def auto_mapping
+    return {} unless headers.present?
+    mapping = {}
+    
+    # 使用 Redmine 的 i18n 翻譯機制來獲取不同語系的欄位名稱
+    field_mappings = {
+      'test_case_execution_id' => [
+        '#', 'id',
+        I18n.t('field_test_case_execution_id', locale: :en),
+        I18n.t('field_test_case_execution_id', locale: :'zh-TW'),
+        I18n.t('field_test_case_execution_id', locale: :ja)
+      ],
+      'test_case' => [
+        'test_case', 'case',
+        I18n.t('field_test_case', locale: :en),
+        I18n.t('field_test_case', locale: :'zh-TW'),
+        I18n.t('field_test_case', locale: :ja)
+      ],
+      'test_plan' => [
+        'test_plan', 'plan',
+        I18n.t('field_test_plan', locale: :en),
+        I18n.t('field_test_plan', locale: :'zh-TW'),
+        I18n.t('field_test_plan', locale: :ja)
+      ],
+      'result' => [
+        'result', 'execution_result',
+        I18n.t('field_result', locale: :en),
+        I18n.t('field_result', locale: :'zh-TW'),
+        I18n.t('field_result', locale: :ja)
+      ],
+      'user' => [
+        'user', 'executor',
+        I18n.t('field_user', locale: :en),
+        I18n.t('field_user', locale: :'zh-TW'),
+        I18n.t('field_user', locale: :ja)
+      ],
+      'issue' => [
+        'issue', 'bug',
+        I18n.t('field_issue', locale: :en),
+        I18n.t('field_issue', locale: :'zh-TW'),
+        I18n.t('field_issue', locale: :ja)
+      ],
+      'comment' => [
+        'comment', 'note',
+        I18n.t('field_comment', locale: :en),
+        I18n.t('field_comment', locale: :'zh-TW'),
+        I18n.t('field_comment', locale: :ja)
+      ],
+      'execution_date' => [
+        'execution_date', 'date',
+        I18n.t('field_execution_date', locale: :en),
+        I18n.t('field_execution_date', locale: :'zh-TW'),
+        I18n.t('field_execution_date', locale: :ja)
+      ]
+    }
+    
+    field_mappings.each do |field, possible_names|
+      matched_header = headers.find do |header|
+        header_clean = header.strip.downcase
+        possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+      end
+      mapping[field] = matched_header if matched_header
+    end
+    mapping
+  end
+
   private
 
   def build_object(row, item)
     test_case_execution = TestCaseExecution.new
     test_case_execution.user = user
     test_case_execution.project_id = mapping["project_id"].to_i
+
+    # If test_case_execution_id is mapped, allow to override existing test case execution
+    test_case_execution_id = row_value(row, "test_case_execution_id")
+    if test_case_execution_id
+      found_test_case_execution = TestCaseExecution.where(id: test_case_execution_id, project_id: test_case_execution.project_id).first
+      if found_test_case_execution
+        test_case_execution = found_test_case_execution
+        test_case_execution.user = user
+      end
+    end
 
     begin
       id_or_name = row_value(row, "test_case")

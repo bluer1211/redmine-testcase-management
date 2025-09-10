@@ -1,0 +1,97 @@
+<div class="import-show">
+  <% if @import_result.present? %>
+    <!-- 導入結果 -->
+    <h2><%= l(:label_import) %> - <%= l(:label_result) %></h2>
+    
+    <div class="import-result box">
+      <h3><%= l(:label_import_completed) %></h3>
+      <p><strong><%= l(:label_successful_imports) %>:</strong> <%= @import_result[:success_count] %></p>
+      <p><strong><%= l(:label_failed_imports) %>:</strong> <%= @import_result[:error_count] %></p>
+      <p><strong><%= l(:label_total_rows) %>:</strong> <%= @import_result[:total_count] %></p>
+    </div>
+
+    <div class="import-actions">
+      <%= link_to l(:label_view_imported_items), project_test_cases_path(@project), 
+                  class: 'button icon icon-list' %>
+      <%= link_to l(:label_new_import), new_project_test_cases_import_path(@project), 
+                  class: 'button icon icon-import' %>
+    </div>
+  <% else %>
+    <!-- 預覽 -->
+    <h2><%= l(:label_import) %> - <%= l(:label_preview) %></h2>
+    
+    <div class="import-info box">
+      <h3><%= l(:label_import_info) %></h3>
+      <p><strong><%= l(:label_attachment) %>:</strong> <%= @import.original_filename %></p>
+      <p><strong><%= l(:label_rows) %>:</strong> <%= @import.parsed_data.length %></p>
+      <p><strong><%= l(:label_columns) %>:</strong> <%= @import.headers.length %></p>
+    </div>
+
+    <div class="import-preview box">
+      <h3><%= l(:label_preview_data) %></h3>
+      <% if @import.parsed_data.any? %>
+        <table class="list">
+          <thead>
+            <tr>
+              <% @import.headers.each do |header| %>
+                <th><%= header %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @import.parsed_data.first(5).each do |row| %>
+              <tr>
+                <% @import.headers.each do |header| %>
+                  <td><%= row[header] %></td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <% if @import.parsed_data.length > 5 %>
+          <p class="info"><%= l(:text_showing_first_rows, count: 5) %></p>
+        <% end %>
+      <% else %>
+        <p class="nodata"><%= l(:label_no_data) %></p>
+      <% end %>
+    </div>
+
+    <div class="import-actions">
+      <%= link_to l(:button_submit), settings_project_import_path(@project, @import), 
+                  class: 'button icon icon-next' %>
+      <%= link_to l(:button_cancel), project_test_cases_path(@project), 
+                  class: 'button' %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.import-actions .button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 10px;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #333;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.import-actions .button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.import-actions .button.icon-next {
+  background-color: #007cba;
+  color: white;
+  border-color: #007cba;
+}
+
+.import-actions .button.icon-next:hover {
+  background-color: #005a87;
+  border-color: #005a87;
+}
+</style>

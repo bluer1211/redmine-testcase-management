@@ -1,0 +1,85 @@
+<div class="import-settings">
+  <h2><%= l(:label_import) %> - <%= l(:label_settings) %></h2>
+  
+  <%= form_tag settings_project_import_path(@project, @import), method: :post do %>
+    <div class="box">
+      <h3><%= l(:label_csv_settings) %></h3>
+      
+      <p>
+        <label for="separator" style="display: inline-block; width: 120px; vertical-align: top;"><%= l(:label_field_separator) %></label>
+        <%= select_tag 'settings[separator]', 
+                       options_for_select([
+                         [l(:label_comma), ','],
+                         [l(:label_semicolon), ';'],
+                         [l(:label_tab), "\t"]
+                       ], @import.settings[:separator] || ','),
+                       id: 'separator', style: 'display: inline-block; vertical-align: top;' %>
+      </p>
+      
+      <p>
+        <label for="wrapper" style="display: inline-block; width: 120px; vertical-align: top;"><%= l(:label_field_wrapper) %></label>
+        <%= select_tag 'settings[wrapper]', 
+                       options_for_select([
+                         [l(:label_double_quote), '"'],
+                         [l(:label_single_quote), "'"],
+                         [l(:label_none), '']
+                       ], @import.settings[:wrapper] || '"'),
+                       id: 'wrapper', style: 'display: inline-block; vertical-align: top;' %>
+      </p>
+      
+      <p>
+        <label for="encoding" style="display: inline-block; width: 120px; vertical-align: top;"><%= l(:label_encoding) %></label>
+        <%= select_tag 'settings[encoding]', 
+                       options_for_select([
+                         ['UTF-8', 'UTF-8'],
+                         ['ISO-8859-1', 'ISO-8859-1'],
+                         ['Windows-1252', 'Windows-1252']
+                       ], @import.settings[:encoding] || 'UTF-8'),
+                       id: 'encoding', style: 'display: inline-block; vertical-align: top;' %>
+      </p>
+    </div>
+
+    <!-- 隱藏目標專案選擇，因為只有一個專案 -->
+    <%= hidden_field_tag 'settings[project_id]', @import.project_id %>
+
+    <div class="import-actions">
+      <%= submit_tag l(:button_submit), :name => nil, class: 'button icon icon-next' %>
+      <%= link_to l(:button_back), new_test_cases_import_path(@project), 
+                  class: 'button' %>
+      <%= link_to l(:button_cancel), project_test_cases_path(@project), 
+                  class: 'button' %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.import-actions .button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-right: 10px;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #333;
+  border-radius: 3px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.import-actions .button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.import-actions .button.icon-next {
+  background-color: #007cba;
+  color: white;
+  border-color: #007cba;
+}
+
+.import-actions .button.icon-next:hover {
+  background-color: #005a87;
+  border-color: #005a87;
+}
+</style>
+

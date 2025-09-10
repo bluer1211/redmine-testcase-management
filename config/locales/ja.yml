@@ -100,6 +100,8 @@ ja:
 
   field_assigned_rate: "担当率"
   field_test_case_id: "テスト項目ID"
+  field_test_case_ids: "テスト項目IDs"
+  field_test_case_execution_id: "テスト実行結果ID"
   field_test_case_update: "テスト項目上書き"
 
   notice_import_tc_test_case_id: "既存のテスト項目をIDを特定して更新したい場合のみ、テスト項目のIDを含む列を指定します。"
@@ -123,3 +125,8 @@ ja:
   settings_test_case_executions_export_limit: "テスト実行結果のCSV出力件数の上限"
 
   test_case_assignment_tooltip: "テスト項目のidまたは名前を入力して検索"
+  
+  notice_import_completed: "インポートが完了しました！テストケース一覧をご確認ください。"
+  notice_test_case_import_completed: "インポートが完了しました！テストケース一覧をご確認ください。"
+  notice_test_plan_import_completed: "インポートが完了しました！テスト計画一覧をご確認ください。"
+  notice_test_case_execution_import_completed: "インポートが完了しました！テスト実行結果一覧をご確認ください。"

@@ -2,7 +2,6 @@ class TestCaseImport < Import
   AUTO_MAPPABLE_FIELDS = {
     "test_case_id" => "field_test_case_id",
     "test_case" => "field_test_case",
-    "test_case_update" => "field_test_case_update",
     "user" => "field_user",
     "environment" => "field_environment",
     "scenario" => "field_scenario",
@@ -28,12 +27,114 @@ class TestCaseImport < Import
   end
 
   def project
-    project_id = mapping["project_id"].to_i
-    allowed_target_projects.find_by_id(project_id) || allowed_target_projects.first
+    return @project if @project.present?
+    
+    # 如果沒有 mapping，使用 project_id
+    if mapping.present?
+      project_id = mapping["project_id"].to_i
+      allowed_target_projects.find_by_id(project_id) || allowed_target_projects.first
+    else
+      # 使用直接存儲的 project_id
+      Project.find_by_id(self.project_id) if self.project_id.present?
+    end
   end
 
   def mappable_custom_fields
     []
+  end
+
+  def import_result
+    @import_result || {}
+  end
+
+  def run
+    return false unless parsed?
+    
+    success_count = 0
+    error_count = 0
+    
+    parsed_data.each_with_index do |row, index|
+      begin
+        object = build_object(row, index)
+        if object.save
+          success_count += 1
+        else
+          error_count += 1
+          Rails.logger.error "Import error at row #{index + 1}: #{object.errors.full_messages.join(', ')}"
+        end
+      rescue => e
+        error_count += 1
+        Rails.logger.error "Import error at row #{index + 1}: #{e.message}"
+      end
+    end
+    
+    @import_result = {
+      success_count: success_count,
+      error_count: error_count,
+      total_count: parsed_data.length
+    }
+    
+    true
+  end
+
+  def auto_mapping
+    return {} unless headers.present?
+    mapping = {}
+    
+    # 使用 Redmine 的 i18n 翻譯機制來獲取不同語系的欄位名稱
+    field_mappings = {
+      'test_case_id' => [
+        '#', 'id', 
+        I18n.t('field_test_case_id', locale: :en),
+        I18n.t('field_test_case_id', locale: :'zh-TW'),
+        I18n.t('field_test_case_id', locale: :ja)
+      ],
+      'test_case' => [
+        'name', 'test_case',
+        I18n.t('field_test_case', locale: :en),
+        I18n.t('field_test_case', locale: :'zh-TW'),
+        I18n.t('field_test_case', locale: :ja)
+      ],
+      'user' => [
+        'user', 'executor',
+        I18n.t('field_user', locale: :en),
+        I18n.t('field_user', locale: :'zh-TW'),
+        I18n.t('field_user', locale: :ja)
+      ],
+      'environment' => [
+        'environment',
+        I18n.t('field_environment', locale: :en),
+        I18n.t('field_environment', locale: :'zh-TW'),
+        I18n.t('field_environment', locale: :ja)
+      ],
+      'scenario' => [
+        'scenario', 'step',
+        I18n.t('field_scenario', locale: :en),
+        I18n.t('field_scenario', locale: :'zh-TW'),
+        I18n.t('field_scenario', locale: :ja)
+      ],
+      'expected' => [
+        'expected', 'result',
+        I18n.t('field_expected', locale: :en),
+        I18n.t('field_expected', locale: :'zh-TW'),
+        I18n.t('field_expected', locale: :ja)
+      ],
+      'test_plan' => [
+        'test_plan', 'plan',
+        I18n.t('field_test_plan', locale: :en),
+        I18n.t('field_test_plan', locale: :'zh-TW'),
+        I18n.t('field_test_plan', locale: :ja)
+      ]
+    }
+    
+    field_mappings.each do |field, possible_names|
+      matched_header = headers.find do |header|
+        header_clean = header.strip.downcase
+        possible_names.compact.any? { |name| header_clean.include?(name.downcase) }
+      end
+      mapping[field] = matched_header if matched_header
+    end
+    mapping
   end
 
   private
@@ -42,7 +143,7 @@ class TestCaseImport < Import
     test_case = TestCase.new
     test_case.user = user
     test_case.project_id = mapping["project_id"].to_i
-    search_test_case = mapping["test_case_update"].to_i.zero? ? false : true
+    # 根據 test_case_id 自動判斷是否更新現有測試案例
 
     found_test_case = nil
     if test_case_id = row_value(row, "test_case_id")
@@ -63,17 +164,11 @@ class TestCaseImport < Import
     found_test_case = if found_test_case
                         found_test_case
                       elsif found_test_plan
-                        if search_test_case
-                          found_test_plan.test_cases.where(name: name).first
-                        else
-                          nil
-                        end
+                        # 如果沒有指定 test_case_id，則不更新現有測試案例
+                        nil
                       else
-                        if search_test_case
-                          TestCase.where(name: name, project_id: test_case.project_id).first
-                        else
-                          nil
-                        end
+                        # 如果沒有指定 test_case_id，則不更新現有測試案例
+                        nil
                       end
     if found_test_case
       test_case = found_test_case
