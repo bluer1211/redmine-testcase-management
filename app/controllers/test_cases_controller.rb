@@ -468,11 +468,14 @@ SQL
     columns = @query.available_columns
     
     csv_data = Redmine::Export::CSV.generate(encoding: 'UTF-8') do |csv|
-      # 使用與 CSV 匯出相同的表頭
-      csv << columns.map {|c| c.caption.to_s} + [l(:field_test_cases)]
+      # 使用與 CSV 匯出相同的表頭，但添加 test_plan_id 欄位
+      headers = columns.map {|c| c.caption.to_s} + [l(:field_test_cases)]
+      headers.unshift(l(:field_test_plan_id))  # 在開頭添加測試計劃 ID 欄位
+      csv << headers
       # 添加範例資料行
       csv << [
-        "1",
+        "1",  # test_plan_id
+        "1",  # id
         "範例測試計劃 1",
         l(:label_new),
         "1",
@@ -495,11 +498,14 @@ SQL
     columns = @query.available_columns
     
     csv_data = Redmine::Export::CSV.generate(encoding: 'UTF-8') do |csv|
-      # 使用與 CSV 匯出相同的表頭
-      csv << columns.map {|c| c.caption.to_s}
+      # 使用與 CSV 匯出相同的表頭，但添加 test_case_execution_id 欄位
+      headers = columns.map {|c| c.caption.to_s}
+      headers.unshift(l(:field_test_case_execution_id))  # 在開頭添加測試案例執行 ID 欄位
+      csv << headers
       # 添加範例資料行
       csv << [
-        "1",
+        "1",  # test_case_execution_id
+        "1",  # id
         "範例測試案例 1",
         "範例測試計劃 1",
         l(:label_succeed),
