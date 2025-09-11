@@ -16,6 +16,7 @@
 | 失敗 | failed | 執行失敗的測試案例數量 |
 | 成功率 | succeeded_rate | 成功測試案例佔總測試案例的百分比 |
 | 進度率 | progress_rate | 已執行測試案例佔總測試案例的百分比 |
+| 通過率 | pass_rate | 成功測試案例佔已執行測試案例的百分比 |
 | 預估錯誤數 | estimated_bug | 預估可能發現的錯誤數量 |
 | 發現錯誤 | detected_bug | 實際發現的錯誤數量 |
 | 剩餘錯誤 | remained_bug | 尚未修復的錯誤數量 |
@@ -79,25 +80,35 @@ end
 ```
 **說明**：(成功數 + 失敗數) ÷ 總測試案例數 × 100%，表示已執行的測試案例比例
 
-### 7. 預估錯誤數 (estimated_bug)
+### 7. 通過率 (pass_rate)
+```ruby
+if (test_plan.count_succeeded + test_plan.count_failed) > 0
+  通過率 = ((test_plan.count_succeeded / (test_plan.count_succeeded + test_plan.count_failed).to_f) * 100).round
+else
+  通過率 = '-'
+end
+```
+**說明**：成功數 ÷ (成功數 + 失敗數) × 100%，表示已執行測試案例中的通過比例
+
+### 8. 預估錯誤數 (estimated_bug)
 ```
 預估錯誤數 = test_plan.estimated_bug
 ```
 **說明**：測試計劃中預先估計可能發現的錯誤數量
 
-### 8. 發現錯誤 (detected_bug)
+### 9. 發現錯誤 (detected_bug)
 ```
 發現錯誤 = SUM(CASE WHEN issues.id IS NOT NULL THEN 1 ELSE 0 END)
 ```
 **說明**：統計實際發現的錯誤數量（關聯到問題的測試案例執行）
 
-### 9. 剩餘錯誤 (remained_bug)
+### 10. 剩餘錯誤 (remained_bug)
 ```
 剩餘錯誤 = SUM(CASE WHEN TCEIS.is_closed = '0' AND issues.id IS NOT NULL THEN 1 ELSE 0 END)
 ```
 **說明**：統計尚未修復的錯誤數量（問題狀態為未關閉）
 
-### 10. 修復率 (fixed_rate)
+### 11. 修復率 (fixed_rate)
 ```ruby
 if test_plan.detected_bug > 0
   修復率 = ((test_plan.fixed_bug / test_plan.detected_bug.to_f) * 100).round
@@ -153,25 +164,35 @@ end
 ```
 **說明**：(總成功數 + 總失敗數) ÷ 總測試案例數 × 100%，表示整體已執行的測試案例比例
 
-### 7. 總預估錯誤數 (estimated_bug)
+### 7. 總體通過率 (pass_rate)
+```ruby
+if (total_succeeded + total_failed) > 0
+  total_pass_rate = ((total_succeeded / (total_succeeded + total_failed).to_f) * 100).round
+else
+  total_pass_rate = '-'
+end
+```
+**說明**：總成功數 ÷ (總成功數 + 總失敗數) × 100%，表示整體已執行測試案例中的通過比例
+
+### 8. 總預估錯誤數 (estimated_bug)
 ```ruby
 total_estimated_bug = @test_plans.sum(&:estimated_bug)
 ```
 **說明**：所有測試計劃的預估錯誤數量總和
 
-### 8. 總發現錯誤數 (detected_bug)
+### 9. 總發現錯誤數 (detected_bug)
 ```ruby
 total_detected_bug = @test_plans.sum(&:detected_bug)
 ```
 **說明**：所有測試計劃中發現的錯誤數量總和
 
-### 9. 總剩餘錯誤數 (remained_bug)
+### 10. 總剩餘錯誤數 (remained_bug)
 ```ruby
 total_remained_bug = @test_plans.sum(&:remained_bug)
 ```
 **說明**：所有測試計劃中剩餘的錯誤數量總和
 
-### 10. 總體修復率 (fixed_rate)
+### 11. 總體修復率 (fixed_rate)
 ```ruby
 if total_detected_bug > 0
   total_fixed_rate = ((total_fixed_bug / total_detected_bug.to_f) * 100).round
@@ -247,6 +268,7 @@ ORDER BY test_plans.id DESC
 ### 計算結果
 - **成功率** = (5 ÷ 10) × 100% = 50%
 - **進度率** = ((5 + 2) ÷ 10) × 100% = 70%
+- **通過率** = (5 ÷ (5 + 2)) × 100% = 71%
 - **修復率** = ((3 - 1) ÷ 3) × 100% = 67%
 
 ### 合計行範例
@@ -261,6 +283,7 @@ ORDER BY test_plans.id DESC
 - 總失敗數量 = 2 + 1 + 3 = 6
 - 總體成功率 = (19 ÷ 30) × 100% = 63%
 - 總體進度率 = ((19 + 6) ÷ 30) × 100% = 83%
+- 總體通過率 = (19 ÷ (19 + 6)) × 100% = 76%
 
 ## 版本信息
 - 文件版本：1.1
