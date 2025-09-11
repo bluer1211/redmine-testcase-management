@@ -84,6 +84,7 @@ zh-TW:
   field_detected_bug: "發現錯誤"
   field_remained_bug: "剩餘錯誤"
   field_progress_rate: "進度率"
+  field_pass_rate: "通過率"
   field_fixed_rate: "修復率"
   field_succeeded_rate: "成功率"
   field_test_plan_id: "測試計劃 ID"

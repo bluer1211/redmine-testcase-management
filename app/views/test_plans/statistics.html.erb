@@ -16,6 +16,7 @@
           <th><%=l(:field_count_failed)%></th>
           <th><%=l(:field_succeeded_rate)%></th>
           <th><%=l(:field_progress_rate)%></th>
+          <th><%=l(:field_pass_rate)%></th>
           <th><%=l(:field_estimated_bug)%></th>
           <th><%=l(:field_detected_bug)%></th>
           <th><%=l(:field_remained_bug)%></th>
@@ -25,8 +26,8 @@
       <tbody>
         <% @test_plans.each do |test_plan| %>
         <tr>
-          <td class="id"><%= link_to test_plan.id, "/projects/#{@project.name}/test_plans/#{test_plan.id}" %></td>
-          <td class="name"><%= link_to test_plan.name, "/projects/#{@project.name}/test_plans/#{test_plan.id}" %></td>
+          <td class="id"><%= link_to test_plan.id, "/projects/#{@project.identifier}/test_plans/#{test_plan.id}" %></td>
+          <td class="name"><%= link_to test_plan.name, "/projects/#{@project.identifier}/test_plans/#{test_plan.id}" %></td>
           <td class="user"><%= link_to test_plan.user.name, "/users/#{test_plan.user.id}" %></td>
           <td class="test_cases"><%= test_plan.test_cases.size %></td>
           <td class="count_not_executed"><%= test_plan.count_not_executed %></td>
@@ -46,6 +47,13 @@
               -
             <% end %>
           </td>
+          <td class="pass_rate">
+            <% if (test_plan.count_succeeded + test_plan.count_failed) > 0 %>
+              <%= ((test_plan.count_succeeded / (test_plan.count_succeeded + test_plan.count_failed).to_f) * 100).round %>
+            <% else %>
+              -
+            <% end %>
+          </td>
           <td class="estimated_bug"><%= test_plan.estimated_bug %></td>
           <td class="detected_bug"><%= test_plan.detected_bug %></td>
           <td class="remained_bug"><%= test_plan.remained_bug %></td>
@@ -56,6 +64,25 @@
               -
             <% end %>
           </td>
+        </tr>
+        <% end %>
+        <!-- 合計行 -->
+        <% if @totals %>
+        <tr class="total-row" style="background-color: #f0f0f0; font-weight: bold; border-top: 2px solid #ccc;">
+          <td class="id">合計</td>
+          <td class="name" style="text-align: center;">-</td>
+          <td class="user" style="text-align: center;">-</td>
+          <td class="test_cases"><%= @totals[:test_cases] %></td>
+          <td class="count_not_executed"><%= @totals[:not_executed] %></td>
+          <td class="count_succeeded"><%= @totals[:succeeded] %></td>
+          <td class="count_failed"><%= @totals[:failed] %></td>
+          <td class="succeeded_rate" style="text-align: center;"><%= @totals[:succeeded_rate] %></td>
+          <td class="progress_rate" style="text-align: center;"><%= @totals[:progress_rate] %></td>
+          <td class="pass_rate" style="text-align: center;"><%= @totals[:pass_rate] %></td>
+          <td class="estimated_bug"><%= @totals[:estimated_bug] %></td>
+          <td class="detected_bug"><%= @totals[:detected_bug] %></td>
+          <td class="remained_bug"><%= @totals[:remained_bug] %></td>
+          <td class="fixed_rate" style="text-align: center;"><%= @totals[:fixed_rate] %></td>
         </tr>
         <% end %>
       </tbody>

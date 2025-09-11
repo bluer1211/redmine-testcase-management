@@ -66,4 +66,4 @@
   </p>
 </div>
 
-<%= javascript_tag "observeAutocompleteField('issue_id', '#{escape_javascript auto_complete_issues_path(project_id: @project, issue_id: @test_case_execution.issue_id)}')" %>
+<%= javascript_tag "observeAutocompleteField('issue_id', '#{escape_javascript auto_complete_issues_path(project_id: @project.id, issue_id: @test_case_execution.issue_id)}')" %>

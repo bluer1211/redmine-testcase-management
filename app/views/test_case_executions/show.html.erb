@@ -43,7 +43,22 @@
           <div class="label"><%=l(:field_issue)%></div>
           <div id="issue_id" class="value">
             <% if @test_case_execution.issue %>
-              <%= link_to @test_case_execution.issue, issue_path(id: @test_case_execution.issue.id) %>
+              <div>
+                <%= link_to @test_case_execution.issue, issue_path(id: @test_case_execution.issue.id) %>
+              </div>
+              <div style="margin-top: 8px;">
+                <span class="status status-<%= @test_case_execution.issue.status.id %>" style="font-size: 14px; font-weight: bold; padding: 4px 8px; border-radius: 3px;">
+                  <%= @test_case_execution.issue.status.name %>
+                </span>
+                <% if @test_case_execution.issue.assigned_to %>
+                  <span style="margin-left: 15px; font-size: 13px;">
+                    <%= link_to @test_case_execution.issue.assigned_to.name, user_path(@test_case_execution.issue.assigned_to), :class => 'user' %>
+                  </span>
+                <% end %>
+                <span style="margin-left: 15px; font-size: 12px; color: #666;">
+                  <%= format_time(@test_case_execution.issue.updated_on) %>
+                </span>
+              </div>
             <% end %>
           </div>
         </div>

@@ -80,6 +80,7 @@ ja:
   field_detected_bug: "摘出バグ"
   field_remained_bug: "残存バグ"
   field_progress_rate: "進捗率"
+  field_pass_rate: "合格率"
   field_fixed_rate: "バグ対応率"
   field_succeeded_rate: "成功率"
   field_test_plan_id: "テスト計画ID"

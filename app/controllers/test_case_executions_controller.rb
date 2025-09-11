@@ -212,7 +212,7 @@ class TestCaseExecutionsController < ApplicationController
       #   @test_case_execution.save_attachments params.require(:attachments).permit!
       # end
       if @test_case_execution.save
-        render_attachment_warning_if_needed @test_case_execution
+        # render_attachment_warning_if_needed @test_case_execution  # 暫時停用，避免 unsaved_attachments 錯誤
         flash[:notice] = l(:notice_successful_update)
         if @test_plan_given
           redirect_to project_test_plan_test_case_path(test_plan_id: @test_plan.id,
@@ -455,24 +455,24 @@ class TestCaseExecutionsController < ApplicationController
         description =<<-EOS
 # #{@test_plan.name} #{@test_case.name}
 
-[#{@test_case.name}](#{project_test_plan_test_case_url(id: @test_case.id)})
+[#{@test_case.name}](#{project_test_plan_test_case_url(@project, @test_plan, @test_case)})
 EOS
       else
         description =<<-EOS
 # #{@test_case.name}
 
-[#{@test_case.name}](#{project_test_case_url(id: @test_case.id)})
+[#{@test_case.name}](#{project_test_case_url(@project, @test_case)})
 EOS
       end
       if @test_case_execution.id
         if @test_plan_given && @test_plan
           description +=<<EOS
-[#{l(:label_test_case_executions)}](#{project_test_plan_test_case_test_case_execution_url(id: @test_case_execution.id)})
+[#{l(:label_test_case_executions)}](#{project_test_plan_test_case_test_case_execution_url(@project, @test_plan, @test_case, @test_case_execution)})
 
 EOS
         else
           description +=<<EOS
-[#{l(:label_test_case_executions)}](#{project_test_case_test_case_execution_url(id: @test_case_execution.id)})
+[#{l(:label_test_case_executions)}](#{project_test_case_test_case_execution_url(@project, @test_case, @test_case_execution)})
 
 EOS
         end
@@ -499,23 +499,23 @@ EOS
         description =<<-EOS
 h1. #{@test_plan.name} #{@test_case.name}
 
-"#{@test_case.name}":#{project_test_plan_test_case_url(id: @test_case.id)}
+"#{@test_case.name}":#{project_test_plan_test_case_url(@project, @test_plan, @test_case)}
 EOS
       else
         description =<<-EOS
 h1. #{@test_case.name}
 
-"#{@test_case.name}":#{project_test_case_url(id: @test_case.id)}
+"#{@test_case.name}":#{project_test_case_url(@project, @test_case)}
 EOS
       end
       if @test_case_execution.id
         if @test_plan_given && @test_plan
           description +=<<EOS
-"#{l(:label_test_case_executions)}":#{project_test_plan_test_case_test_case_execution_url(id: @test_case_execution.id)}
+"#{l(:label_test_case_executions)}":#{project_test_plan_test_case_test_case_execution_url(@project, @test_plan, @test_case, @test_case_execution)}
 EOS
         else
           description +=<<EOS
-"#{l(:label_test_case_executions)}":#{project_test_case_test_case_execution_url(id: @test_case_execution.id)}
+"#{l(:label_test_case_executions)}":#{project_test_case_test_case_execution_url(@project, @test_case, @test_case_execution)}
 EOS
         end
       end

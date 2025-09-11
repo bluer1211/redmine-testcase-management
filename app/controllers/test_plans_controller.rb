@@ -238,6 +238,57 @@ SQL
                       .group(:id)
                       .select(select_query)
                       .order(id: :desc)
+      
+      # 計算合計數據 - 使用安全的方法
+      begin
+        total_test_cases = 0
+        total_not_executed = 0
+        total_succeeded = 0
+        total_failed = 0
+        total_estimated_bug = 0
+        total_detected_bug = 0
+        total_remained_bug = 0
+        total_fixed_bug = 0
+        
+        @test_plans.each do |tp|
+          # 安全地獲取測試案例數量
+          test_cases_count = tp.respond_to?(:test_cases) ? tp.test_cases.size : 0
+          total_test_cases += test_cases_count
+          
+          # 安全地獲取統計數據
+          total_not_executed += tp.respond_to?(:count_not_executed) ? (tp.count_not_executed || 0) : 0
+          total_succeeded += tp.respond_to?(:count_succeeded) ? (tp.count_succeeded || 0) : 0
+          total_failed += tp.respond_to?(:count_failed) ? (tp.count_failed || 0) : 0
+          total_estimated_bug += tp.respond_to?(:estimated_bug) ? (tp.estimated_bug || 0) : 0
+          total_detected_bug += tp.respond_to?(:detected_bug) ? (tp.detected_bug || 0) : 0
+          total_remained_bug += tp.respond_to?(:remained_bug) ? (tp.remained_bug || 0) : 0
+          total_fixed_bug += tp.respond_to?(:fixed_bug) ? (tp.fixed_bug || 0) : 0
+        end
+        
+        # 計算百分比
+        total_succeeded_rate = total_test_cases > 0 ? ((total_succeeded.to_f / total_test_cases) * 100).round : '-'
+        total_progress_rate = total_test_cases > 0 ? (((total_succeeded + total_failed).to_f / total_test_cases) * 100).round : '-'
+        total_pass_rate = (total_succeeded + total_failed) > 0 ? ((total_succeeded.to_f / (total_succeeded + total_failed)) * 100).round : '-'
+        total_fixed_rate = total_detected_bug > 0 ? ((total_fixed_bug.to_f / total_detected_bug) * 100).round : '-'
+        
+        @totals = {
+          test_cases: total_test_cases,
+          not_executed: total_not_executed,
+          succeeded: total_succeeded,
+          failed: total_failed,
+          succeeded_rate: total_succeeded_rate,
+          progress_rate: total_progress_rate,
+          pass_rate: total_pass_rate,
+          estimated_bug: total_estimated_bug,
+          detected_bug: total_detected_bug,
+          remained_bug: total_remained_bug,
+          fixed_rate: total_fixed_rate
+        }
+      rescue => e
+        # 如果計算合計時出錯，設置為空值
+        @totals = nil
+      end
+      
       @title = html_title(l(:label_test_plan_statistics))
       render :statistics
     rescue

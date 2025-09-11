@@ -3,7 +3,7 @@
 [![Redmine Version](https://img.shields.io/badge/Redmine-6.0.6+-red.svg)](https://redmine.org)
 [![Rails Version](https://img.shields.io/badge/Rails-7.2.2.1+-green.svg)](https://rubyonrails.org)
 [![License](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](LICENSE)
-[![Plugin Version](https://img.shields.io/badge/Version-1.6.5-orange.svg)](CHANGELOG.md)
+[![Plugin Version](https://img.shields.io/badge/Version-1.6.7-orange.svg)](CHANGELOG.md)
 
 完整的 Redmine 測試案例管理系統，支援 CSV 匯入/匯出、模板下載和完整本地化支援。功能包括測試計劃、測試案例、執行追蹤、統計和批量操作。
 
@@ -17,9 +17,10 @@
 - **自動對應功能**: 智能的 CSV 欄位自動對應，支援多語系
 - **匯入模板**: 提供標準化的 CSV 模板檔案下載功能
 - **匯入預覽**: 匯入前的資料預覽和驗證功能
-- **統計報表**: 測試計劃和測試案例的統計分析
+- **統計報表**: 測試計劃和測試案例的統計分析，包含通過率和合計行功能
+- **問題關聯**: 測試案例執行與問題的關聯顯示，包含詳細狀態信息
 - **批量操作**: 支援批量編輯和刪除
-- **完整本地化**: 支援繁體中文等多種語言
+- **完整本地化**: 支援英文、日文、繁體中文等多種語言
 
 ## 作者
 

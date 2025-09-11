@@ -81,6 +81,7 @@ en:
   field_detected_bug: "Detected Bug"
   field_remained_bug: "Remained Bug"
   field_progress_rate: "Progress Rate"
+  field_pass_rate: "Pass Rate"
   field_fixed_rate: "Fixed Rate"
   field_succeeded_rate: "Succeeded Rate"
   field_test_plan_id: "Test Plan ID"
